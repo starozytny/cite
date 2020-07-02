@@ -1,1 +1,15 @@
 {% extends 'themes/default/base.html.twig' %}
+
+{% block body %}
+
+    {% include "themes/default/app/layout/components/menu.html.twig" %}
+
+    <main>
+        {% block main_content %}
+            
+        {% endblock %}
+    </main>
+
+    {% include "themes/default/app/layout/components/footer.html.twig" %}
+
+{% endblock %}

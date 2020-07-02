@@ -9,7 +9,7 @@
 
 {% block title %}Home{% endblock %}
 
-{% block body %}
+{% block main_content %}
     Hello world 
 
     <div id="r-compteur" class="compteur" data-count="1946">0</div>
@@ -25,6 +25,7 @@
         <li><a href="{{ path('app_cookies') }}">Cookies</a></li>
         <li><a href="{{ path('app_rgpd') }}">RGPD</a></li>
         <li><a href="{{ path('app_contact') }}">Contact</a></li>
+        <li><a href="{{ path('app_booking_index') }}">Réservation</a></li>
     </ul>
 {% endblock %}
 
