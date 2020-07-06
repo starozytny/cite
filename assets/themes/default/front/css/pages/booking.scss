@@ -74,6 +74,17 @@
             }
         }
 
+        .step-prospects-add{
+            button{
+                cursor: pointer;
+                padding: 25px;
+            }
+
+            &.full{
+                display: none;
+            }
+        }
+
         .step-prospect{
             &.active{
                 background-color: $successBg;

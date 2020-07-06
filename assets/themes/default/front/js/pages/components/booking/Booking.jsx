@@ -47,7 +47,8 @@ export class Step1 extends Component {
         
         this.state = {
             added: 0,
-            deleted: 0
+            deleted: 0,
+            classAdd: ''
         }
 
         this.handleClickDelete = this.handleClickDelete.bind(this); 
@@ -60,10 +61,19 @@ export class Step1 extends Component {
         Gestion d'ajout et suppression d'inscrits
      */
     handleClickDelete (e) {
-        this.setState({deleted: parseInt(this.state.deleted) + 1})
+        this.setState({deleted: parseInt(this.state.deleted) + 1, classAdd: ''})
     }
     handleClickAdd (e) {
-        this.setState({added: parseInt(this.state.added) + 1})
+        let value = parseInt(this.state.added) + 1;
+        let valueDeleted = parseInt(this.state.deleted);
+        let remaining = value - valueDeleted;
+        if(remaining < 10){
+            this.setState({added: value});
+        }else if (remaining === 10){
+            this.setState({added: value, classAdd: 'full'});
+        }else{
+             this.setState({classAdd: 'full'});
+        }
     }
 
     /**
@@ -74,7 +84,7 @@ export class Step1 extends Component {
 
     render () {
         const {classStep} = this.props;
-        const {added} = this.state;
+        const {added, classAdd} = this.state;
 
         let arr = [];
         for (let i=0 ; i<added ; i++) {
@@ -87,8 +97,8 @@ export class Step1 extends Component {
             <div className="step-prospects">
                 {arr}
             </div>
-            <div>
-                <button onClick={this.handleClickAdd}>Add</button>
+            <div className={"step-prospects-add " + classAdd}>
+                <button onClick={this.handleClickAdd}>Ajouter</button>
             </div>
         </>
 
