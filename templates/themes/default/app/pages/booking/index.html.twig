@@ -1,13 +1,24 @@
 {% extends 'themes/default/app/layout/layout.html.twig' %}
 
-{% block title %}Contact{% endblock %}
+{% block title %}Réservation d'un ticket pour la journée d'inscription à la Cité de la musique{% endblock %}
 
 {% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('default_booking') }}
 {% endblock %}
 
-{% block body %}
-    <h1>Réservation</h1>
+{% block main_content %}
+
+    <div class="ariane">
+        <span><a href="{{ path('app_homepage') }}">Accueil</a></span>
+        <span class="active"><a href="{{ path('app_booking_index') }}">Réservation d'un ticket</a></span>
+    </div>
+
+    <div id="booking"></div>
+
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('default_booking') }}
 {% endblock %}

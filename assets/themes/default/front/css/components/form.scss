@@ -1,0 +1,71 @@
+@import "../vars/vars.scss";
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 35px;
+
+    &.form-group-error{
+        label{
+            color: $errorLabel;
+        }
+        .error{
+            @include show();
+        }
+        input, textarea{
+            border-color: $errorBg;
+            border-radius: 5px 5px 0 0;
+        }
+    }
+}
+
+.error{
+    background-color: $errorBg;
+    color: $error;
+    padding: 5px;
+    font-size: 14px;
+    @include hide();
+}
+
+label{
+    @include fontSemibold();
+    color: #6A6A6A;
+    margin-bottom: 10px;
+}
+
+input, textarea{
+    background-color: $alpha;
+    border: 1px solid $color7;
+    border-radius: 5px;
+    padding: 10px 5px;
+    font-size: 14px;
+    height: 20px;
+
+    &:focus{
+        outline-color: $color4;
+    }
+}
+textarea{
+    height: 200px;
+    resize: none;
+}
+
+label{
+    select{
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px 5px;
+        background-color: $color4;
+        border: 1px solid $color4;
+    }
+}
+
+.form-infos{
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: $color6
+}
+
+.form-group-btn{
+    display: block;
+}

@@ -1,0 +1,28 @@
+@import '../vars/vars.scss';
+
+.btn{
+    display: inline-block;
+    background-color: transparent;
+    border: 1px solid $color3;
+    text-transform: uppercase;
+    padding: 12px 22px 12px 22px;
+    border-radius: 100px;
+    color: $color3;
+    z-index: 1;
+    @include boxshadow($color3);
+    @include fontSemibold();
+    cursor: pointer;
+    transition: all 0.4s ease-in-out;
+}
+
+.btn-primary{
+    background-color: $color0;
+    border-color: $color0;
+    color: $color5;
+}
+
+.btn-danger{
+    background-color: $error;
+    border-color: $error;
+    color: $color4;
+}

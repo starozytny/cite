@@ -53,6 +53,7 @@ Encore
     .addEntry('default_security', './assets/themes/default/front/js/pages/security.jsx')
     .addEntry('default_legales', './assets/themes/default/front/js/pages/legales.jsx')
     .addEntry('default_contact', './assets/themes/default/front/js/pages/contact.jsx')
+    .addEntry('default_booking', './assets/themes/default/front/js/pages/booking.jsx')
 
     .addEntry('default_admin', './assets/themes/default/back/js/default.jsx')
 

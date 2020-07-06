@@ -1,21 +1,21 @@
 import React, {Components} from 'react';
 
-export function Input({type, name, id, value, onChange, error, children}) {
+export function Input({type, identifiant, value, onChange, error, placeholder="", onBlur=null, children}) {
     return (
         <div className={'form-group' + (error ? " form-group-error" : "")}>
-            <label htmlFor={id}>{children}</label>
-            <input type={type} name={name} id={id} value={value} onChange={onChange}/>
-            <div className="error">{error ? error : null}</div>
+            <label htmlFor={identifiant}>{children}</label>
+            <input type={type} name={identifiant} id={identifiant} value={value} placeholder={placeholder} onChange={onChange} onBlur={onBlur}/>
+            <div className='error'>{error ? error : null}</div>
         </div>
     );
 }
 
-export function TextArea({name, id, value, onChange, error, children}) {
+export function TextArea({identifiant, value, onChange, error, children}) {
     return (
         <div className={'form-group' + (error ? " form-group-error" : "")}>
-            <label htmlFor={id}>{children}</label>
-            <textarea name={name} id={id} value={value} onChange={onChange}/>
-            <div className="error">{error ? error : null}</div>
+            <label htmlFor={identifiant}>{children}</label>
+            <textarea name={identifiant} id={identifiant} value={value} onChange={onChange}/>
+            <div className='error'>{error ? error : null}</div>
         </div>
     );
 }

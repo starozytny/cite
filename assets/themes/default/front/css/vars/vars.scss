@@ -3,6 +3,9 @@
 @mixin fontSemibold() { font-family: 'Poppins', sans-serif; font-weight: 600; }
 @mixin fontBold() { font-family: 'Poppins', sans-serif; font-weight: 700; }
 
+@mixin hide() { position: absolute; opacity: 0; z-index: -10; }
+@mixin show() { position: relative; opacity: 1; z-index: 0; }
+
 @mixin flex($direction: row, $align: center, $justify: center) {
   display: flex;flex-direction: $direction;
   align-items: $align;justify-content: $justify;
@@ -10,6 +13,14 @@
 
 @mixin boxshadow($size: 10, $color: $alpha, $opacity: 0.8) {
   box-shadow: 0 0 #{$size}px transparentize($color, $opacity);
+}
+
+@mixin boxsh(){
+  box-shadow:
+  0 0.9px 5.3px rgba(0, 0, 0, 0.001),
+  0 3.1px 17.9px rgba(0, 0, 0, 0.013),
+  0 14px 80px rgba(0, 0, 0, 0.04)
+;
 }
 
 @mixin margin1280() {
@@ -22,10 +33,10 @@
   margin: 0 auto;
 }
 
-$color0: #C10F1E;
+$color0: #df1f2f;
 $color1: #98101B;
 $color2: #6B0C14;
-$color3: #15120D;
+$color3: #171717;
 $color4: #F1ECEC;
 $color5: #FDFCFC;
 $color6: #676767;
@@ -33,6 +44,7 @@ $color7: #C6C3C3;
 $color8: #DFDDDD;
 
 $error: #d40d0e;
+$errorLabel: #d40d0e;
 $errorBg: #ffb9b9;
 $success: #169f50;
 $successBg: #83ffc5;
