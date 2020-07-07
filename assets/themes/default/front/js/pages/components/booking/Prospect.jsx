@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Step} from './Step';
 import {Input} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
+import Swal from 'sweetalert2'
 
 /**
     Step  : Récupérer les informations de chaque personnes à inscrire
@@ -63,6 +64,23 @@ export class StepProspects extends Component {
      */
     handleClickNext (e) {
         console.log(this.state)
+        const {added, deleted} = this.state;
+
+        let remaining = parseInt(added) - parseInt(deleted);
+        let cards = document.querySelectorAll('.step-prospect');
+        let go = false;
+        cards.forEach((elem) => {
+            go = elem.classList.contains('valide') ? true : false;
+        })
+        if(remaining > 0 && go){
+        }else{
+            Swal.fire({
+                title: 'Erreur !',
+                html: 'Veuillez <b>valider</b> (boutton bleu) les personnes à inscrire avant de pouvoir passer à l\'étape suivante.',
+                icon: 'error',
+                confirmButtonText: 'Confirmer'
+              })
+        }
     }
 
     render () {
