@@ -23,6 +23,7 @@ export class StepProspects extends Component {
         this.handleClickNext = this.handleClickNext.bind(this);
 
         this.addProspect = this.addProspect.bind(this);
+        this.removeProspect = this.removeProspect.bind(this);
     }
 
     /**
@@ -52,6 +53,11 @@ export class StepProspects extends Component {
         this.setState({ prospects: arr })     
     }
 
+    removeProspect (data) {
+        let arr = this.state.prospects.filter((elem) => elem.id != data.id)
+        this.setState({ prospects: arr })     
+    }
+
     /**
         Gestion étape suivante
      */
@@ -66,7 +72,7 @@ export class StepProspects extends Component {
         let arr = [];
         for (let i=0 ; i<added ; i++) {
             arr.push(
-                <Prospect key={i} id={i} onDeleteCard={this.handleClickDelete} addProspect={this.addProspect}/>
+                <Prospect key={i} id={i} onDeleteCard={this.handleClickDelete} addProspect={this.addProspect} removeProspect={this.removeProspect} />
             )
         }
         
@@ -127,6 +133,8 @@ class Prospect extends Component {
     handleDelete (e) {
         this.setState({renderCompo: false})
         this.props.onDeleteCard();
+        let data = {...this.state, ...{id: this.props.id}};
+        this.props.removeProspect(data);
     }
 
     handleChange (e) {
