@@ -99,6 +99,13 @@
         .btn-back{
             display: none;
         }
+        .step-actions{
+            width: 50%;
+
+            &.full{
+                width: 100%;
+            }
+        }
     }
 
     .step-prospects-add, .step-prospects-add-static{
@@ -150,6 +157,7 @@
 .step-actions{
     left: auto;
     right: 0;
+    width: 100%;
 
     .btn{
         width: 100%;

@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import {Step} from './Step';
 import {Input} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 /**
     Step  : Récupérer les informations de chaque personnes à inscrire
@@ -15,16 +16,12 @@ export class StepProspects extends Component {
             added: 0,
             deleted: 0,
             classAdd: '',
-            prospects: []
         }
 
         this.handleClickDelete = this.handleClickDelete.bind(this); 
         this.handleClickAdd = this.handleClickAdd.bind(this); 
 
         this.handleClickNext = this.handleClickNext.bind(this);
-
-        this.addProspect = this.addProspect.bind(this);
-        this.removeProspect = this.removeProspect.bind(this);
     }
 
     /**
@@ -44,42 +41,29 @@ export class StepProspects extends Component {
         }else{
             this.setState({classAdd: 'full'});
         }
-
-        window.focus();
-    }
-
-    addProspect (data) {
-        let tmp = this.state.prospects.filter((elem) => elem.id != data.id)
-        let arr = tmp.concat([data])
-        this.setState({ prospects: arr })     
-    }
-
-    removeProspect (data) {
-        let arr = this.state.prospects.filter((elem) => elem.id != data.id)
-        this.setState({ prospects: arr })     
     }
 
     /**
         Gestion étape suivante
      */
     handleClickNext (e) {
-        console.log(this.state)
-        const {added, deleted} = this.state;
-
-        let remaining = parseInt(added) - parseInt(deleted);
-        let cards = document.querySelectorAll('.step-prospect');
         let go = false;
-        cards.forEach((elem) => {
-            go = elem.classList.contains('valide') ? true : false;
-        })
-        if(remaining > 0 && go){
+        for(let ref in this.refs){
+            if(!this.refs[ref].state.deleted){
+                let r = this.refs[ref].handleClick();
+                go = r.code === 1 ? true : false;
+            }
+        }
+
+        if(go){
+
         }else{
             Swal.fire({
                 title: 'Erreur !',
-                html: 'Veuillez <b>valider</b> (boutton bleu) les personnes à inscrire avant de pouvoir passer à l\'étape suivante.',
+                html: 'Veuillez compléter les informations des personnes à inscrire avant de continuer.',
                 icon: 'error',
                 confirmButtonText: 'Confirmer'
-              })
+            })
         }
     }
 
@@ -90,7 +74,7 @@ export class StepProspects extends Component {
         let arr = [];
         for (let i=0 ; i<added ; i++) {
             arr.push(
-                <Prospect key={i} id={i} onDeleteCard={this.handleClickDelete} addProspect={this.addProspect} removeProspect={this.removeProspect} />
+                <Prospect key={i} id={i} ref={"child" + i} onDeleteCard={this.handleClickDelete} />
             )
         }
         
@@ -113,7 +97,7 @@ export class StepProspects extends Component {
             </div>
         </>
 
-        return <Step id="1" classStep={classStep} title="Informations des personnes à inscrire" onClickNext={this.handleClickNext} body={body}>
+        return <Step id="1" classStep={classStep} title="Informations des personnes à inscrire" specialFull={classAdd} onClickNext={this.handleClickNext} body={body}>
             Les informations recueillies à partir de ce formulaire sont transmises au service de la Cité de la musique dans le but 
             de pré-remplir les inscriptions. Plus d'informations sur le traitement de vos données dans notre 
             politique de confidentialité.
@@ -128,6 +112,7 @@ class Prospect extends Component {
         this.state = {
             renderCompo: true,
             valide: '',
+            deleted: false,
             firstname: {value: '', error: ''},
             lastname: {value: '', error: ''},
             civility: {value: 'Mr', error: ''},
@@ -149,10 +134,8 @@ class Prospect extends Component {
     }
 
     handleDelete (e) {
-        this.setState({renderCompo: false})
+        this.setState({renderCompo: false, deleted: true})
         this.props.onDeleteCard();
-        let data = {...this.state, ...{id: this.props.id}};
-        this.props.removeProspect(data);
     }
 
     handleChange (e) {
@@ -161,7 +144,7 @@ class Prospect extends Component {
         let value = name === 'isAdh' ? e.target.checked : e.target.value;
         this.setState({ [name]: {value: value} });
 
-        const {phoneDomicile, phoneTravail, birthday} = this.state;
+        const {phoneDomicile, phoneTravail} = this.state;
         if(name === 'phoneDomicile' || name === 'phoneTravail'){
             let valueD = name === 'phoneDomicile' ? value : phoneDomicile.value;
             let valueT = name === 'phoneTravail' ? value : phoneTravail.value;
@@ -223,10 +206,13 @@ class Prospect extends Component {
         // -------
         if(!validate.code){
             this.setState(validate.errors);
+            return {code: 0};
         }else{
-            let data = {...this.state, ...{id: this.props.id}};
             this.setState({valide: 'valide'})
-            this.props.addProspect(data);
+            return {
+                code: 1,
+                id: this.props.id
+            };
         }
     }
 
@@ -240,14 +226,14 @@ class Prospect extends Component {
             {renderCompo ? <ProspectCard id={id} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
                             birthday={birthday} phoneDomicile={phoneDomicile} phoneTravail={phoneTravail} email={email}
                             adr={adr} cp={cp} city={city} isAdh={isAdh} numAdh={numAdh}
-                            onChange={this.handleChange} onDelete={this.handleDelete} onClick={this.handleClick} onClickEdit={this.handleClickEdit}/> 
+                            onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit}/> 
                         : null}
         </>
     }
 } 
 
 function ProspectCard({id, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneTravail, email, adr, cp, city, isAdh, numAdh,
-                        onChange, onDelete, onClick, onClickEdit}) 
+                        onChange, onDelete, onClickEdit}) 
     {
     return <div className={"step-card step-prospect " + valide}>
 
@@ -276,7 +262,6 @@ function ProspectCard({id, valide, firstname, lastname, civility, birthday, phon
 
         <div className="actions">
             <button className="delete" onClick={onDelete}>Supprimer</button>
-            <button className="valide" onClick={onClick}>Valider</button>
         </div>
 
         <div className={"valideDiv " + valide}>
