@@ -1,0 +1,95 @@
+@import '../../../vars/vars.scss';
+
+.steps-dot{
+    position: relative;
+    display: flex;
+    margin: 25px 10px;
+    @include flex(row, center, space-between);
+    max-width: 768px;
+    @include hide();
+
+    &.active{
+        @include show();
+        transition: all 0.2s ease-in-out;
+    }
+
+    &:before{
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        display: block;
+        background-color: $color7;
+        width: 100%;
+        height: 5px;
+        z-index: -1;
+    }
+
+    .item{
+        position: relative;
+        @include flex(column, center, center);
+
+        &.active{
+            .circle{
+                background-color: $color0;
+            }
+        }
+
+        &.full{
+            &:before{
+                background-color: $color0;
+            }
+        }
+
+        &:before{
+            content: '';
+            background-color: $color7;
+            display: block;
+            width: 26px; height: 26px;
+            border-radius: 26px;
+            margin: -10px 0 10px 0;
+        }
+        .circle{
+            margin-top: -32px;
+            margin-bottom: 25px;
+            display: block;
+            width: 12px; height: 12px;
+            border: 3px solid $color5;
+            background-color: $color7;
+            border-radius: 25px;
+        }
+        .text{
+            display: none;
+        }
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .steps-dot{
+        &:before{
+            width: 87%;
+            left: 75px;
+        }
+        .item{
+            .numero{display: none;}
+            .text{ display: block;}
+        }
+    }
+}
+
+//                      __   _  ___ ____  _  _     __
+//                     | _| / |/ _ \___ \| || |   |_ |
+//    _____ _____ _____| |  | | | | |__) | || |_   | |_____ _____ _____
+//   |_____|_____|_____| |  | | |_| / __/|__   _|  | |_____|_____|_____|
+//                     | |  |_|\___/_____|  |_|    | |
+//                     |__|                       |__|
+@media (min-width: 1024px) {
+    .steps-dot{
+        margin: 25px auto 50px auto;
+    }
+}

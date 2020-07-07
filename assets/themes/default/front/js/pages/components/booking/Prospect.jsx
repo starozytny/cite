@@ -103,10 +103,10 @@ class Prospect extends Component {
 
         this.state = {
             renderCompo: true,
-            valide: false,
+            valide: '',
             firstname: {value: '', error: ''},
             lastname: {value: '', error: ''},
-            civility: {value: 'mr', error: ''},
+            civility: {value: 'Mr', error: ''},
             birthday: {value: '2019-01-01', error: ''},
             phoneDomicile: {value: '', error: ''},
             phoneTravail: {value: '', error: ''},
@@ -121,6 +121,7 @@ class Prospect extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleClickEdit = this.handleClickEdit.bind(this);
     }
 
     handleDelete (e) {
@@ -140,6 +141,10 @@ class Prospect extends Component {
             let valueT = name === 'phoneTravail' ? value : phoneTravail.value;
             this.setState({ phoneDomicile: {value: valueD ,error: ''}, phoneTravail: {value: valueT ,error: ''}  });
         }
+    }
+
+    handleClickEdit (e) {
+        this.setState({valide: ''})
     }
 
     handleClick (e) {
@@ -194,33 +199,31 @@ class Prospect extends Component {
             this.setState(validate.errors);
         }else{
             let data = {...this.state, ...{id: this.props.id}};
-            console.log(data)
+            this.setState({valide: 'valide'})
+            this.props.addProspect(data);
         }
-       
-
-        // this.props.addProspect(data);
     }
 
     render () {
         const {firstname, lastname, civility, birthday, phoneDomicile, phoneTravail, email,
             adr, cp, city, isAdh, numAdh, 
-            renderCompo} = this.state;
+            renderCompo, valide} = this.state;
         const {id} = this.props;
 
         return <>
-            {renderCompo ? <ProspectCard id={id} firstname={firstname} lastname={lastname} civility={civility} 
+            {renderCompo ? <ProspectCard id={id} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
                             birthday={birthday} phoneDomicile={phoneDomicile} phoneTravail={phoneTravail} email={email}
                             adr={adr} cp={cp} city={city} isAdh={isAdh} numAdh={numAdh}
-                            onChange={this.handleChange} onDelete={this.handleDelete} onClick={this.handleClick} /> 
+                            onChange={this.handleChange} onDelete={this.handleDelete} onClick={this.handleClick} onClickEdit={this.handleClickEdit}/> 
                         : null}
         </>
     }
 } 
 
-function ProspectCard({id, firstname, lastname, civility, birthday, phoneDomicile, phoneTravail, email, adr, cp, city, isAdh, numAdh,
-                        onChange, onDelete, onClick}) 
+function ProspectCard({id, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneTravail, email, adr, cp, city, isAdh, numAdh,
+                        onChange, onDelete, onClick, onClickEdit}) 
     {
-    return <div className="step-card step-prospect">
+    return <div className={"step-card step-prospect " + valide}>
 
         <span className="title"><span className="icon-infos"></span></span>
 
@@ -249,6 +252,18 @@ function ProspectCard({id, firstname, lastname, civility, birthday, phoneDomicil
             <button className="delete" onClick={onDelete}>Supprimer</button>
             <button className="valide" onClick={onClick}>Valider</button>
         </div>
+
+        <div className={"valideDiv " + valide}>
+            <div className="infos">
+                <div>{civility.value}. {lastname.value} {firstname.value}</div>
+                <div>{email.value}</div>
+                <div>{birthday.value}</div>
+            </div>
+            <div className="actions">
+                <button className="delete" onClick={onDelete}>Supprimer</button>
+                <button className="edit" onClick={onClickEdit}>Modifier</button>
+            </div>
+        </div>
     </div>
 }
 
@@ -256,11 +271,11 @@ function RadioCivility({id, civility, onChange}) {
     return (
         <div className="form-group form-group-radio">
             <div>
-                <input type="radio" id={"civility-mr-" + id} name={"civility-" + id} value="mr" checked={civility.value === 'mr'} onChange={onChange} />
+                <input type="radio" id={"civility-mr-" + id} name={"civility-" + id} value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
                 <label htmlFor={"civility-mr-" + id}>Mr</label>
             </div>
             <div>
-                <input type="radio" id={"civility-mme" + id} name={"civility-" + id} value="mme" checked={civility.value === 'mme'} onChange={onChange} />
+                <input type="radio" id={"civility-mme" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
                 <label htmlFor={"civility-mme" + id}>Mme</label>
             </div>
         </div>
