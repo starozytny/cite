@@ -47,16 +47,36 @@ export class StepProspects extends Component {
         Gestion étape suivante
      */
     handleClickNext (e) {
-        let go = false;
+        let go = false; let data = [];
         for(let ref in this.refs){
-            if(!this.refs[ref].state.deleted){
+            let st = this.refs[ref].state;
+
+            if(!st.deleted){
                 let r = this.refs[ref].handleClick();
-                go = r.code === 1 ? true : false;
+                if(r.code === 1){
+                    go = true;
+                    
+                    let d = {
+                        civility: st.civility.value,
+                        firstname: st.firstname.value,
+                        lastname: st.lastname.value,
+                        email: st.email.value,
+                        birthday: st.birthday.value,
+                        adr: st.adr.value,
+                        cp: st.cp.value,
+                        city: st.city.value,
+                        isAdh: st.isAdh.value,
+                        numAdh: st.numAdh.value
+                    }
+                    data.push(d);
+                }else{
+                    go = false;
+                }
             }
         }
 
         if(go){
-
+            this.props.toResponsableStep(data);
         }else{
             Swal.fire({
                 title: 'Erreur !',

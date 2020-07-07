@@ -8,10 +8,13 @@ export class Booking extends Component {
         this.state = {
             classDot: '',
             classStart: '',
-            classStep1: ''
+            classStep1: '',
+            prospects: []
         }
 
-        this.handleClickStart = this.handleClickStart.bind(this)
+        this.handleClickStart = this.handleClickStart.bind(this);
+
+        this.toResponsableStep = this.toResponsableStep.bind(this);
     }
 
     /**
@@ -19,6 +22,18 @@ export class Booking extends Component {
     */
     handleClickStart (e) {
         this.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active'})
+    }
+
+    toResponsableStep (data) {
+
+        data = data.filter((thing, index, self) =>
+            index === self.findIndex((t) => (
+                t.civility === thing.civility && t.firstname === thing.firstname && t.lastname === thing.lastname &&
+                t.birthday === thing.birthday
+            ))
+        )
+            
+        console.log(data)
     }
 
     render () {
@@ -34,7 +49,7 @@ export class Booking extends Component {
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1}/>
                 <div className="steps">
-                    <StepProspects classStep={classStep1}/>
+                    <StepProspects classStep={classStep1} toResponsableStep={this.toResponsableStep}/>
                 </div>
             </section>
         </>
