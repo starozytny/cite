@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {StepProspects} from './Prospect';
+import {StepResponsable} from './Responsable';
 
 export class Booking extends Component {
     constructor(props){
@@ -9,6 +10,7 @@ export class Booking extends Component {
             classDot: '',
             classStart: '',
             classStep1: '',
+            classStep2: '',
             prospects: []
         }
 
@@ -25,20 +27,18 @@ export class Booking extends Component {
     }
 
     toResponsableStep (data) {
-
         data = data.filter((thing, index, self) =>
             index === self.findIndex((t) => (
                 t.civility === thing.civility && t.firstname === thing.firstname && t.lastname === thing.lastname &&
                 t.birthday === thing.birthday
             ))
         )
-            
-        console.log(data)
+        this.setState({classDot: 'active-2', classStep1: 'full', classStep2: 'active'});
     }
 
     render () {
 
-        const {classDot, classStart, classStep1} = this.state;
+        const {classDot, classStart, classStep1, classStep2} = this.state;
 
         return <>
         
@@ -47,9 +47,10 @@ export class Booking extends Component {
                 <Starter onClick={this.handleClickStart}/>
             </section>
             <section className="section-steps">
-                <StepDot classDot={classDot} classStep1={classStep1}/>
+                <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} />
                 <div className="steps">
                     <StepProspects classStep={classStep1} toResponsableStep={this.toResponsableStep}/>
+                    <StepResponsable classStep={classStep2}/>
                 </div>
             </section>
         </>
@@ -71,8 +72,14 @@ function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
             <span className="text">{elem.text}</span>
         </div>
     })
+    let classActive = "";
+    if(classStep1 != undefined || classStep2 != undefined || classStep3 != undefined || classStep4 != undefined){
+        if(classDot != ""){
+            classActive = "active";
+        }
+    }
     return (
-        <div className={"steps-dot " + classStep1 + " " + classDot}>
+        <div className={"steps-dot " + classActive + " " + classDot}>
             {liste}
         </div>
     )

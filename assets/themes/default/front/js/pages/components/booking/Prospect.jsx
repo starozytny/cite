@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
 import {Step} from './Step';
 import {Input} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';

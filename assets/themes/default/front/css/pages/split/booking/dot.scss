@@ -13,7 +13,7 @@
         transition: all 0.2s ease-in-out;
     }
 
-    &:before{
+    &:before, &::after{
         content: '';
         position: absolute;
         top: 0; left: 0;
@@ -22,6 +22,18 @@
         width: 100%;
         height: 5px;
         z-index: -1;
+        transition: all 0.5s ease-in-out;
+    }
+
+    &::after{
+        background-color: $color0;
+        width: 0;
+    }
+
+    &.active-2{
+        &:after{
+            width: 38%;
+        }
     }
 
     .item{
@@ -35,7 +47,7 @@
         }
 
         &.full{
-            &:before{
+            &:before, .circle{
                 background-color: $color0;
             }
         }
@@ -74,6 +86,16 @@
         &:before{
             width: 87%;
             left: 75px;
+        }
+
+        &::after{
+            left: 75px;
+        }
+
+        &.active-2{
+            &:after{
+                width: 33%;
+            }
         }
         .item{
             .numero{display: none;}
