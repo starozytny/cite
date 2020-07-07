@@ -143,6 +143,7 @@
         background-color: $alpha;
         padding: 25px;
         margin-bottom: 30px;
+        max-width: 410px;
     }
 
     .step-actions{
@@ -233,6 +234,8 @@
         .form-group{
             margin-bottom: 15px;
         }
+
+        .error{font-size: 12px;}
 
         .form-group-radio{
             @include flex(row, center, center);
@@ -420,6 +423,10 @@
         justify-content: center;
     }
     .steps{
+        .step-card{
+            width: 536px;
+            max-width: 536px;
+        }
         .step-actions, .step-prospects-add, .step-prospects-add button{
             height: 80px;
         }

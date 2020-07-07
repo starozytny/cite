@@ -1,3 +1,19 @@
+function validateCustomPhone($value) {
+    if($value === ""){
+        return {
+            'code': false,
+            'message': 'Au moins 1 téléphone doit être renseigné.'
+        };
+    }
+    if (!(/^((\+)33|0)[1-9](\d{2}){4}$/.test($value))){
+        return {
+            'code': false,
+            'message': 'Ce numéro n\'est pas valide.'
+        };
+    }
+    return {'code': true};
+}
+
 function validateText($value) {
     if($value === ""){
         return {
@@ -25,6 +41,9 @@ function validateur(values){
         switch (element.type) {
             case 'text':
                 validate = validateText(element.value);
+                break;
+            case 'customPhone':
+                validate = validateCustomPhone(element.value);
                 break;
             case 'email':
                 validate = validateEmail(element.value);

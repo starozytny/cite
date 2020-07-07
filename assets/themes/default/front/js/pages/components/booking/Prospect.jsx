@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Step} from './Step';
 import {Input} from '../../../components/composants/Fields';
+import Validateur from '../../../components/functions/validate_input';
 
 /**
     Step  : Récupérer les informations de chaque personnes à inscrire
@@ -43,9 +44,6 @@ export class StepProspects extends Component {
         }
 
         window.focus();
-
-        console.log(this.props)
-        console.log(this.state)
     }
 
     addProspect (data) {
@@ -132,16 +130,77 @@ class Prospect extends Component {
 
     handleChange (e) {
         let name = e.target.name;
-        this.setState({ [name.substr(0,name.indexOf("-"))]: {value: e.target.value} });
+        name = name.substr(0,name.indexOf("-"))
+        let value = name === 'isAdh' ? e.target.checked : e.target.value;
+        this.setState({ [name]: {value: value} });
+
+        const {phoneDomicile, phoneTravail} = this.state;
+        if(name === 'phoneDomicile' || name === 'phoneTravail'){
+            let valueD = name === 'phoneDomicile' ? value : phoneDomicile.value;
+            let valueT = name === 'phoneTravail' ? value : phoneTravail.value;
+            this.setState({ phoneDomicile: {value: valueD ,error: ''}, phoneTravail: {value: valueT ,error: ''}  });
+        }
     }
 
     handleClick (e) {
-        let data = {
-            id: this.props.id,
-            firstname: this.state.firstname.value
+        const {firstname, lastname, email, birthday, adr, cp, city, phoneDomicile, phoneTravail, isAdh, numAdh} = this.state;
+
+        let validate = Validateur.validateur([
+            {type: "text", id: 'firstname', value: firstname.value},
+            {type: "text", id: 'lastname', value: lastname.value},
+            {type: "email", id: 'email', value: email.value},
+            {type: "text", id: 'birthday', value: birthday.value},
+            {type: "text", id: 'adr', value: adr.value},
+            {type: "text", id: 'cp', value: cp.value},
+            {type: "text", id: 'city', value: city.value}
+        ]);
+
+        // phone facultatif
+        let validatePhone;
+        if((phoneDomicile.value === "" && phoneTravail.value === "") || (phoneDomicile.value !== "" && phoneTravail.value !== "")){
+            validatePhone = Validateur.validateur([
+                {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value},
+                {type: "customPhone", id: 'phoneTravail', value: phoneTravail.value}
+            ])
+        }else if(phoneDomicile.value !== "" && phoneTravail.value === ""){
+            validatePhone = Validateur.validateur([
+                {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value}
+            ])
+        }else if(phoneDomicile.value === "" && phoneTravail.value !== ""){
+            validatePhone = Validateur.validateur([
+                {type: "customPhone", id: 'phoneTravail', value: phoneTravail.value}
+            ])
+        }
+        if(!validatePhone.code){
+            validate.code = false;
+            validate.errors = {...validate.errors, ...validatePhone.errors};
         }
 
-        this.props.addProspect(data);
+
+
+        // if isAdh is checked
+        if(isAdh.value){
+            let validateAdh = Validateur.validateur([
+                {type: "text", id: 'numAdh', value: numAdh.value}
+            ])
+
+            if(!validateAdh.code){
+                v2 = {...validate.errors, ...validateAdh.errors};
+                validate.code = false;
+                validate.errors = v2;
+            }
+        }
+
+        // -------
+        if(!validate.code){
+            this.setState(validate.errors);
+        }else{
+            let data = {...this.state, ...{id: this.props.id}};
+            console.log(data)
+        }
+       
+
+        // this.props.addProspect(data);
     }
 
     render () {
@@ -160,12 +219,6 @@ class Prospect extends Component {
     }
 } 
 
-
-/*
-
-num adh // txt explain
-
-*/
 function ProspectCard({id, firstname, lastname, civility, birthday, phoneDomicile, phoneTravail, email, adr, cp, city, isAdh, numAdh,
                         onChange, onDelete, onClick}) 
     {
@@ -181,10 +234,10 @@ function ProspectCard({id, firstname, lastname, civility, birthday, phoneDomicil
         <div className="line line-2">
             <Input type="text" identifiant={"email-" + id} value={email.value} onChange={onChange} error={email.error}>Adresse e-mail</Input>
             <Input type="text" identifiant={"birthday-" + id} value={birthday.value} onChange={onChange} placeholder="JJ/MM/AAAA" error={birthday.error}>Date de naissance</Input>
-        </div>
+        </div> 
         <div className="line line-2">
-            <Input type="text" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input>
-            <Input type="text" identifiant={"phoneTravail-" + id} value={phoneTravail.value} onChange={onChange} error={phoneTravail.error}>Téléphone travail</Input>
+            <Input type="number" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input>
+            <Input type="number" identifiant={"phoneTravail-" + id} value={phoneTravail.value} onChange={onChange} error={phoneTravail.error}>Téléphone travail</Input>
         </div>
         <Input type="text" identifiant={"adr-" + id} value={adr.value} onChange={onChange} error={adr.error}>Adresse postal</Input>
         <div className="line line-2">
@@ -205,12 +258,12 @@ function RadioCivility({id, civility, onChange}) {
     return (
         <div className="form-group form-group-radio">
             <div>
-                <input type="radio" id="mr" name={"civility-" + id} value="mr" checked={civility.value === 'mr'} onChange={onChange} />
-                <label htmlFor="mr">Mr</label>
+                <input type="radio" id={"civility-mr-" + id} name={"civility-" + id} value="mr" checked={civility.value === 'mr'} onChange={onChange} />
+                <label htmlFor={"civility-mr-" + id}>Mr</label>
             </div>
             <div>
-                <input type="radio" id="mme" name={"civility-" + id} value="mme" checked={civility.value === 'mme'} onChange={onChange} />
-                <label htmlFor="mme">Mme</label>
+                <input type="radio" id={"civility-mme" + id} name={"civility-" + id} value="mme" checked={civility.value === 'mme'} onChange={onChange} />
+                <label htmlFor={"civility-mme" + id}>Mme</label>
             </div>
         </div>
     )
@@ -218,13 +271,13 @@ function RadioCivility({id, civility, onChange}) {
 
 function IsAdh({id, isAdh, numAdh, onChange}) {
     return (
-        <>
+        <div className="line line-2">
             <div className="form-group">
-                <label htmlFor="isAdh">Déjà adhérent ?</label>
-                <input type="checkbox" name="isAdh" id="isAdh" checked={isAdh.value} onChange={onChange} />
+                <label htmlFor={"isAdh-" + id}>Déjà adhérent ?</label>
+                <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} onChange={onChange} />
             </div>
             {isAdh.value ? <Input type="text" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error}>Numéro adhérent</Input> 
                 : null}
-        </>
+        </div>
     )
 }
