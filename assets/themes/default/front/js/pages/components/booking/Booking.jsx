@@ -6,6 +6,7 @@ export class Booking extends Component {
         super(props);
 
         this.state = {
+            classDot: '',
             classStart: '',
             classStep1: ''
         }
@@ -17,19 +18,21 @@ export class Booking extends Component {
     * Fonction pour commencer le processus de demande de ticket.
     */
     handleClickStart (e) {
-        this.setState({classStart: 'hide', classStep1: 'active'})
+        this.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active'})
     }
 
     render () {
 
-        const {classStart, classStep1} = this.state;
+        const {classDot, classStart, classStep1} = this.state;
 
         return <>
+        
             <section className={"section-infos " + classStart}>
                 <Infos />
                 <Starter onClick={this.handleClickStart}/>
             </section>
             <section className="section-steps">
+                <StepDot classDot={classDot} classStep1={classStep1}/>
                 <div className="steps">
                     <StepProspects classStep={classStep1}/>
                 </div>
@@ -38,27 +41,24 @@ export class Booking extends Component {
     }
 }
 
-function Starter({onClick}) {
+function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
+    let items = [
+        { active: classStep1, text: 'Personnes à inscrire'},
+        { active: classStep2, text: 'Responsable'},
+        { active: classStep3, text: 'Récapitulatif'},
+        { active: classStep4, text: 'Ticket'}
+    ];
+    let liste = items.map((elem, index) => {
+        let numero = index + 1;
+        return <div className={"item " + elem.active } key={index}>
+            <div className="circle"></div>
+            <span className="numero">{numero}</span>
+            <span className="text">{elem.text}</span>
+        </div>
+    })
     return (
-        <div className="starter">
-            <div className="starter-card">
-                <div className="starter-infos">
-                    <p>
-                        Déroulement : 
-                    </p>
-                    <ul>
-                        <li>Faire sa demande de ticket pour X personnes.</li>
-                        <li>Récupérer son ticket et sa plage horaire grâce au mail envoyé.</li>
-                        <li>Se rendre à la journée d'inscription à l'horaire indiqué.</li>
-                    </ul>
-                    <div className="alert alert-danger">
-                        A la journée d'inscription veuillez prendre avec vous le document suivant : Avis d'impôts
-                    </div>
-                </div>
-                <div className="starter-btn">
-                    <button className="btn btn-primary" onClick={onClick}>Prendre de ticket</button>
-                </div>
-            </div>
+        <div className={"steps-dot " + classStep1 + " " + classDot}>
+            {liste}
         </div>
     )
 }
@@ -81,6 +81,31 @@ function Infos() {
                 <br />
                 04 91 39 28 28
             </p>
+        </div>
+    )
+}
+
+function Starter({onClick}) {
+    return (
+        <div className="starter">
+            <div className="starter-card">
+                <div className="starter-infos">
+                    <p>
+                        Déroulement : 
+                    </p>
+                    <ul>
+                        <li>Faire sa demande de ticket pour X personnes.</li>
+                        <li>Récupérer son ticket et sa plage horaire grâce au mail envoyé.</li>
+                        <li>Se rendre à la journée d'inscription à l'horaire indiqué.</li>
+                    </ul>
+                    <div className="alert alert-danger">
+                        A la journée d'inscription veuillez prendre avec vous le document suivant : Avis d'impôts
+                    </div>
+                </div>
+                <div className="starter-btn">
+                    <button className="btn btn-primary" onClick={onClick}>Réserver un ticket</button>
+                </div>
+            </div>
         </div>
     )
 }

@@ -39,57 +39,260 @@
     }
 }
 
+/*****
+** STEPS
+******/
 .section-steps{
     padding: 0 10px;
+}
+
+.steps-dot{
+    position: relative;
+    display: flex;
+    margin: 25px 10px;
+    @include flex(row, center, space-between);
+    max-width: 768px;
+    @include hide();
+
+    &.active{
+        @include show();
+        transition: all 0.2s ease-in-out;
+    }
+
+    &:before{
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        display: block;
+        background-color: $color7;
+        width: 100%;
+        height: 5px;
+        z-index: -1;
+    }
+
+    .item{
+        position: relative;
+        @include flex(column, center, center);
+
+        &.active{
+            .circle{
+                background-color: $color0;
+            }
+        }
+
+        &.full{
+            &:before{
+                background-color: $color0;
+            }
+        }
+
+        &:before{
+            content: '';
+            background-color: $color7;
+            display: block;
+            width: 26px; height: 26px;
+            border-radius: 26px;
+            margin: -10px 0 10px 0;
+        }
+        .circle{
+            margin-top: -32px;
+            margin-bottom: 25px;
+            display: block;
+            width: 12px; height: 12px;
+            border: 3px solid $color5;
+            background-color: $color7;
+            border-radius: 25px;
+        }
+        .text{
+            display: none;
+        }
+    }
+}
+
+.steps{
+    .step{
+        @include hide();
+
+        &.active{
+            @include show();
+            transition: all 0.2s ease-in-out;
+        }
+    }
 
     .step-title{
         margin-bottom: 25px;
+    
+        h2{
+            margin-bottom: 10px;
+        }
+    
+        h2 + p {
+            font-size: 14px;
+            opacity: 0.9;
+            max-width: 500px;
+        }
     }
-
+    
     .step-content{
         margin-bottom: 25px;
     }
 
-    .steps{
-        .step{
-            @include hide();
+    .step-card{
+        @include boxsh();
+        border-radius: 5px;
+        background-color: $alpha;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
 
-            &.active{
-                @include show();
-                transition: all 0.2s ease-in-out;
-            }
+    .step-actions{
+        text-align: right;
+        &.btn{
+            margin-left: 15px;
         }
+    }
 
-        .step-card{
-            @include boxsh();
-            border-radius: 5px;
-            background-color: $alpha;
+    .step-1{
+        .btn-back{
+            display: none;
+        }
+    }
+
+    .step-prospects-add, .step-prospects-add-static{
+        button{
+            cursor: pointer;
             padding: 25px;
-            margin-bottom: 30px;
-        }
+            width: 100%;
+            background: $alpha;
+            border: 1px solid $color7;
+            color: $color6;
+            @include flex(row, center, center);
+            transition: all 0.4s ease-in-out;
+            height: 55px;
+            text-transform: uppercase;
 
-        .step-1{
-            .btn-back{
-                display: none;
+            [class^="icon-"]{
+                font-size: 24px;
+                margin-right: 10px;
+            }
+
+            .text{display: none;}
+
+            &:hover, &:focus{
+                background-color: $alpha;
+                border-color: $color3;
+                color: $color3;
             }
         }
 
-        .step-prospects-add{
+        &.full{
+            display: none;
+        }
+    }
+
+    .step-prospects-add-static{
+        margin-bottom: 25px;
+    }
+
+    .step-prospect{
+        .title{
+            display: block;
+            margin-bottom: 25px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .actions{
+            @include flex(row, center, space-between);
+            margin-top: 30px;
+
             button{
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 14px;
+                border-radius: 20px;
+                border: none;
                 cursor: pointer;
-                padding: 25px;
-            }
+                color: $color5;
+                transition: 0.2s ease-in-out;
 
-            &.full{
-                display: none;
+                &:hover{
+                    transform: translateY(-2px);
+                }
+    
+                &.delete{
+                    background-color: $errorBg;
+                }
+                &.valide{
+                    background-color: $successBg;
+                }
             }
         }
 
-        .step-prospect{
-            &.active{
-                background-color: $successBg;
+        .form-group{
+            margin-bottom: 15px;
+        }
+
+        .form-group-radio{
+            @include flex(row, center, center);
+
+            & > * {
+                width: 50%;
+            }
+            & > *:not(:last-child){
+                margin-right: 10px;
             }
         }
+        input[type="radio"]{
+            opacity: 0;
+            & + label{
+                padding: 3px 10px;
+                width: 70px;
+                border-radius: 5px;
+                display: block;
+                margin-top: -25px;
+                text-align: center;
+                cursor: pointer;
+                border: 1px dashed transparent;
+                @include fontRegular();
+                font-size: 16px;
+                
+                &:hover{
+                    border-color: $color7;
+                }
+            }
+        }
+        input:checked{
+            & + label{
+                border: 1px solid $color3;
+
+                &:hover{
+                    border-color: $color3;
+                }
+            }
+        }
+        
+        &.active{
+            background-color: $successBg;
+        }
+    }
+}
+
+.step-actions, .step-prospects-add{
+    position: fixed;
+    bottom: 0;left: 0;
+    width: 50%;
+    height: 55px;
+}
+
+.step-actions{
+    left: auto;
+    right: 0;
+
+    .btn{
+        width: 100%;
+        border-radius: 0;
+        height: 100%;
     }
 }
 
@@ -100,7 +303,43 @@
 //                     | |   /_/  \___/ \___/   | |
 //                     |__|                    |__|
 @media (min-width:768px) {
+    .steps-dot{
+        &:before{
+            width: 87%;
+            left: 75px;
+        }
+        .item{
+            .numero{display: none;}
+            .text{ display: block;}
+        }
+    }
 
+    .step-prospect{
+        .line{
+            @include flex(row, flex-start, space-between);
+            margin-bottom: 15px;
+
+            & > *:not(:last-child){
+                margin-right: 30px;
+            }
+        }
+        .line-2{
+            & > *{
+                width: 50%;
+            }
+        }
+        .line-3{
+            & > *{
+                width: 33%;
+            }
+        }
+
+        .form-group-radio{
+            width: 210px;
+        }
+
+        input[type="radio"] + label{    margin-bottom: 0;}
+    }
 }
 
 //                      __   _  ___ ____  _  _     __
@@ -123,17 +362,19 @@
         padding: 25px;
     }
 
-    .section-steps{    
-        .steps{
-            .step-prospects{
-                @include flex(row, flex-start, flex-start);
-                flex-wrap: wrap;
-            }
-
-            .step-card{
-               margin-right: 30px;
-            }
+    .steps{
+        .step-prospects{
+            @include flex(row, flex-start, flex-start);
+            flex-wrap: wrap;
         }
+
+        .step-card:nth-child(odd){
+           margin-right: 30px;
+        }
+    }
+
+    .steps-dot{
+        margin: 25px auto 50px auto;
     }
 }
 
@@ -164,6 +405,30 @@
             .alert{
                 margin-top: 30px;
                 margin-bottom: 30px;
+            }
+        }
+    }
+
+    .steps{
+        .step-prospects{
+            justify-content: center;
+        }
+    }
+
+    .step-prospects{
+        justify-content: center;
+    }
+    .steps{
+        .step-actions, .step-prospects-add, .step-prospects-add button{
+            height: 80px;
+        }
+
+        .step-prospects-add{
+            button{
+                .text{
+                    display: inline;
+                    margin-left: 4px;
+                }
             }
         }
     }
