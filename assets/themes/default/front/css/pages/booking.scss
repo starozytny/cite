@@ -203,7 +203,7 @@
         }
 
         .actions{
-            @include flex(row, center, space-between);
+            @include flex(row, center, flex-end);
             margin-top: 30px;
 
             button{
@@ -221,10 +221,11 @@
                 }
     
                 &.delete{
-                    background-color: $errorBg;
+                    background-color: #fa9b9b;
+                    margin-right: 15px;
                 }
                 &.valide{
-                    background-color: $successBg;
+                    background-color: #2ffa9c;
                 }
             }
         }
