@@ -107,7 +107,7 @@ class Prospect extends Component {
             firstname: {value: '', error: ''},
             lastname: {value: '', error: ''},
             civility: {value: 'mr', error: ''},
-            birthday: {value: '', error: ''},
+            birthday: {value: '2019-01-01', error: ''},
             phoneDomicile: {value: '', error: ''},
             phoneTravail: {value: '', error: ''},
             email: {value: '', error: ''},
@@ -134,7 +134,7 @@ class Prospect extends Component {
         let value = name === 'isAdh' ? e.target.checked : e.target.value;
         this.setState({ [name]: {value: value} });
 
-        const {phoneDomicile, phoneTravail} = this.state;
+        const {phoneDomicile, phoneTravail, birthday} = this.state;
         if(name === 'phoneDomicile' || name === 'phoneTravail'){
             let valueD = name === 'phoneDomicile' ? value : phoneDomicile.value;
             let valueT = name === 'phoneTravail' ? value : phoneTravail.value;
@@ -149,7 +149,7 @@ class Prospect extends Component {
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
             {type: "email", id: 'email', value: email.value},
-            {type: "text", id: 'birthday', value: birthday.value},
+            {type: "date", id: 'birthday', value: birthday.value},
             {type: "text", id: 'adr', value: adr.value},
             {type: "text", id: 'cp', value: cp.value},
             {type: "text", id: 'city', value: city.value}
@@ -175,8 +175,6 @@ class Prospect extends Component {
             validate.code = false;
             validate.errors = {...validate.errors, ...validatePhone.errors};
         }
-
-
 
         // if isAdh is checked
         if(isAdh.value){
@@ -233,7 +231,7 @@ function ProspectCard({id, firstname, lastname, civility, birthday, phoneDomicil
         </div>
         <div className="line line-2">
             <Input type="text" identifiant={"email-" + id} value={email.value} onChange={onChange} error={email.error}>Adresse e-mail</Input>
-            <Input type="text" identifiant={"birthday-" + id} value={birthday.value} onChange={onChange} placeholder="JJ/MM/AAAA" error={birthday.error}>Date de naissance</Input>
+            <Input type="date" identifiant={"birthday-" + id} value={birthday.value} onChange={onChange} placeholder="JJ/MM/AAAA" error={birthday.error}>Date de naissance</Input>
         </div> 
         <div className="line line-2">
             <Input type="number" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input>

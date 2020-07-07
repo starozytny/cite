@@ -14,6 +14,29 @@ function validateCustomPhone($value) {
     return {'code': true};
 }
 
+function validateDate($value) {
+    if($value === ""){
+        return {
+            'code': false,
+            'message': 'Ce champ doit être renseigné.'
+        };
+    }
+    if($value.length !== 10){
+        return {
+            'code': false,
+            'message': 'Cette date n\'est pas valide.'
+        };
+    }
+    const compare = (a,b) => a.getTime() >= b.getTime();
+    if(!compare(new Date(), new Date($value))){
+        return {
+            'code': false,
+            'message': 'Cette date n\'est pas valide.'
+        };
+    }
+    return {'code': true};
+}
+
 function validateText($value) {
     if($value === ""){
         return {
@@ -44,6 +67,10 @@ function validateur(values){
                 break;
             case 'customPhone':
                 validate = validateCustomPhone(element.value);
+                break;
+            case 'date':
+                validate = validateDate(element.value);
+                break;
                 break;
             case 'email':
                 validate = validateEmail(element.value);
