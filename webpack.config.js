@@ -56,6 +56,7 @@ Encore
     .addEntry('default_booking', './assets/themes/default/front/js/pages/booking.jsx')
 
     .addEntry('default_admin', './assets/themes/default/back/js/default.jsx')
+    .addEntry('default_admin_ticket', './assets/themes/default/back/js/pages/ticket.jsx')
 
     .addEntry('default_super', './assets/themes/default/super/js/default.jsx')
 

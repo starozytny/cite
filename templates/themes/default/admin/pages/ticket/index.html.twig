@@ -1,0 +1,28 @@
+{% extends 'themes/default/admin/layout/layout.html.twig' %}
+
+{% block title %}Gestion des tickets{% endblock %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('default_admin_ticket') }}
+{% endblock %}
+
+{% block main_content %}
+
+    <section class="title">
+        <h1>Gestion des tickets</h1>
+    </section>
+
+    <section class="content">
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="item">
+                    <a class="btn btn-primary">Ajouter une journée</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('default_admin_ticket') }}
+{% endblock %}
