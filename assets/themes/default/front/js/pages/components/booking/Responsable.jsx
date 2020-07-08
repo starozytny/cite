@@ -38,11 +38,11 @@ export class StepResponsable extends Component {
         let body = <>
             <div className="step-card">
                 <div className="int-responsable">
-                    <div>Sélectionner un responsable</div>
+                    <div className="title">Sélectionner un responsable</div>
                     <RadioResponsable items={prospects} radioResp={radioResp} onChange={this.handleChange} />
                 </div>
                 <div className="ext-responsable">
-                    <div>Informations du responsable</div>
+                    <div className="title">Informations du responsable</div>
                     <div className="formulaire">
                         <RadioCivility civility={civility} onChange={this.handleChange}/>
                         <div className="line line-2">

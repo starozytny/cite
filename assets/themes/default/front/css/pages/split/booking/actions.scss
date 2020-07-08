@@ -1,0 +1,57 @@
+@import '../../../vars/vars.scss';
+
+.step-actions, .step-prospects-add{
+    position: fixed;
+    bottom: 0;left: 0;
+    width: 50%;
+    height: 55px;
+    z-index: 20;
+}
+
+.step-actions{
+    left: auto;
+    right: 0;
+    width: 100%;
+
+    .btn{
+        width: 50%;
+        border-radius: 0;
+        height: 100%;
+    }
+}
+
+.step-prospects-add, .step-prospects-add-static{
+    button{
+        cursor: pointer;
+        padding: 25px;
+        width: 100%;
+        background: $alpha;
+        border: 1px solid $color7;
+        color: $color6;
+        @include flex(row, center, center);
+        transition: all 0.4s ease-in-out;
+        height: 55px;
+        text-transform: uppercase;
+
+        [class^="icon-"]{
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .text{display: none;}
+
+        &:hover, &:focus{
+            background-color: $alpha;
+            border-color: $color3;
+            color: $color3;
+        }
+    }
+
+    &.full{
+        display: none;
+    }
+}
+
+.step-prospects-add-static{
+    margin-bottom: 25px;
+}

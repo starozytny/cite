@@ -1,0 +1,68 @@
+@import '../../../vars/vars.scss';
+
+.int-responsable, .ext-responsable{
+    .title{
+        @include fontSemibold();
+        margin-bottom: 10px;
+    }
+}
+
+.int-responsable{
+    padding-bottom: 25px;
+    border-bottom: 1px solid $color8;
+    margin-bottom: 25px;
+
+    .form-group-radio{
+        flex-direction: column;
+        width: 100%;
+
+        & > *:not(:last-child){
+            margin-right: 0;
+        }
+
+        & > *{
+            width: 100%;
+        }
+    }
+
+    input[type="radio"] + label{
+        width: calc(100% - 20px);
+        padding: 8px 10px;
+        @include flex(column, center, center);
+
+        [class^="icon-"]{
+            display: block;
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .int-responsable{
+        padding-bottom: 10px;
+    
+        .form-group-radio{
+            flex-direction: row;
+            align-items: stretch;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+
+            & > *{
+                width: 50%;
+                margin-bottom: 15px;
+            }
+
+            & > *:nth-child(odd){
+                margin-right: 15px;
+                width: calc(50% - 15px);
+            }
+        }
+    }
+}

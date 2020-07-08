@@ -2,6 +2,8 @@
 
 @import 'split/booking/dot.scss';
 @import 'split/booking/fiche.scss';
+@import 'split/booking/actions.scss';
+@import 'split/booking/responsable.scss';
 
 .section-infos{
     padding: 0 10px;
@@ -52,10 +54,12 @@
 .steps{
     .step{
         @include hide();
+        display: none;
 
         &.active{
             @include show();
-            transition: all 0.2s ease-in-out;
+            display: block;
+            transition: opacity 0.2s ease-in-out 0.2s;
         }
     }
 
@@ -111,67 +115,90 @@
             }
         }
     }
-
-    .step-prospects-add, .step-prospects-add-static{
-        button{
-            cursor: pointer;
-            padding: 25px;
-            width: 100%;
-            background: $alpha;
-            border: 1px solid $color7;
-            color: $color6;
-            @include flex(row, center, center);
-            transition: all 0.4s ease-in-out;
-            height: 55px;
-            text-transform: uppercase;
-
-            [class^="icon-"]{
-                font-size: 24px;
-                margin-right: 10px;
-            }
-
-            .text{display: none;}
-
-            &:hover, &:focus{
-                background-color: $alpha;
-                border-color: $color3;
-                color: $color3;
-            }
-        }
-
-        &.full{
-            display: none;
-        }
-    }
-
-    .step-prospects-add-static{
-        margin-bottom: 25px;
-    }
-
-}
-
-.step-actions, .step-prospects-add{
-    position: fixed;
-    bottom: 0;left: 0;
-    width: 50%;
-    height: 55px;
-    z-index: 20;
-}
-
-.step-actions{
-    left: auto;
-    right: 0;
-    width: 100%;
-
-    .btn{
-        width: 50%;
-        border-radius: 0;
-        height: 100%;
-    }
 }
 
 .step-error{
     margin-bottom: 10px;
+}
+
+.form-group{
+    margin-bottom: 15px;
+}
+
+.error{font-size: 12px;}
+
+.form-group-radio{
+    @include flex(row, center, center);
+
+    & > * {
+        width: 50%;
+    }
+    & > *:not(:last-child){
+        margin-right: 10px;
+    }
+}
+input[type="radio"]{
+    opacity: 0;
+    & + label{
+        padding: 3px 10px;
+        width: 70px;
+        border-radius: 5px;
+        display: block;
+        margin-top: -25px;
+        text-align: center;
+        cursor: pointer;
+        border: 1px dashed $color7;
+        @include fontRegular();
+        font-size: 16px;
+        transition: all 0.2s ease-in-out;
+        
+        &:hover{
+            border-style: solid;
+        }
+    }
+}
+input:checked{
+    & + label{
+        border: 1px solid $color3;
+        color: $color3;
+
+        &:hover{
+            border-color: $color3;
+        }
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .line{
+        @include flex(row, flex-start, space-between);
+        margin-bottom: 15px;
+
+        & > *:not(:last-child){
+            margin-right: 30px;
+        }
+    }
+    .line-2{
+        & > *{
+            width: 50%;
+        }
+    }
+    .line-3{
+        & > *{
+            width: 33%;
+        }
+    }
+
+    .form-group-radio{
+        width: 210px;
+    }
+
+    input[type="radio"] + label{    margin-bottom: 0;}
 }
 
 //                      __   _  ___ ____  _  _     __
@@ -204,8 +231,12 @@
            margin-right: 30px;
         }
 
-        .step-2{
+        .step-2.active{
             display: flex;
+
+            .step-card:nth-child(odd){
+                margin-right: 0;
+            }
 
             .step-title{
                 width: 50%;
@@ -251,12 +282,6 @@
         }
     }
 
-    .steps{
-        .step-prospects{
-            justify-content: center;
-        }
-    }
-
     .step-prospects{
         justify-content: center;
     }
@@ -275,6 +300,13 @@
                     display: inline;
                     margin-left: 4px;
                 }
+            }
+        }
+
+        .step-2.active{
+            .step-content{
+                margin-left: 0;
+                width: 50%;
             }
         }
     }
