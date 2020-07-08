@@ -22,6 +22,7 @@ export class Booking extends Component {
         this.toResponsableStep = this.toResponsableStep.bind(this);
         this.backToProspects = this.backToProspects.bind(this);
         this.toReviewStep = this.toReviewStep.bind(this);
+        this.backToResponsable = this.backToResponsable.bind(this);
     }
 
     /**
@@ -49,6 +50,10 @@ export class Booking extends Component {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active'});
     }
 
+    backToResponsable (e) {
+        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: ''});
+    }
+
     render () {
 
         const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable} = this.state;
@@ -64,7 +69,7 @@ export class Booking extends Component {
                 <div className="steps">
                     <StepProspects classStep={classStep1} toResponsableStep={this.toResponsableStep}/>
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
-                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} />
+                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} onClickPrev={this.backToResponsable}/>
                 </div>
             </section>
         </>

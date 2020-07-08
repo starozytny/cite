@@ -1,0 +1,105 @@
+@import '../../../vars/vars.scss';
+
+.review-prospects, .review-responsable{
+    margin-top: 40px;
+    .title{
+        margin-bottom: 15px;
+    }
+}
+.review-cards{
+    @include flex(row, flex-start, flex-start);
+    flex-wrap: wrap;
+
+    .review-card{
+        padding: 25px;
+        background-color: $alpha;
+        @include boxsh();
+        border-radius: 5px;
+        margin-bottom: 10px;
+        width: 100%;
+
+        & > div:first-child{
+            @include fontSemibold();
+            margin-bottom: 4px;
+        }
+
+        .review-card-email{
+            margin-bottom: 10px;
+        }
+
+        & > .txt-discret{
+            color: $color6;
+            font-size: 14px;
+        }
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .review-cards{
+        align-items: stretch;
+
+        .review-card{
+            width: 41%;
+            margin-right: 15px;
+        }
+    }
+}
+
+//                      __   _  ___ ____  _  _     __
+//                     | _| / |/ _ \___ \| || |   |_ |
+//    _____ _____ _____| |  | | | | |__) | || |_   | |_____ _____ _____
+//   |_____|_____|_____| |  | | |_| / __/|__   _|  | |_____|_____|_____|
+//                     | |  |_|\___/_____|  |_|    | |
+//                     |__|                       |__|
+@media (min-width: 1024px) {
+    .review{
+        display: flex;
+
+        & > *{
+            width: 50%;
+        }
+    }
+    .review-prospects{
+        padding-right: 10px;
+        .review-cards{
+            .review-card{
+                width: 100%;
+            }
+        }
+    }
+
+    .review-responsable{
+        padding-left: 20px;
+        border-left: 1px solid $color7;
+        .review-cards{
+            .review-card{
+                width: 100%;
+            }
+        }
+    }
+    
+}
+
+//                      __   _ ____  ___   ___    __
+//                     | _| / |___ \( _ ) / _ \  |_ |
+//    _____ _____ _____| |  | | __) / _ \| | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | |/ __/ (_) | |_| |  | |_____|_____|_____|
+//                     | |  |_|_____\___/ \___/   | |
+//                     |__|                      |__|
+@media (min-width:1280px) {
+    .review-prospects{
+        .review-cards{
+            .review-card{
+                width: 38%;
+                margin-right: 20px;
+                margin-bottom: 20px;
+            }
+        }
+    }
+}

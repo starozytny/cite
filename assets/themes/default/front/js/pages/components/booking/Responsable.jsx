@@ -170,6 +170,7 @@ export class StepResponsable extends Component {
 
         return <Step id="2" classStep={classStep} title="Responsable" onClickPrev={this.handleClickPrev} onClickNext={this.handleClickNext} body={body}>
             <span className="text-regular">
+                Cette personne est responsable des personnes inscrites à l'étape précédente. <br/>
                 Le responsable designe celui qui effectuera le paiement de l'inscription à la cité de la musique. <br/>
                 Il n'est pas forcément un adhérent ou futur adhérent.
             </span>
