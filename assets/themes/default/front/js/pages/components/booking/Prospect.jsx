@@ -61,6 +61,8 @@ export class StepProspects extends Component {
                         lastname: st.lastname.value,
                         email: st.email.value,
                         birthday: st.birthday.value,
+                        phoneDomicile: st.phoneDomicile.value,
+                        phoneMobile: st.phoneMobile.value,
                         adr: st.adr.value,
                         cp: st.cp.value,
                         city: st.city.value,

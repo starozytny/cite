@@ -29,6 +29,38 @@ export class StepResponsable extends Component {
         let name = e.target.name;
         let value = e.target.value;
         this.setState({ [name]: {value: value} });
+
+        if(name === "radioResp" && value !== "999"){
+            this.props.prospects.map((elem, index) => {
+                if(index === parseInt(value)){
+                    this.setState({
+                        civility: {value: elem.civility, error: ''},
+                        firstname: {value: elem.firstname, error: ''},
+                        lastname: {value: elem.lastname, error: ''},
+                        email: {value: elem.email, error: ''},
+                        adr: {value: elem.adr, error: ''},
+                        complement: {value: '', error: ''},
+                        cp: {value: elem.cp, error: ''},
+                        city: {value: elem.city, error: ''},
+                        phoneDomicile: {value: elem.phoneDomicile, error: ''},
+                        phoneMobile: {value: elem.phoneMobile, error: ''}
+                    })
+                }
+            })
+        }else if(name === "radioResp" && value === "999"){
+            this.setState({
+                civility: {value: 'Mr', error: ''},
+                firstname: {value: '', error: ''},
+                lastname: {value: '', error: ''},
+                email: {value: '', error: ''},
+                adr: {value: '', error: ''},
+                complement: {value: '', error: ''},
+                cp: {value: '', error: ''},
+                city: {value: '', error: ''},
+                phoneDomicile: {value: '', error: ''},
+                phoneMobile: {value: '', error: ''}
+            })
+        }
     }
 
     render () {
@@ -46,23 +78,23 @@ export class StepResponsable extends Component {
                     <div className="formulaire">
                         <RadioCivility civility={civility} onChange={this.handleChange}/>
                         <div className="line line-2">
-                            <Input type="text" identifiant={"firstname"} value={firstname.value} onChange={this.handleChange} error={firstname.error}>Prénom</Input>
-                            <Input type="text" identifiant={"lastname"} value={lastname.value} onChange={this.handleChange} error={lastname.error}>Nom</Input>
+                            <Input type="text" auto="none" identifiant={"firstname"} value={firstname.value} onChange={this.handleChange} error={firstname.error}>Prénom</Input>
+                            <Input type="text" auto="none" identifiant={"lastname"} value={lastname.value} onChange={this.handleChange} error={lastname.error}>Nom</Input>
                         </div>
                         <div className="line line-2">
-                            <Input type="text" identifiant={"email"} value={adr.value} onChange={this.handleChange} error={email.error}>Adresse e-mail</Input>
+                            <Input type="text" auto="none" identifiant={"email"} value={email.value} onChange={this.handleChange} error={email.error}>Adresse e-mail</Input>
                         </div>
                         <div className="line line-2">
-                            <Input type="text" identifiant={"phoneDomicile"} value={phoneDomicile.value} onChange={this.handleChange} error={phoneDomicile.error}>Téléphone domicile</Input>
-                            <Input type="text" identifiant={"phoneMobile"} value={phoneMobile.value} onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
+                            <Input type="text" auto="none" identifiant={"phoneDomicile"} value={phoneDomicile.value} onChange={this.handleChange} error={phoneDomicile.error}>Téléphone domicile</Input>
+                            <Input type="text" auto="none" identifiant={"phoneMobile"} value={phoneMobile.value} onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
                         </div>
                         <div className="line line-2">
-                            <Input type="text" identifiant={"adr"} value={adr.value} onChange={this.handleChange} error={adr.error}>Adresse postale</Input>
-                            <Input type="text" identifiant={"complement"} value={complement.value} onChange={this.handleChange} error={complement.error}>Complément d'adresse</Input>
+                            <Input type="text" auto="none" identifiant={"adr"} value={adr.value} onChange={this.handleChange} error={adr.error}>Adresse postale</Input>
+                            <Input type="text" auto="none" identifiant={"complement"} value={complement.value} onChange={this.handleChange} error={complement.error}>Complément d'adresse</Input>
                         </div>
                         <div className="line line-2">
-                            <Input type="text" identifiant={"cp"} value={cp.value} onChange={this.handleChange} error={cp.error}>Code postale</Input>
-                            <Input type="text" identifiant={"city"} value={city.value} onChange={this.handleChange} error={city.error}>Ville</Input>
+                            <Input type="text" auto="none" identifiant={"cp"} value={cp.value} onChange={this.handleChange} error={cp.error}>Code postale</Input>
+                            <Input type="text" auto="none" identifiant={"city"} value={city.value} onChange={this.handleChange} error={city.error}>Ville</Input>
                         </div>
                     </div>
                 </div>
@@ -82,10 +114,9 @@ export class StepResponsable extends Component {
 }
 
 function RadioResponsable({items, radioResp, onChange}){
-
     let liste = items.map((elem, index) =>{
         return <div key={index}>
-            <input type="radio" id={"resp-" + index} name="radioResp" value={index} checked={radioResp.value === index} onChange={onChange} />
+            <input type="radio" autoComplete="off" id={"resp-" + index} name="radioResp" value={index} checked={parseInt(radioResp.value) === index} onChange={onChange} />
             <label htmlFor={"resp-" + index}>
                 <span className="icon-infos"></span>
                 <span>{elem.firstname} {elem.lastname}</span>
@@ -96,7 +127,7 @@ function RadioResponsable({items, radioResp, onChange}){
     return (
         <div className="form-group form-group-radio">
             <div>
-                <input type="radio" id="autre" name="radioResp" value="999" checked={radioResp.value === '999'} onChange={onChange} />
+                <input type="radio" autoComplete="off" id="autre" name="radioResp" value="999" checked={radioResp.value === '999'} onChange={onChange} />
                 <label htmlFor="autre">
                     <span>Autre</span>
                 </label>
@@ -110,11 +141,11 @@ function RadioCivility({civility, onChange}) {
     return (
         <div className="form-group form-group-radio">
             <div>
-                <input type="radio" id="civility-mr" name="civility" value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
+                <input type="radio" autoComplete="off" id="civility-mr" name="civility" value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
                 <label htmlFor="civility-mr">Mr</label>
             </div>
             <div>
-                <input type="radio" id="civility-mme" name="civility" value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
+                <input type="radio" autoComplete="off" id="civility-mme" name="civility" value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
                 <label htmlFor="civility-mme">Mme</label>
             </div>
         </div>
