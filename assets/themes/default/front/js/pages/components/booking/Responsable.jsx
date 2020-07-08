@@ -22,7 +22,31 @@ export class StepResponsable extends Component {
             radioResp: {value: '999', error: ''}
         }
 
+        this.reset = this.reset.bind(this);
+
         this.handleChange = this.handleChange.bind(this);
+        this.handleClickPrev = this.handleClickPrev.bind(this);
+    }
+
+    reset (){
+        this.setState({
+            civility: {value: 'Mr', error: ''},
+            firstname: {value: '', error: ''},
+            lastname: {value: '', error: ''},
+            email: {value: '', error: ''},
+            adr: {value: '', error: ''},
+            complement: {value: '', error: ''},
+            cp: {value: '', error: ''},
+            city: {value: '', error: ''},
+            phoneDomicile: {value: '', error: ''},
+            phoneMobile: {value: '', error: ''},
+            radioResp: {value: '999', error: ''}
+        })
+    }
+
+    handleClickPrev (e) {
+        this.reset();
+        this.props.onClickPrev();
     }
 
     handleChange (e) {
@@ -48,18 +72,7 @@ export class StepResponsable extends Component {
                 }
             })
         }else if(name === "radioResp" && value === "999"){
-            this.setState({
-                civility: {value: 'Mr', error: ''},
-                firstname: {value: '', error: ''},
-                lastname: {value: '', error: ''},
-                email: {value: '', error: ''},
-                adr: {value: '', error: ''},
-                complement: {value: '', error: ''},
-                cp: {value: '', error: ''},
-                city: {value: '', error: ''},
-                phoneDomicile: {value: '', error: ''},
-                phoneMobile: {value: '', error: ''}
-            })
+            this.reset();
         }
     }
 
@@ -70,7 +83,7 @@ export class StepResponsable extends Component {
         let body = <>
             <div className="step-card">
                 <div className="int-responsable">
-                    <div className="title">Sélectionner un responsable</div>
+                    <div className="title">Pré-remplir les informations avec : </div>
                     <RadioResponsable items={prospects} radioResp={radioResp} onChange={this.handleChange} />
                 </div>
                 <div className="ext-responsable">
@@ -101,7 +114,7 @@ export class StepResponsable extends Component {
             </div>
         </>
 
-        return <Step id="2" classStep={classStep} title="Responsable" onClickPrev={onClickPrev} body={body}>
+        return <Step id="2" classStep={classStep} title="Responsable" onClickPrev={this.handleClickPrev} body={body}>
             <span className="text-regular">
                 Le responsable designe celui qui effectuera le paiement de l'inscription à la cité de la musique. <br/>
                 Il n'est pas forcément un adhérent ou futur adhérent.
