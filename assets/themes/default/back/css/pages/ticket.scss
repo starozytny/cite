@@ -1,2 +1,131 @@
 @import '../vars/vars.scss';
 
+.days-cards{
+    @include flex(row, stretch, flex-start);
+    flex-wrap: wrap;
+}
+
+.day-card{
+    width: 100%;
+    background-color: $alpha;
+    @include boxsh();
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.day-card-date{
+    @include flex(row, center, flex-start);
+    @include fontSemibold();
+    margin-bottom: 5px;
+    padding: 15px 10px 0 10px;
+
+    .day-card-isOpen{
+        width: 10px; height: 10px;
+        border-radius: 10px;
+        background-color: $color7;
+        margin-right: 5px;
+
+        &.day-card-isOpen-1{
+            background-color: $infoBg;
+        }
+    }
+}
+
+.day-card-type{
+    font-size: 14px;
+    color: $color7;
+    margin-bottom: 25px;
+    padding: 0 10px;
+}
+
+.day-card-numbers{
+    @include flex(row, center, space-between);
+    margin-bottom: 15px;
+    font-size: 14px;
+    padding: 0 10px;
+}
+
+.day-card-actions{
+    @include flex(row, flex-end, flex-end);
+    border-top: 1px solid $color4;
+
+    & > *{
+        width: 50%;
+    }
+
+    button{
+        background-color: transparent;
+        border: none;
+        padding: 15px 0;
+        font-size: 14px;
+        cursor: pointer;
+
+        &:hover{
+            text-decoration: underline;
+        }
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .day-card{
+        width: 50%;
+        margin-bottom: 20px;
+
+        &:nth-child(odd){
+            width: calc(50% - 10px);
+            margin-right: 10px;
+        }
+        &:nth-child(even){
+            width: calc(50% - 10px);
+            margin-left: 10px;
+        }
+    }
+}
+
+//                      __   _  ___ ____  _  _     __
+//                     | _| / |/ _ \___ \| || |   |_ |
+//    _____ _____ _____| |  | | | | |__) | || |_   | |_____ _____ _____
+//   |_____|_____|_____| |  | | |_| / __/|__   _|  | |_____|_____|_____|
+//                     | |  |_|\___/_____|  |_|    | |
+//                     |__|                       |__|
+@media (min-width: 1024px) {
+    .day-card{
+        &:nth-child(odd){
+            width: calc(30% - 20px);
+            margin-left: 10px;
+        }
+        &:nth-child(even){
+            width: calc(30% - 20px);
+            margin-right: 10px;
+        }
+    }
+    .day-card-date{
+        padding: 20px 20px 0 20px;
+    }
+    .day-card-type, .day-card-numbers{
+        padding: 0 20px;
+    }
+}
+
+//                      __   _  __    ___   ___    __
+//                     | _| / |/ /_  / _ \ / _ \  |_ |
+//    _____ _____ _____| |  | | '_ \| | | | | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | | (_) | |_| | |_| |  | |_____|_____|_____|
+//                     | |  |_|\___/ \___/ \___/   | |
+//                     |__|                       |__|
+@media (min-width: 1600px){
+    .day-card{
+        &:nth-child(odd){
+            width: calc(25% - 20px);
+        }
+        &:nth-child(even){
+            width: calc(25% - 20px);
+        }
+    }
+}

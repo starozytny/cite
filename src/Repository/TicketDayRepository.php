@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\TicketNumber;
+use App\Entity\TicketDay;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method TicketNumber|null find($id, $lockMode = null, $lockVersion = null)
- * @method TicketNumber|null findOneBy(array $criteria, array $orderBy = null)
- * @method TicketNumber[]    findAll()
- * @method TicketNumber[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method TicketDay|null find($id, $lockMode = null, $lockVersion = null)
+ * @method TicketDay|null findOneBy(array $criteria, array $orderBy = null)
+ * @method TicketDay[]    findAll()
+ * @method TicketDay[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TicketNumberRepository extends ServiceEntityRepository
+class TicketDayRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TicketNumber::class);
+        parent::__construct($registry, TicketDay::class);
     }
 
     // /**
-    //  * @return TicketNumber[] Returns an array of TicketNumber objects
+    //  * @return TicketDay[] Returns an array of TicketDay objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class TicketNumberRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?TicketNumber
+    public function findOneBySomeField($value): ?TicketDay
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.exampleField = :val')

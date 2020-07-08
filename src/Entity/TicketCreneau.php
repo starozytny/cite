@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\TicketNumberRepository;
+use App\Repository\TicketCreneauRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=TicketNumberRepository::class)
+ * @ORM\Entity(repositoryClass=TicketCreneauRepository::class)
  */
-class TicketNumber
+class TicketCreneau
 {
     /**
      * @ORM\Id()
@@ -18,9 +18,9 @@ class TicketNumber
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=50)
      */
-    private $day;
+    private $horaire;
 
     /**
      * @ORM\Column(type="integer")
@@ -37,14 +37,14 @@ class TicketNumber
         return $this->id;
     }
 
-    public function getDay(): ?int
+    public function getHoraire(): ?string
     {
-        return $this->day;
+        return $this->horaire;
     }
 
-    public function setDay(int $day): self
+    public function setHoraire(string $horaire): self
     {
-        $this->day = $day;
+        $this->horaire = $horaire;
 
         return $this;
     }

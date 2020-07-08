@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\TicketProspect;
+use App\Entity\TicketCreneau;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method TicketProspect|null find($id, $lockMode = null, $lockVersion = null)
- * @method TicketProspect|null findOneBy(array $criteria, array $orderBy = null)
- * @method TicketProspect[]    findAll()
- * @method TicketProspect[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method TicketCreneau|null find($id, $lockMode = null, $lockVersion = null)
+ * @method TicketCreneau|null findOneBy(array $criteria, array $orderBy = null)
+ * @method TicketCreneau[]    findAll()
+ * @method TicketCreneau[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TicketProspectRepository extends ServiceEntityRepository
+class TicketCreneauRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TicketProspect::class);
+        parent::__construct($registry, TicketCreneau::class);
     }
 
     // /**
-    //  * @return TicketProspect[] Returns an array of TicketProspect objects
+    //  * @return TicketCreneau[] Returns an array of TicketCreneau objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class TicketProspectRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?TicketProspect
+    public function findOneBySomeField($value): ?TicketCreneau
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.exampleField = :val')

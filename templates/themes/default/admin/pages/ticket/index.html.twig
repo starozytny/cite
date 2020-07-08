@@ -14,12 +14,35 @@
 
     <section class="content">
         <div class="toolbar">
-            <div class="toolbar-left">
+            <!-- <div class="toolbar-left">
                 <div class="item">
                     <a class="btn btn-primary">Ajouter une journée</a>
                 </div>
+            </div> -->
+        </div>
+
+        <div class="days">
+            <div class="days-cards">
+                {% for day in days %}
+                    <div class="day-card">
+                        <div class="day-card-date">
+                            <div class="day-card-isOpen day-card-isOpen-{{ day.isOpen }}"></div>
+                            <div>{{ day.day | date('d-m-Y') }}</div>
+                        </div>
+                        <div class="day-card-type">Journée des {{ day.typeString }}</div>
+                        <div class="day-card-numbers">
+                            <div class="day-card-max">max : {{ day.max }}</div>
+                            <div class="day-card-remaining">reste : {{ day.remaining }}</div>
+                        </div>
+                        <div class="day-card-actions">
+                            <button class="btn-edit">Editer</button>
+                            <button class="btn-details">Détails</button>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
+
     </section>
 {% endblock %}
 

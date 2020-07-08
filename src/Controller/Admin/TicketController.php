@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\TicketDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -15,6 +16,11 @@ class TicketController extends AbstractController
      */
     public function index()
     {
-        return $this->render('root/admin/pages/ticket/index.html.twig');
+        $em = $this->getDoctrine()->getManager();
+        $days = $em->getRepository(TicketDay::class)->findBy(array(), array('day' => 'ASC'));
+
+        return $this->render('root/admin/pages/ticket/index.html.twig', [
+            'days' => $days
+        ]);
     }
 }
