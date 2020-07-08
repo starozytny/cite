@@ -1,0 +1,44 @@
+{% extends 'themes/default/admin/layout/layout.html.twig' %}
+
+{% block title %}Détails de la journée du {{ day.day | date('d-m-Y') }}{% endblock %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('default_admin_ticket') }}
+{% endblock %}
+
+{% block main_content %}
+
+    <section class="title">
+        <h1>Détails de la journée du {{ day.day | date('d-m-Y') }}</h1>
+    </section>
+
+    <section class="content">
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="item">
+                    <a href="{{ path('admin_ticket_index') }}" class="btn">Retour à la liste</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="slots">
+            <div class="slots-cards">
+                {% for slot in slots %}
+                    <div class="slot-card">
+                        <div class="slot-card-date">
+                            <div>{{ slot.horaire }} </div>
+                        </div>
+                        <div class="slot-card-numbers">
+                            <div class="slot-card-max">max : {{ slot.max }}</div>
+                            <div class="slot-card-remaining">reste : {{ slot.remaining }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('default_admin_ticket') }}
+{% endblock %}

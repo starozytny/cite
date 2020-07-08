@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TicketDayRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -45,9 +47,15 @@ class TicketDay
      */
     private $isOpen;
 
+    /**
+     * @ORM\OneToMany(targetEntity=TicketCreneau::class, mappedBy="ticketDay", orphanRemoval=true)
+     */
+    private $ticketCreneaux;
+
     public function __construct()
     {
         $this->setIsOpen(false);
+        $this->ticketCreneaux = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -116,6 +124,37 @@ class TicketDay
     public function setIsOpen(bool $isOpen): self
     {
         $this->isOpen = $isOpen;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TicketCreneau[]
+     */
+    public function getTicketCreneaux(): Collection
+    {
+        return $this->ticketCreneaux;
+    }
+
+    public function addTicketCreneaux(TicketCreneau $ticketCreneaux): self
+    {
+        if (!$this->ticketCreneaux->contains($ticketCreneaux)) {
+            $this->ticketCreneaux[] = $ticketCreneaux;
+            $ticketCreneaux->setTicketDay($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTicketCreneaux(TicketCreneau $ticketCreneaux): self
+    {
+        if ($this->ticketCreneaux->contains($ticketCreneaux)) {
+            $this->ticketCreneaux->removeElement($ticketCreneaux);
+            // set the owning side to null (unless already changed)
+            if ($ticketCreneaux->getTicketDay() === $this) {
+                $ticketCreneaux->setTicketDay(null);
+            }
+        }
 
         return $this;
     }

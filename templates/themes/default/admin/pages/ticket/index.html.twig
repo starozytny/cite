@@ -1,6 +1,6 @@
 {% extends 'themes/default/admin/layout/layout.html.twig' %}
 
-{% block title %}Gestion des tickets{% endblock %}
+{% block title %}Gestion des journées{% endblock %}
 
 {% block stylesheets %}
     {{ encore_entry_link_tags('default_admin_ticket') }}
@@ -36,7 +36,7 @@
                         </div>
                         <div class="day-card-actions">
                             <button class="btn-edit">Editer</button>
-                            <button class="btn-details">Détails</button>
+                            <a href="{{ path('admin_ticket_show', {'ticketDay': day.id}) }}" class="btn-details">Détails</a>
                         </div>
                     </div>
                 {% endfor %}

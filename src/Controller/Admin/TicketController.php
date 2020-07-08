@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Service\OpenDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,19 @@ class TicketController extends AbstractController
 
         return $this->render('root/admin/pages/ticket/index.html.twig', [
             'days' => $days
+        ]);
+    }
+     /**
+     * @Route("/jour/{ticketDay}/details", name="show")
+     */
+    public function show(TicketDay $ticketDay)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $slots = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $ticketDay), array('horaire' => 'ASC'));
+
+        return $this->render('root/admin/pages/ticket/show.html.twig', [
+            'day' => $ticketDay,
+            'slots' => $slots
         ]);
     }
 }

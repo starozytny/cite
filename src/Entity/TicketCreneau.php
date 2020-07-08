@@ -32,6 +32,12 @@ class TicketCreneau
      */
     private $remaining;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TicketDay::class, inversedBy="ticketCreneaux")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $ticketDay;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +75,18 @@ class TicketCreneau
     public function setRemaining(int $remaining): self
     {
         $this->remaining = $remaining;
+
+        return $this;
+    }
+
+    public function getTicketDay(): ?TicketDay
+    {
+        return $this->ticketDay;
+    }
+
+    public function setTicketDay(?TicketDay $ticketDay): self
+    {
+        $this->ticketDay = $ticketDay;
 
         return $this;
     }

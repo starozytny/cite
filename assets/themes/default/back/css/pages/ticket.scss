@@ -1,11 +1,11 @@
 @import '../vars/vars.scss';
 
-.days-cards{
+.days-cards, .slots-cards{
     @include flex(row, stretch, flex-start);
     flex-wrap: wrap;
 }
 
-.day-card{
+.day-card, .slot-card{
     width: 100%;
     background-color: $alpha;
     @include boxsh();
@@ -13,7 +13,7 @@
     margin-bottom: 15px;
 }
 
-.day-card-date{
+.day-card-date, .slot-card-date{
     @include flex(row, center, flex-start);
     @include fontSemibold();
     margin-bottom: 5px;
@@ -43,7 +43,7 @@
     padding: 0 10px;
 }
 
-.day-card-numbers{
+.day-card-numbers, .slot-card-numbers{
     @include flex(row, center, space-between);
     margin-bottom: 15px;
     font-size: 14px;
@@ -58,12 +58,15 @@
         width: 50%;
     }
 
-    button{
+    button, a{
+        display: block;
+        color: $color3;
         background-color: transparent;
         border: none;
         padding: 15px 0;
         font-size: 14px;
         cursor: pointer;
+        text-align: center;
 
         &:hover{
             text-decoration: underline;
@@ -78,7 +81,7 @@
 //                     | |   /_/  \___/ \___/   | |
 //                     |__|                    |__|
 @media (min-width:768px) {
-    .day-card{
+    .day-card, .slot-card{
         width: 50%;
         margin-bottom: 20px;
 
@@ -100,7 +103,7 @@
 //                     | |  |_|\___/_____|  |_|    | |
 //                     |__|                       |__|
 @media (min-width: 1024px) {
-    .day-card{
+    .day-card, .slot-card{
         &:nth-child(odd){
             width: calc(30% - 20px);
             margin-left: 10px;
@@ -110,10 +113,10 @@
             margin-right: 10px;
         }
     }
-    .day-card-date{
+    .day-card-date, .slot-card-date{
         padding: 20px 20px 0 20px;
     }
-    .day-card-type, .day-card-numbers{
+    .day-card-type, .day-card-numbers, .slot-card-numbers{
         padding: 0 20px;
     }
 }
@@ -125,7 +128,7 @@
 //                     | |  |_|\___/ \___/ \___/   | |
 //                     |__|                       |__|
 @media (min-width: 1600px){
-    .day-card{
+    .day-card, .slot-card{
         &:nth-child(odd){
             width: calc(25% - 20px);
         }
