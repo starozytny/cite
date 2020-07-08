@@ -22,12 +22,17 @@
     .day-card-isOpen{
         width: 10px; height: 10px;
         border-radius: 10px;
-        background-color: $color7;
+        background-color: $color8;
         margin-right: 5px;
 
         &.day-card-isOpen-1{
-            background-color: $infoBg;
+            background-color: $color1;
         }
+    }
+
+    .txt-discret{
+        @include fontRegular();
+        font-size: 14px;
     }
 }
 
