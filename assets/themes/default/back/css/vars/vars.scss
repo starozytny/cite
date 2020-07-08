@@ -1,20 +1,56 @@
-@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,600,700&display=swap');
-
 @mixin fontLight() { font-family: 'Poppins', sans-serif; font-weight: 300; }
 @mixin fontRegular() { font-family: 'Poppins', sans-serif; font-weight: 400; }
 @mixin fontSemibold() { font-family: 'Poppins', sans-serif; font-weight: 600; }
 @mixin fontBold() { font-family: 'Poppins', sans-serif; font-weight: 700; }
+
+@mixin hide() { position: absolute; opacity: 0; z-index: -10; }
+@mixin show() { position: relative; opacity: 1; z-index: 0; }
 
 @mixin flex($direction: row, $align: center, $justify: center) {
   display: flex;flex-direction: $direction;
   align-items: $align;justify-content: $justify;
 }
 
-@mixin boxshadow($size: 10, $color: $alpha, $opacity: 0.8) {
-  box-shadow: 0 0 #{$direction}px transparentize($color, $opacity);
+@mixin boxshadow($color: $alpha, $opacity: 0.8, $size: 10) {
+  box-shadow: 0 0 #{$size}px transparentize($color, $opacity);
 }
 
-$error: #d40d0e;
+@mixin boxsh(){
+  box-shadow:
+    0 4.2px 4.3px rgba(0, 0, 0, 0.018),
+    0 11.5px 11.8px rgba(0, 0, 0, 0.02),
+    0 27.7px 28.3px rgba(0, 0, 0, 0.022),
+    0 92px 94px rgba(0, 0, 0, 0.05)
+  ;
+}
+
+@mixin margin1280() {
+  margin-right: 3%;
+  margin-left: 3%;
+}
+
+@mixin maxscreen() {
+  max-width: 1366px;
+  margin: 0 auto;
+}
+
+$color0: #2B96D6;
+$color1: #FEC61F;
+$color2: #D62B42;
+$color3: #15120D;
+$color4: #F1ECEC;
+$color5: #FDFCFC; // fond main
+$color6: #676767;
+$color7: #a9a9a9; // discret
+$color8: #DFDDDD;
+
+$gerance: #0B983A;
+$syndic: #DB121F;
+$services: #009FE3;
+$transac: #D6B80B;
+
+$error: #ab0b0c;
+$errorLabel: #d40d0e;
 $errorBg: #ffb9b9;
 $success: #169f50;
 $successBg: #83ffc5;

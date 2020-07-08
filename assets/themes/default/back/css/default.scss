@@ -1,10 +1,19 @@
 @import "~normalize.css";
 @import "vars/fonts.scss";
-@import "vars/vars.scss";
+@import "vars/vars";
 
-body {
-    background-color: lightgray;
+@import "components/menu.scss";
+@import "components/header.scss";
+@import "components/footer.scss";
+@import "components/button.scss";
+@import "components/toolbar.scss";
+@import "components/form.scss";
+@import "components/loader.scss";
+
+body{
     @include fontRegular();
+    background-color: $color5;
+    color: $color3;
 }
 
 h1, h2, h3, h4, p{
@@ -14,4 +23,67 @@ h1, h2, h3, h4, p{
 a{
     text-decoration: none;
     transition: all 0.2s ease-in-out;
+}
+
+main{
+    width: calc(100% - 50px);
+    margin-left: 50px;
+}
+
+.main{
+    min-height: 100vh;
+    padding-top: 10px;
+    overflow: hidden;
+}
+
+h1{
+    color: $color3;
+}
+
+section.title{
+    padding: 0 10px;
+    margin-bottom: 25px;
+}
+section.content{
+    padding: 0 10px;
+}
+
+.overlay{
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: transparentize($color: $color3, $amount: 0.5);
+    opacity: 0;
+    z-index: -1;
+}
+
+//                      __   _ ____  ___   ___    __
+//                     | _| / |___ \( _ ) / _ \  |_ |
+//    _____ _____ _____| |  | | __) / _ \| | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | |/ __/ (_) | |_| |  | |_____|_____|_____|
+//                     | |  |_|_____\___/ \___/   | |
+//                     |__|                      |__|
+@media (min-width:1280px) {
+    main{
+        width: calc(100% - 250px);
+        margin-left: 250px;
+    }
+    section.title, section.content{
+        padding: 0 3%;
+    }
+}
+
+//                      __   _  __    ___   ___    __
+//                     | _| / |/ /_  / _ \ / _ \  |_ |
+//    _____ _____ _____| |  | | '_ \| | | | | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | | (_) | |_| | |_| |  | |_____|_____|_____|
+//                     | |  |_|\___/ \___/ \___/   | |
+//                     |__|                       |__|
+@media (min-width: 1600px){
+    section.title, section.content{
+        @include maxscreen();
+    }
+    section.title{
+        margin-bottom: 25px;
+    }
 }

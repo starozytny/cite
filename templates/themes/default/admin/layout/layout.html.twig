@@ -1,1 +1,14 @@
 {% extends 'themes/default/base_admin.html.twig' %}
+
+{% block body %}
+    {% include "themes/default/admin/layout/components/menu.html.twig" %}
+
+    <main>
+        {% include "themes/default/admin/layout/components/header.html.twig" %}
+        <div class="main">
+            {% block main_content %}{% endblock %}
+        </div>
+    </main>
+
+    {% include "themes/default/admin/layout/components/footer.html.twig" %}
+{% endblock %}

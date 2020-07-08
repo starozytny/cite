@@ -1,0 +1,103 @@
+@import "../vars/vars.scss";
+
+nav{
+    background-color: $alpha;
+    position: fixed;
+    top: 0; left: 0;
+    width: 50px;
+    height: 100%;
+    overflow: hidden;
+    box-shadow: 0 0 20px transparentize($color: $color6, $amount: 0.95);
+
+    .nav-type{
+        a{
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            font-size: 36px;
+            @include fontBold;
+            color: $color1;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid $color4;
+
+            .type-suite{
+                display: none;
+            }
+        }
+    }
+
+    .nav-menu, .nav-params{
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        margin-top: 7px;
+
+        a{
+            display: flex;
+            color: #828282;
+            padding: 8px 0;
+            width: 100%;
+            display: flex;
+            align-items: center; justify-content: center;
+            
+            [class^="icon-"]{
+                font-size: 22px;
+                
+                & + span{
+                    margin-left: 10px;
+                }
+            }
+
+            span:last-child{
+                display: none;
+            }
+
+            &.active, &:hover{
+                color: $color3;
+            }
+        }
+    }
+}
+
+//                      __   _ ____  ___   ___    __
+//                     | _| / |___ \( _ ) / _ \  |_ |
+//    _____ _____ _____| |  | | __) / _ \| | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | |/ __/ (_) | |_| |  | |_____|_____|_____|
+//                     | |  |_|_____\___/ \___/   | |
+//                     |__|                      |__|
+@media (min-width:1280px) {
+    nav{
+        width: 250px;
+    
+        .nav-type{
+            a{
+                flex-direction: row;
+                align-items: flex-end;
+                .type-suite{
+                    display: inline;
+                    font-size: 16px;
+                    transform: translateY(-4px);
+                }
+            }
+        }
+    
+        .nav-menu, .nav-params{
+            align-items: flex-start;justify-content: flex-start;
+            margin-top: 25px;
+
+            a{
+                width: calc(100% - 20px);
+                padding-left: 20px;
+                align-items: center;
+                justify-content: flex-start;
+                
+                [class^="icon-"]{
+                    font-size: 20px;
+                }
+    
+                span:last-child{
+                    display: inline;
+                }
+            }
+        }
+    }
+}

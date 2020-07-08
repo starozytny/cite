@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,600,700&display=swap');
+
 @font-face {
     font-family: 'icomoon';
     src:  url('../../fonts/icomoon.eot?s30i5c');
@@ -25,70 +27,81 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  .icon-add:before {
-    content: "\e900";
-  }
-  .icon-bell:before {
-    content: "\e901";
-  }
-  .icon-chat:before {
-    content: "\e902";
-  }
-  .icon-check:before {
-    content: "\e903";
-  }
-  .icon-chevron-left:before {
-    content: "\e904";
-  }
-  .icon-chevron-right:before {
-    content: "\e905";
-  }
-  .icon-close:before {
-    content: "\e906";
-  }
-  .icon-close-circle:before {
-    content: "\e907";
-  }
-  .icon-edit:before {
-    content: "\e908";
-  }
-  .icon-export:before {
-    content: "\e909";
-  }
-  .icon-files:before {
-    content: "\e90a";
-  }
-  .icon-filter:before {
-    content: "\e90b";
-  }
-  .icon-home:before {
-    content: "\e90c";
-  }
-  .icon-menu:before {
-    content: "\e90d";
-  }
-  .icon-new:before {
-    content: "\e90e";
-  }
-  .icon-play:before {
-    content: "\e90f";
-  }
-  .icon-reload:before {
-    content: "\e910";
-  }
-  .icon-search:before {
-    content: "\e911";
-  }
-  .icon-settings:before {
-    content: "\e912";
-  }
-  .icon-trash:before {
-    content: "\e913";
-  }
-  .icon-unlock:before {
-    content: "\e914";
-  }
-  .icon-users:before {
-    content: "\e915";
-  }
-  
+.icon-plus:before {
+  content: "\e919";
+}
+.icon-dot:before {
+  content: "\e918";
+}
+.icon-depot:before {
+  content: "\e916";
+}
+.icon-documentation:before {
+  content: "\e917";
+}
+.icon-add:before {
+  content: "\e900";
+}
+.icon-bell:before {
+  content: "\e901";
+}
+.icon-chat:before {
+  content: "\e902";
+}
+.icon-check:before {
+  content: "\e903";
+}
+.icon-chevron-left:before {
+  content: "\e904";
+}
+.icon-chevron-right:before {
+  content: "\e905";
+}
+.icon-close:before {
+  content: "\e906";
+}
+.icon-close-circle:before {
+  content: "\e907";
+}
+.icon-edit:before {
+  content: "\e908";
+}
+.icon-export:before {
+  content: "\e909";
+}
+.icon-files:before {
+  content: "\e90a";
+}
+.icon-filter:before {
+  content: "\e90b";
+}
+.icon-home:before {
+  content: "\e90c";
+}
+.icon-menu:before {
+  content: "\e90d";
+}
+.icon-new:before {
+  content: "\e90e";
+}
+.icon-play:before {
+  content: "\e90f";
+}
+.icon-reload:before {
+  content: "\e910";
+}
+.icon-search:before {
+  content: "\e911";
+}
+.icon-settings:before {
+  content: "\e912";
+}
+.icon-trash:before {
+  content: "\e913";
+}
+.icon-unlock:before {
+  content: "\e914";
+}
+.icon-users:before {
+  content: "\e915";
+}
