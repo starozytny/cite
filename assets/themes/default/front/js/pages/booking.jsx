@@ -3,7 +3,8 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {Booking} from './components/booking/Booking.jsx';
 
+let booking = document.getElementById("booking");
 ReactDOM.render(
-    <Booking />,
-    document.getElementById("booking")
+    <Booking day={booking.dataset.day} dayId={booking.dataset.id} />,
+    booking
 )

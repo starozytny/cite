@@ -11,10 +11,23 @@
 
     <div class="ariane">
         <span><a href="{{ path('app_homepage') }}">Accueil</a></span>
-        <span class="active"><a href="{{ path('app_booking_index') }}">Réservation d'un ticket</a></span>
+        <span class="active"><a href="{{ path('app_booking_index') }}">Réservation de ticket pour le {{ day.day | date('d/m/Y') }}</a></span>
     </div>
 
-    <div id="booking"></div>
+    {% if day is defined %}
+        <div id="booking" data-day="{{ day.day | date('d/m/Y') }}" data-id="{{ day.id }}"></div>
+    {% else %}
+        <div>
+            <div class="section-infos">
+                <div class="informations">
+                    <h1>Réservation de tickets</h1>
+                    <p class="subtitle">Aucune inscription ouvert pour aujourd'hui.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    
 
 {% endblock %}
 

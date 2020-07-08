@@ -8,6 +8,8 @@ export class Booking extends Component {
         super(props);
 
         this.state = {
+            day: this.props.day,
+            dayId: this.props.id,
             classDot: '',
             classStart: '',
             classStep1: '',
@@ -55,13 +57,13 @@ export class Booking extends Component {
     }
 
     render () {
-
+        const {day, dayId} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable} = this.state;
 
         return <>
         
             <section className={"section-infos " + classStart}>
-                <Infos />
+                <Infos day={day} />
                 <Starter onClick={this.handleClickStart}/>
             </section>
             <section className="section-steps">
@@ -69,7 +71,7 @@ export class Booking extends Component {
                 <div className="steps">
                     <StepProspects classStep={classStep1} toResponsableStep={this.toResponsableStep}/>
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
-                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} onClickPrev={this.backToResponsable}/>
+                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} dayId={dayId} onClickPrev={this.backToResponsable}/>
                 </div>
             </section>
         </>
@@ -104,11 +106,11 @@ function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
     )
 }
 
-function Infos() {
+function Infos({day}) {
     return (
         <div className="informations">
             <h1>Réservation d'un ticket</h1>
-            <p className="subtitle">Journée d'inscription du mardi 8 septembre 2020</p>
+            <p className="subtitle">Journée d'inscription du {day}</p>
                     
             <p>
                 Pour obtenir votre ticket d’entrée à la journée d’inscription de la Cité de la musique, complétez le formulaire suivant.

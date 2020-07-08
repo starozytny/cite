@@ -8,7 +8,7 @@ export class StepReview extends Component {
     }
 
     render () {
-        const {classStep, onClickPrev, prospects, responsable} = this.props;
+        const {classStep, onClickPrev, prospects, responsable, day, dayId} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
             return (
@@ -47,7 +47,7 @@ export class StepReview extends Component {
 
         return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} body={body} nextText="Valider">
             <span className="text-regular">
-                Inscription pour la journée du : <b>8 septembre 2020</b> <br/>
+                Inscription pour la journée du : <b>{day}</b> <br/>
                 Horaires attribuées automatiquement : <b>8h00</b>
             </span>
         </Step>
