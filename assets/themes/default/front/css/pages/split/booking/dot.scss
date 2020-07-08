@@ -59,6 +59,7 @@
             width: 26px; height: 26px;
             border-radius: 26px;
             margin: -10px 0 10px 0;
+            transition: all 0.2s ease-in-out;
         }
         .circle{
             margin-top: -32px;
@@ -68,6 +69,7 @@
             border: 3px solid $color5;
             background-color: $color7;
             border-radius: 25px;
+            transition: all 0.2s ease-in-out;
         }
         .text{
             display: none;

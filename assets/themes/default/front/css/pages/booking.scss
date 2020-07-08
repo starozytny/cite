@@ -49,8 +49,6 @@
     padding: 0 10px;
 }
 
-
-
 .steps{
     .step{
         @include hide();
@@ -72,6 +70,12 @@
             font-size: 14px;
             opacity: 0.9;
             max-width: 500px;
+        }
+        h2 + p .text-regular{
+            font-size: 16px;
+            display: block;
+            opacity: 1;
+            margin-bottom: 10px;
         }
     }
     
@@ -199,8 +203,22 @@
         .step-card:nth-child(odd){
            margin-right: 30px;
         }
+
+        .step-2{
+            display: flex;
+
+            .step-title{
+                width: 50%;
+            }
+
+            .step-content{
+                margin-left: 50px;
+                width: calc(50% - 50px);
+            }
+        }
     }
 }
+
 
 //                      __   _ ____  ___   ___    __
 //                     | _| / |___ \( _ ) / _ \  |_ |

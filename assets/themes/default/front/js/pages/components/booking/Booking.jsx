@@ -17,6 +17,7 @@ export class Booking extends Component {
         this.handleClickStart = this.handleClickStart.bind(this);
 
         this.toResponsableStep = this.toResponsableStep.bind(this);
+        this.backToProspects = this.backToProspects.bind(this);
     }
 
     /**
@@ -33,12 +34,16 @@ export class Booking extends Component {
                 t.birthday === thing.birthday
             ))
         )
-        this.setState({classDot: 'active-2', classStep1: 'full', classStep2: 'active'});
+        this.setState({prospects: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active'});
+    }
+
+    backToProspects (e) {
+        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: ''});
     }
 
     render () {
 
-        const {classDot, classStart, classStep1, classStep2} = this.state;
+        const {classDot, classStart, classStep1, classStep2, prospects} = this.state;
 
         return <>
         
@@ -50,7 +55,7 @@ export class Booking extends Component {
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} />
                 <div className="steps">
                     <StepProspects classStep={classStep1} toResponsableStep={this.toResponsableStep}/>
-                    <StepResponsable classStep={classStep2}/>
+                    <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects}/>
                 </div>
             </section>
         </>

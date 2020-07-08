@@ -137,7 +137,7 @@ class Prospect extends Component {
             civility: {value: 'Mr', error: ''},
             birthday: {value: '2019-01-01', error: ''},
             phoneDomicile: {value: '', error: ''},
-            phoneTravail: {value: '', error: ''},
+            phoneMobile: {value: '', error: ''},
             email: {value: '', error: ''},
             adr: {value: '', error: ''},
             cp: {value: '', error: ''},
@@ -163,11 +163,11 @@ class Prospect extends Component {
         let value = name === 'isAdh' ? e.target.checked : e.target.value;
         this.setState({ [name]: {value: value} });
 
-        const {phoneDomicile, phoneTravail} = this.state;
-        if(name === 'phoneDomicile' || name === 'phoneTravail'){
+        const {phoneDomicile, phoneMobile} = this.state;
+        if(name === 'phoneDomicile' || name === 'phoneMobile'){
             let valueD = name === 'phoneDomicile' ? value : phoneDomicile.value;
-            let valueT = name === 'phoneTravail' ? value : phoneTravail.value;
-            this.setState({ phoneDomicile: {value: valueD ,error: ''}, phoneTravail: {value: valueT ,error: ''}  });
+            let valueT = name === 'phoneMobile' ? value : phoneMobile.value;
+            this.setState({ phoneDomicile: {value: valueD ,error: ''}, phoneMobile: {value: valueT ,error: ''}  });
         }
     }
 
@@ -176,7 +176,7 @@ class Prospect extends Component {
     }
 
     handleClick (e) {
-        const {firstname, lastname, email, birthday, adr, cp, city, phoneDomicile, phoneTravail, isAdh, numAdh} = this.state;
+        const {firstname, lastname, email, birthday, adr, cp, city, phoneDomicile, phoneMobile, isAdh, numAdh} = this.state;
 
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
@@ -190,18 +190,18 @@ class Prospect extends Component {
 
         // phone facultatif
         let validatePhone;
-        if((phoneDomicile.value === "" && phoneTravail.value === "") || (phoneDomicile.value !== "" && phoneTravail.value !== "")){
+        if((phoneDomicile.value === "" && phoneMobile.value === "") || (phoneDomicile.value !== "" && phoneMobile.value !== "")){
             validatePhone = Validateur.validateur([
                 {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value},
-                {type: "customPhone", id: 'phoneTravail', value: phoneTravail.value}
+                {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
             ])
-        }else if(phoneDomicile.value !== "" && phoneTravail.value === ""){
+        }else if(phoneDomicile.value !== "" && phoneMobile.value === ""){
             validatePhone = Validateur.validateur([
                 {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value}
             ])
-        }else if(phoneDomicile.value === "" && phoneTravail.value !== ""){
+        }else if(phoneDomicile.value === "" && phoneMobile.value !== ""){
             validatePhone = Validateur.validateur([
-                {type: "customPhone", id: 'phoneTravail', value: phoneTravail.value}
+                {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
             ])
         }
         if(!validatePhone.code){
@@ -236,14 +236,14 @@ class Prospect extends Component {
     }
 
     render () {
-        const {firstname, lastname, civility, birthday, phoneDomicile, phoneTravail, email,
+        const {firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email,
             adr, cp, city, isAdh, numAdh, 
             renderCompo, valide} = this.state;
         const {id} = this.props;
 
         return <>
             {renderCompo ? <ProspectCard id={id} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
-                            birthday={birthday} phoneDomicile={phoneDomicile} phoneTravail={phoneTravail} email={email}
+                            birthday={birthday} phoneDomicile={phoneDomicile} phoneMobile={phoneMobile} email={email}
                             adr={adr} cp={cp} city={city} isAdh={isAdh} numAdh={numAdh}
                             onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit}/> 
                         : null}
@@ -251,7 +251,7 @@ class Prospect extends Component {
     }
 } 
 
-function ProspectCard({id, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneTravail, email, adr, cp, city, isAdh, numAdh,
+function ProspectCard({id, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email, adr, cp, city, isAdh, numAdh,
                         onChange, onDelete, onClickEdit}) 
     {
     return <div className={"step-card step-prospect " + valide}>
@@ -269,7 +269,7 @@ function ProspectCard({id, valide, firstname, lastname, civility, birthday, phon
         </div> 
         <div className="line line-2">
             <Input type="number" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input>
-            <Input type="number" identifiant={"phoneTravail-" + id} value={phoneTravail.value} onChange={onChange} error={phoneTravail.error}>Téléphone travail</Input>
+            <Input type="number" identifiant={"phoneMobile-" + id} value={phoneMobile.value} onChange={onChange} error={phoneMobile.error}>Téléphone mobile</Input>
         </div>
         <Input type="text" identifiant={"adr-" + id} value={adr.value} onChange={onChange} error={adr.error}>Adresse postal</Input>
         <div className="line line-2">
@@ -305,8 +305,8 @@ function RadioCivility({id, civility, onChange}) {
                 <label htmlFor={"civility-mr-" + id}>Mr</label>
             </div>
             <div>
-                <input type="radio" id={"civility-mme" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
-                <label htmlFor={"civility-mme" + id}>Mme</label>
+                <input type="radio" id={"civility-mme-" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
+                <label htmlFor={"civility-mme-" + id}>Mme</label>
             </div>
         </div>
     )
