@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {StepProspects} from './Prospect';
 import {StepResponsable} from './Responsable';
+import {StepReview} from './Review';
 
 export class Booking extends Component {
     constructor(props){
@@ -11,13 +12,16 @@ export class Booking extends Component {
             classStart: '',
             classStep1: '',
             classStep2: '',
-            prospects: []
+            classStep3: '',
+            prospects: [],
+            responsable: ''
         }
 
         this.handleClickStart = this.handleClickStart.bind(this);
 
         this.toResponsableStep = this.toResponsableStep.bind(this);
         this.backToProspects = this.backToProspects.bind(this);
+        this.toReviewStep = this.toReviewStep.bind(this);
     }
 
     /**
@@ -41,9 +45,13 @@ export class Booking extends Component {
         this.setState({classDot: 'active-1', classStep1: 'active', classStep2: ''});
     }
 
+    toReviewStep (data) {
+        this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active'});
+    }
+
     render () {
 
-        const {classDot, classStart, classStep1, classStep2, prospects} = this.state;
+        const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable} = this.state;
 
         return <>
         
@@ -52,10 +60,11 @@ export class Booking extends Component {
                 <Starter onClick={this.handleClickStart}/>
             </section>
             <section className="section-steps">
-                <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} />
+                <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} />
                 <div className="steps">
                     <StepProspects classStep={classStep1} toResponsableStep={this.toResponsableStep}/>
-                    <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects}/>
+                    <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
+                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} />
                 </div>
             </section>
         </>

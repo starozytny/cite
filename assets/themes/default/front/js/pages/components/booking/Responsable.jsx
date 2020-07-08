@@ -26,6 +26,7 @@ export class StepResponsable extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleClickPrev = this.handleClickPrev.bind(this);
+        this.handleClickNext = this.handleClickNext.bind(this);
     }
 
     reset (){
@@ -76,8 +77,61 @@ export class StepResponsable extends Component {
         }
     }
 
+    handleClickNext (e) {
+        const {civility, firstname, lastname, email, adr, complement, cp, city, phoneDomicile, phoneMobile} = this.state;
+
+        let validate = Validateur.validateur([
+            {type: "text", id: 'firstname', value: firstname.value},
+            {type: "text", id: 'lastname', value: lastname.value},
+            {type: "email", id: 'email', value: email.value},
+            {type: "text", id: 'adr', value: adr.value},
+            {type: "text", id: 'cp', value: cp.value},
+            {type: "text", id: 'city', value: city.value}
+        ]);
+
+        // phone facultatif
+        let validatePhone;
+        if((phoneDomicile.value === "" && phoneMobile.value === "") || (phoneDomicile.value !== "" && phoneMobile.value !== "")){
+            validatePhone = Validateur.validateur([
+                {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value},
+                {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
+            ])
+        }else if(phoneDomicile.value !== "" && phoneMobile.value === ""){
+            validatePhone = Validateur.validateur([
+                {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value}
+            ])
+        }else if(phoneDomicile.value === "" && phoneMobile.value !== ""){
+            validatePhone = Validateur.validateur([
+                {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
+            ])
+        }
+        if(!validatePhone.code){
+            validate.code = false;
+            validate.errors = {...validate.errors, ...validatePhone.errors};
+        }
+
+        // -------
+        if(!validate.code){
+            this.setState(validate.errors);
+        }else{
+            let data = {
+                civility: civility.value,
+                firstname: firstname.value,
+                lastname: lastname.value,
+                email: email.value,
+                phoneDomicile: phoneDomicile.value,
+                phoneMobile: phoneMobile.value,
+                adr: adr.value,
+                complement: complement.value,
+                cp: cp.value,
+                city: city.value,
+            }
+            this.props.toReviewStep(data);
+        }
+    }
+
     render () {
-        const {classStep, prospects, onClickPrev} = this.props;
+        const {classStep, prospects} = this.props;
         const {firstname, lastname, civility, email, adr, complement, cp, city, phoneDomicile, phoneMobile, radioResp} = this.state;
 
         let body = <>
@@ -114,7 +168,7 @@ export class StepResponsable extends Component {
             </div>
         </>
 
-        return <Step id="2" classStep={classStep} title="Responsable" onClickPrev={this.handleClickPrev} body={body}>
+        return <Step id="2" classStep={classStep} title="Responsable" onClickPrev={this.handleClickPrev} onClickNext={this.handleClickNext} body={body}>
             <span className="text-regular">
                 Le responsable designe celui qui effectuera le paiement de l'inscription à la cité de la musique. <br/>
                 Il n'est pas forcément un adhérent ou futur adhérent.

@@ -35,6 +35,11 @@
             width: 38%;
         }
     }
+    &.active-3{
+        &:after{
+            width: 68%;
+        }
+    }
 
     .item{
         position: relative;
@@ -97,6 +102,11 @@
         &.active-2{
             &:after{
                 width: 33%;
+            }
+        }
+        &.active-3{
+            &:after{
+                width: 62%;
             }
         }
         .item{
