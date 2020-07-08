@@ -18,11 +18,6 @@ class TicketCreneau
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $horaire;
-
-    /**
      * @ORM\Column(type="integer")
      */
     private $max;
@@ -38,21 +33,14 @@ class TicketCreneau
      */
     private $ticketDay;
 
+    /**
+     * @ORM\Column(type="time")
+     */
+    private $horaire;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getHoraire(): ?string
-    {
-        return $this->horaire;
-    }
-
-    public function setHoraire(string $horaire): self
-    {
-        $this->horaire = $horaire;
-
-        return $this;
     }
 
     public function getMax(): ?int
@@ -87,6 +75,18 @@ class TicketCreneau
     public function setTicketDay(?TicketDay $ticketDay): self
     {
         $this->ticketDay = $ticketDay;
+
+        return $this;
+    }
+
+    public function getHoraire(): ?\DateTimeInterface
+    {
+        return $this->horaire;
+    }
+
+    public function setHoraire(\DateTimeInterface $horaire): self
+    {
+        $this->horaire = $horaire;
 
         return $this;
     }

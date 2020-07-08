@@ -40,42 +40,34 @@ class AdminCreateTicketsCommand extends Command
         $this->resetTable($io,'ticket_day');
         $this->resetTable($io,'ticket_creneau');
 
+        dump(date_create_from_format('H:i', '16:00')->format('H:i'));
+
+        
+
         $days = array(
             [
                 'type' => TicketDay::TYPE_ANCIEN,
                 'day' => new DateTime('2020-07-08'),
                 'max' => 100,
                 'remaining' => 100,
-                'creneaux' => [ 
-                    ['horaire' => '8h00', 'max' => 20], ['horaire' => '8h15', 'max' => 20], ['horaire' => '8h30', 'max' => 20], ['horaire' => '8h45', 'max' => 20], ['horaire' => '9h00', 'max' => 20]
-                ]
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
                 'day' => new DateTime('2020-07-09'),
                 'max' => 100,
                 'remaining' => 100,
-                'creneaux' => [ 
-                    ['horaire' => '8h00', 'max' => 20], ['horaire' => '8h15', 'max' => 20], ['horaire' => '8h30', 'max' => 20], ['horaire' => '8h45', 'max' => 20], ['horaire' => '9h00', 'max' => 20]
-                ]
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
                 'day' => new DateTime('2020-07-10'),
                 'max' => 100,
                 'remaining' => 100,
-                'creneaux' => [ 
-                    ['horaire' => '8h00', 'max' => 20], ['horaire' => '8h15', 'max' => 20], ['horaire' => '8h30', 'max' => 20], ['horaire' => '8h45', 'max' => 20], ['horaire' => '9h00', 'max' => 20]
-                ]
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
                 'day' => new DateTime('2020-07-11'),
                 'max' => 100,
                 'remaining' => 100,
-                'creneaux' => [ 
-                    ['horaire' => '8h00', 'max' => 20], ['horaire' => '8h15', 'max' => 20], ['horaire' => '8h30', 'max' => 20], ['horaire' => '8h45', 'max' => 20], ['horaire' => '9h00', 'max' => 20]
-                ]
             ]
         );
 
@@ -90,11 +82,12 @@ class AdminCreateTicketsCommand extends Command
 
             $this->em->persist($new);
 
-            foreach ($day['creneaux'] as $slot){
+            $horaires = ['8:00', '8:15', '8:30', '8:45', '9:00'];
+            foreach($horaires as $horaire){
                 $s = (new TicketCreneau())
-                    ->setHoraire($slot['horaire'])
-                    ->setMax($slot['max'])
-                    ->setRemaining($slot['max'])
+                    ->setHoraire(date_create_from_format('H:i', $horaire))
+                    ->setMax(20)
+                    ->setRemaining(20)
                     ->setTicketDay($new)
                 ;
 

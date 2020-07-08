@@ -2,6 +2,7 @@
 
 namespace App\Controller\App;
 
+use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Service\OpenDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,11 +37,13 @@ class BookingController extends AbstractController
      */
     public function tmpBook(TicketDay $id)
     {
-        $creneaux = $id->getTicketCreneaux();
+        $em = $this->getDoctrine()->getManager();
+        $creneaux = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $id), array('horaire' => 'ASC'));
         // check s'il y a de la place
         // ------- [si] -> OUI
-
-        dump($creneaux);
+        foreach($creneaux as $creneau){
+            dump($creneau);
+        }
         // persist & flush data
         // (set un timer pour supprimer l'inscription)
         // ------- [sinon]
