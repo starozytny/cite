@@ -66,22 +66,16 @@ export class Booking extends Component {
     toReviewStep (data) {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active'});
 
-        const {prospects} = this.state;
-
-        let url = Routing.generate('app_booking_tmp_book', {
-            'id' : this.props.dayId, 
-            'nbProspects': prospects.length
-        })
-
-        console.log(prospects)
-        console.log(data)
-
         AjaxSend.loader(true);
-        axios({ method: 'get', url: url }).then(function (response) 
-        {
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_tmp_book', { 'id' : this.props.dayId }), 
+            data: { prospects: this.state.prospects, responsable: data } 
+        }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
+            console.log(data)
             if(code === 1){
-                console.log(data)
+                
             }else{
 
             }

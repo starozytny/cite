@@ -39,10 +39,8 @@ class AdminCreateTicketsCommand extends Command
         $io->title('Reset des tables');
         $this->resetTable($io,'ticket_day');
         $this->resetTable($io,'ticket_creneau');
-
-        dump(date_create_from_format('H:i', '16:00')->format('H:i'));
-
-        
+        $this->resetTable($io,'ticket_responsable');
+        $this->resetTable($io,'ticket_prospect');        
 
         $days = array(
             [

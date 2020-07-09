@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\TicketResponsableRepository;
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TicketResponsable
 {
+    const ST_TMP = 0;
+    const ST_CONFIRMED = 1;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -66,6 +72,39 @@ class TicketResponsable
      * @ORM\Column(type="string", length=255)
      */
     private $city;
+
+    /**
+     * @ORM\OneToMany(targetEntity=TicketProspect::class, mappedBy="responsable", orphanRemoval=true)
+     */
+    private $prospects;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createAt;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isWaiting;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $ticket;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $status;
+
+    public function __construct()
+    {
+        $this->prospects = new ArrayCollection();
+        $this->setCreateAt(new DateTime());
+        $this->setIsWaiting(false);
+        $this->setStatus(self::ST_TMP);
+    }
 
     public function getId(): ?int
     {
@@ -188,6 +227,85 @@ class TicketResponsable
     public function setCity(string $city): self
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TicketProspect[]
+     */
+    public function getProspects(): Collection
+    {
+        return $this->prospects;
+    }
+
+    public function addProspect(TicketProspect $prospect): self
+    {
+        if (!$this->prospects->contains($prospect)) {
+            $this->prospects[] = $prospect;
+            $prospect->setResponsable($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProspect(TicketProspect $prospect): self
+    {
+        if ($this->prospects->contains($prospect)) {
+            $this->prospects->removeElement($prospect);
+            // set the owning side to null (unless already changed)
+            if ($prospect->getResponsable() === $this) {
+                $prospect->setResponsable(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCreateAt(): ?\DateTimeInterface
+    {
+        return $this->createAt;
+    }
+
+    public function setCreateAt(\DateTimeInterface $createAt): self
+    {
+        $this->createAt = $createAt;
+
+        return $this;
+    }
+
+    public function getIsWaiting(): ?bool
+    {
+        return $this->isWaiting;
+    }
+
+    public function setIsWaiting(bool $isWaiting): self
+    {
+        $this->isWaiting = $isWaiting;
+
+        return $this;
+    }
+
+    public function getTicket(): ?string
+    {
+        return $this->ticket;
+    }
+
+    public function setTicket(?string $ticket): self
+    {
+        $this->ticket = $ticket;
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

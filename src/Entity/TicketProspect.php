@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TicketProspect
 {
-    const ST_TMP = 0;
+    const ST_ATTENTE = 0;
     const ST_CONFIRMED = 1;
     const ST_REGISTERED = 2;
 
@@ -78,11 +78,6 @@ class TicketProspect
     private $numAdh;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $ticket;
-
-    /**
      * @ORM\Column(type="integer")
      */
     private $status;
@@ -93,15 +88,15 @@ class TicketProspect
     private $createAt;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\ManyToOne(targetEntity=TicketResponsable::class, inversedBy="prospects")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $isWaiting;
+    private $responsable;
 
     public function __construct()
     {
         $this->setCreateAt(new DateTime());
-        $this->setIsWaiting(false);
-        $this->setStatus(self::ST_TMP);
+        $this->setStatus(self::ST_ATTENTE);
     }
 
     public function getId(): ?int
@@ -241,18 +236,6 @@ class TicketProspect
         return $this;
     }
 
-    public function getTicket(): ?string
-    {
-        return $this->ticket;
-    }
-
-    public function setTicket(?string $ticket): self
-    {
-        $this->ticket = $ticket;
-
-        return $this;
-    }
-
     public function getStatus(): ?int
     {
         return $this->status;
@@ -277,14 +260,14 @@ class TicketProspect
         return $this;
     }
 
-    public function getIsWaiting(): ?bool
+    public function getResponsable(): ?TicketResponsable
     {
-        return $this->isWaiting;
+        return $this->responsable;
     }
 
-    public function setIsWaiting(bool $isWaiting): self
+    public function setResponsable(?TicketResponsable $responsable): self
     {
-        $this->isWaiting = $isWaiting;
+        $this->responsable = $responsable;
 
         return $this;
     }
