@@ -37,6 +37,19 @@ export class Booking extends Component {
         this.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active'})
     }
 
+    /**
+     * Fonction go back step
+     */
+    backToProspects (e) {
+        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: ''});
+    }
+    backToResponsable (e) {
+        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: ''});
+    }
+
+    /**
+     * Fonction go to step Responsable
+     */
     toResponsableStep (data) {
         data = data.filter((thing, index, self) =>
             index === self.findIndex((t) => (
@@ -45,12 +58,11 @@ export class Booking extends Component {
             ))
         )
         this.setState({prospects: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active'});
-    }
+    }    
 
-    backToProspects (e) {
-        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: ''});
-    }
-
+    /**
+     * Get horaire and pre register prospects + responsable if not place = message + waiting list
+     */
     toReviewStep (data) {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active'});
 
@@ -60,6 +72,10 @@ export class Booking extends Component {
             'id' : this.props.dayId, 
             'nbProspects': prospects.length
         })
+
+        console.log(prospects)
+        console.log(data)
+
         AjaxSend.loader(true);
         axios({ method: 'get', url: url }).then(function (response) 
         {
@@ -72,9 +88,7 @@ export class Booking extends Component {
         });
     }
 
-    backToResponsable (e) {
-        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: ''});
-    }
+    
 
     render () {
         const {day, dayId} = this.props;

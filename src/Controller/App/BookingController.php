@@ -7,6 +7,7 @@ use App\Entity\TicketDay;
 use App\Service\OpenDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -35,12 +36,12 @@ class BookingController extends AbstractController
     /**
      * @Route("/tmp/book/{id}/{nbProspects}", options={"expose"=true}, name="tmp_book")
      */
-    public function tmpBook(TicketDay $id, $nbProspects)
+    public function tmpBook(TicketDay $id, $nbProspects, Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $creneaux = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $id), array('horaire' => 'ASC'));
-        // check s'il y a de la place
-        // ------- [si] -> OUI
+
+        // Check place in each creneaux orderBy ASC horaire
         $i = 0; $len = count($creneaux);
         foreach($creneaux as $creneau){
 
@@ -49,6 +50,9 @@ class BookingController extends AbstractController
             if($remaining > 0){ // reste de la place
 
                 if($remaining >= $nbProspects){ // assez de place pour l'inscription
+
+                    
+
                     return new JsonResponse([
                         'code' => 1,
                         'message' => 'Parfait'
