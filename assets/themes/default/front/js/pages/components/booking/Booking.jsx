@@ -21,7 +21,10 @@ export class Booking extends Component {
             prospects: [],
             responsable: '',
             messageInfo: '', // for review page
-            responsableId: null // pour delete si go back in review page
+            responsableId: null, // pour delete si go back in review page
+            min: 4,
+            second: 60,
+            timeExpired: false
         }
 
         this.handleClickStart = this.handleClickStart.bind(this);
@@ -78,7 +81,7 @@ export class Booking extends Component {
      * Get horaire and pre register prospects + responsable if not place = message + waiting list
      */
     toReviewStep (data) {
-        this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active'});
+        this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active', min: 4, second: 60});
 
         const {prospects} = this.state;
 
@@ -90,10 +93,14 @@ export class Booking extends Component {
             data: { prospects: prospects, responsable: data } 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-
+            
             if(code === 1){
+
                 self.setState({ messageInfo: data.message, responsableId: data.responsableId });
+                setInterval(() => self.tick(), 1000);
+                
             }else if(code === 2){ // some already registered
+
                 let newProspects = [];
                 prospects.forEach(element => {
                     let newProspect = element;
@@ -106,18 +113,39 @@ export class Booking extends Component {
                     newProspects.push(newProspect);
                 });
                 self.setState({ prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
+
             }else{
                 self.setState({ messageInfo: data.message })
             }
         });
     }
 
+    tick(){
+        const {min, second} = this.state;
+        
+        let oldMin = parseInt(min);
+        let oldSecond = parseInt(second);
+        let expired = false;
+        let nMin = oldMin
+        let nSecond = oldSecond - 1;
+    
+        if(oldMin == 0 && oldSecond == 0){
+            nMin = 0; nSecond = 0; expired = true;
+        }else{
+            if(nSecond < 0){
+                nSecond = oldMin > 0 ? 60 : 0;
+                nMin = oldMin - 1;       
+            }
+        }
+        
+        this.setState({ second: nSecond, min: nMin, timeExpired: expired });
+    }
+
     render () {
         const {day, days} = this.props;
-        const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable, messageInfo} = this.state;
+        const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable, messageInfo, min, second, timeExpired} = this.state;
 
         return <>
-        
             <section className={"section-infos " + classStart}>
                 <Infos day={day} />
                 <Starter onClick={this.handleClickStart} days={days}/>
@@ -127,7 +155,8 @@ export class Booking extends Component {
                 <div className="steps">
                     <StepProspects classStep={classStep1} prospects={prospects} toResponsableStep={this.toResponsableStep}/>
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
-                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable}/>
+                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
+                                timeExpired={timeExpired} min={min} second={second}/>
                 </div>
             </section>
         </>

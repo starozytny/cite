@@ -6,10 +6,10 @@ export class StepReview extends Component {
 
     constructor(props){
         super(props);
-    }
+    }    
 
     render () {
-        const {classStep, onClickPrev, prospects, responsable, day, messageInfo} = this.props;
+        const {classStep, onClickPrev, prospects, responsable, day, messageInfo, min, second, timeExpired} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
             return (
@@ -47,10 +47,14 @@ export class StepReview extends Component {
             </div>
         </>
 
-        return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} body={body} nextText="Valider">
+        return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} body={body} 
+        nextText={timeExpired ? "Expirée" : "Valider (" + min +"min " + second + "s)"} expired={timeExpired}>
             <div className="text-regular">
-                Inscription pour la journée du : <b>{day}</b> <br/>
+                <div>Inscription pour la journée du : <b>{day}</b></div>
                 {ReactHtmlParser(messageInfo)}
+                <div>
+                    La réservation est valide pendant {timeExpired ? <b>Expirée</b> : <b>{min}min {second}s</b>}
+                </div>
             </div>
         </Step>
     }

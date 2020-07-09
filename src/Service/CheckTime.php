@@ -28,11 +28,11 @@ class CheckTime
         return 0;
     }
 
-    public function moreTenMinutes(?DateTimeInterface $datetime){
+    public function moreFiveMinutes(?DateTimeInterface $datetime){
         if($datetime == null){
             return true;
         }
-        return (time() > (date_timestamp_get($datetime) + (60*10))) ? true : false;
+        return (time() > (date_timestamp_get($datetime) + (60*5))) ? true : false;
     }
 
     public function moreThirtyMinutes(?DateTimeInterface $datetime){

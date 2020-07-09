@@ -29,7 +29,7 @@ class ResponsableService
         ));
 
         foreach($responsables as $responsable){
-            if($this->checkTime->moreTenMinutes($responsable->getCreateAt())){
+            if($this->checkTime->moreFiveMinutes($responsable->getCreateAt())){
                 $this->deleteResponsable($responsable);
             }
         }      

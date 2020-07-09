@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-export function Step({id, classStep, title, body, specialFull=null, onClickNext, onClickPrev, nextText="Suivant", children}) {
+export function Step({id, classStep, title, body, specialFull=null, onClickNext, onClickPrev, nextText="Suivant", expired=false, children}) {
     return (
         <div className={"step step-" + id + " " + classStep}>
             <div className="step-title">
