@@ -1,17 +1,26 @@
 const axios = require('axios/dist/axios');
 
-function sendAjax(self, url, data, suite) {
+function loader(status){
     let loader = document.querySelector('#loader');
+    if(status){
+        axios.interceptors.request.use(function (config) {
+            loader.style.display = "flex"; return config;
+        }, function (error) { return Promise.reject(error); });
+    }else{
+        loader.style.display = "none";
+    }
+}
 
-    axios.interceptors.request.use(function (config) {
-        loader.style.display = "flex"; return config;
-    }, function (error) { return Promise.reject(error); });
+function sendAjax(self, url, data, suite=null, openLoader=true) {
+    if(openLoader){
+        loader(true);
+    }
 
     axios({ method: 'post', url: url, data: data }).then(function (response) 
     {
         let data = response.data;
         let code = data.code;
-        loader.style.display = "none";
+        loader(false);
         
         if(code === 1){
             let state = { error: '', success: data.message }
@@ -30,5 +39,6 @@ function sendAjax(self, url, data, suite) {
 }
 
 module.exports = {
-    sendAjax
+    sendAjax,
+    loader
 }

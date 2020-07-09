@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios/dist/axios';
 import Routing from '../../../../../../../../public/bundles/fosjsrouting/js/router.min.js';
+import AjaxSend from '../../../components/functions/ajax_classique';
 import {StepProspects} from './Prospect';
 import {StepResponsable} from './Responsable';
 import {StepReview} from './Review';
@@ -52,11 +53,19 @@ export class Booking extends Component {
 
     toReviewStep (data) {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active'});
-        axios({ method: 'get', url: Routing.generate('app_booking_tmp_book', {'id' : this.props.dayId}) }).then(function (response) 
-        {
-            let data = response.data; let code = data.code;
-            if(code === 1){
 
+        const {prospects} = this.state;
+
+        let url = Routing.generate('app_booking_tmp_book', {
+            'id' : this.props.dayId, 
+            'nbProspects': prospects.length
+        })
+        AjaxSend.loader(true);
+        axios({ method: 'get', url: url }).then(function (response) 
+        {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            if(code === 1){
+                console.log(data)
             }else{
 
             }

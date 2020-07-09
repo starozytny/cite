@@ -33,16 +33,45 @@ class BookingController extends AbstractController
     }
 
     /**
-     * @Route("/tmp/book/{id}", options={"expose"=true}, name="tmp_book")
+     * @Route("/tmp/book/{id}/{nbProspects}", options={"expose"=true}, name="tmp_book")
      */
-    public function tmpBook(TicketDay $id)
+    public function tmpBook(TicketDay $id, $nbProspects)
     {
         $em = $this->getDoctrine()->getManager();
         $creneaux = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $id), array('horaire' => 'ASC'));
         // check s'il y a de la place
         // ------- [si] -> OUI
+        $i = 0; $len = count($creneaux);
         foreach($creneaux as $creneau){
-            dump($creneau);
+
+            $remaining = $creneau->getRemaining();
+
+            if($remaining > 0){ // reste de la place
+
+                if($remaining >= $nbProspects){ // assez de place pour l'inscription
+                    return new JsonResponse([
+                        'code' => 1,
+                        'message' => 'Parfait'
+                    ]);
+                }else{ // pas assez de place pour l'inscription
+                    // test le suivant sauf si last creneau
+                    if($i == $len - 1) { 
+                        return new JsonResponse([
+                            'code' => 0,
+                            'message' => 'Reste de la place mais pas assez pour le nombre de prospects -> file attente'
+                        ]);
+                    }
+                }
+
+            }else{ // pas de place 
+                // test le suivant sauf si last creneau
+                if($i == $len - 1) {
+                    return new JsonResponse([
+                        'code' => 0,
+                        'message' => 'Plus de place dispo sur tous les créneaux -> file attente'
+                    ]);
+                }
+            }
         }
         // persist & flush data
         // (set un timer pour supprimer l'inscription)
