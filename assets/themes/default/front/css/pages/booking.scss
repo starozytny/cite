@@ -36,7 +36,41 @@
 
     .starter-infos{
         .alert{
+            margin-top: 15px;
             margin-bottom: 15px;
+        }
+    }
+
+    .starter-dates{
+        margin-top: 15px;
+
+        .item{
+            margin-bottom: 5px;
+        }
+
+        .item.active{
+            @include fontSemibold();
+        }
+
+        .starter-dates-dot{
+            display: inline-block;
+            width: 10px; height: 10px;
+            border-radius: 10px;
+            background-color: $color7;
+            margin-right: 5px;
+
+            &.starter-dates-dot-true{
+                background-color: $yellow;
+            }
+        }
+
+        .txt-discret{
+            font-size: 14px;
+            color: $color6;
+
+            span{
+                display: none;
+            }
         }
     }
 
@@ -179,6 +213,16 @@ input:checked{
 //                     | |   /_/  \___/ \___/   | |
 //                     |__|                    |__|
 @media (min-width:768px) {
+    .starter-card{
+        .starter-dates{
+            .txt-discret{
+                span{
+                    display: inline;
+                }
+            }
+        }
+    }
+
     .line{
         @include flex(row, flex-start, space-between);
         margin-bottom: 15px;
@@ -268,14 +312,6 @@ input:checked{
     }
     .informations{
         margin-right: 100px;
-    }
-    .starter-card{
-        .starter-infos{
-            .alert{
-                margin-top: 30px;
-                margin-bottom: 30px;
-            }
-        }
     }
     .starter-card{
         .starter-infos{

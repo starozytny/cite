@@ -101,14 +101,14 @@ export class Booking extends Component {
     
 
     render () {
-        const {day} = this.props;
+        const {day, days} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable, messageInfo} = this.state;
 
         return <>
         
             <section className={"section-infos " + classStart}>
                 <Infos day={day} />
-                <Starter onClick={this.handleClickStart}/>
+                <Starter onClick={this.handleClickStart} days={days}/>
             </section>
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} />
@@ -155,13 +155,12 @@ function Infos({day}) {
         <div className="informations">
             <h1>Réservation d'un ticket</h1>
             <p className="subtitle">Journée d'inscription du {day}</p>
-                    
             <p>
-                Pour obtenir votre ticket d’entrée à la journée d’inscription de la Cité de la musique, complétez le formulaire suivant.
+                La demande de ticket permet de faire une réservation pour X personnes.
                 <br /><br />
-                Votre ticket et l’heure à laquelle vous devez vous présenter vous seront envoyés par email.
+                Votre <b>numéro de ticket</b> et l’<b>horaire de passage</b> vous seront envoyés par email.
                 <br /><br /><br /><br />
-                <b className="txt-danger">Important :</b> Compte-tenu du nombre important de demandes, nous ne pouvons délivrer qu’un ticket par famille. Merci pour votre compréhension.
+                <b className="txt-danger">Important :</b> Pour toute information concernant le déroulement de cette journée
             </p>
             <p className="informations-complementaire">
                 Pour toute information concernant le déroulement de cette journée : 
@@ -172,21 +171,31 @@ function Infos({day}) {
     )
 }
 
-function Starter({onClick}) {
+function Starter({onClick, days}) {
+
+    let items = JSON.parse(days).map((elem, index) => {
+        return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
+            <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
+            <span>{(new Date(Date.parse(elem.day))).toLocaleDateString('fr-FR')}</span>
+            <span className="txt-discret"> - Journée des {elem.typeString} <span>{elem.isOpen ? ' | ouverte aux tickets' : null}</span></span>
+        </div>
+    });
+
     return (
         <div className="starter">
             <div className="starter-card">
                 <div className="starter-infos">
+
                     <p>
-                        Déroulement : 
+                        Planning des journées d'inscriptions :
                     </p>
-                    <ul>
-                        <li>Faire sa demande de ticket pour X personnes.</li>
-                        <li>Récupérer son ticket et sa plage horaire grâce au mail envoyé.</li>
-                        <li>Se rendre à la journée d'inscription à l'horaire indiqué.</li>
-                    </ul>
-                    <div className="alert alert-danger">
-                        A la journée d'inscription veuillez prendre avec vous le document suivant : Avis d'impôts
+
+                    <div className="starter-dates">
+                        {items}
+                    </div>
+
+                    <div className="alert alert-info">
+                        A la journée d'inscription veuillez apporter votre <b>avis d'impôt sur le revenu</b>
                     </div>
                 </div>
                 <div className="starter-btn">

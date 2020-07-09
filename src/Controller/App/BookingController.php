@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/reservation", name="app_booking_")
@@ -21,18 +22,22 @@ class BookingController extends AbstractController
     /**
      * @Route("/", name="index")
      */
-    public function index(OpenDay $openDay)
+    public function index(OpenDay $openDay, SerializerInterface $serializer)
     {
         $openDay->open();
         $em = $this->getDoctrine()->getManager();
+        $days = $em->getRepository(TicketDay::class)->findAll();
         $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
 
         if(!$day){
             return $this->render('root/app/pageS/booking/index.html.twig');
         }
 
+        $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen']]);
+
         return $this->render('root/app/pageS/booking/index.html.twig', [
-            'day' => $day
+            'day' => $day,
+            'days' => $days
         ]);
     }
 
