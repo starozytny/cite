@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ReactHtmlParser from 'react-html-parser';
 import {Step} from './Step';
 
 export class StepReview extends Component {
@@ -8,7 +9,7 @@ export class StepReview extends Component {
     }
 
     render () {
-        const {classStep, onClickPrev, prospects, responsable, day, dayId} = this.props;
+        const {classStep, onClickPrev, prospects, responsable, day, messageInfo} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
             return (
@@ -46,10 +47,10 @@ export class StepReview extends Component {
         </>
 
         return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} body={body} nextText="Valider">
-            <span className="text-regular">
+            <div className="text-regular">
                 Inscription pour la journée du : <b>{day}</b> <br/>
-                Horaires attribuées automatiquement : <b>8h00</b>
-            </span>
+                {ReactHtmlParser(messageInfo)}
+            </div>
         </Step>
     }
 }

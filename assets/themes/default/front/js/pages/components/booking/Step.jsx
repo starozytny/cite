@@ -5,7 +5,7 @@ export function Step({id, classStep, title, body, specialFull=null, onClickNext,
         <div className={"step step-" + id + " " + classStep}>
             <div className="step-title">
                 <h2>{title}</h2>
-                {children ? <p>{children}</p> : null}
+                {children ? <div>{children}</div> : null}
             </div>
             <div className="step-content">
                 {body}

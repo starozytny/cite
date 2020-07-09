@@ -19,7 +19,8 @@ export class Booking extends Component {
             classStep2: '',
             classStep3: '',
             prospects: [],
-            responsable: ''
+            responsable: '',
+            messageInfo: ''
         }
 
         this.handleClickStart = this.handleClickStart.bind(this);
@@ -67,17 +68,19 @@ export class Booking extends Component {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active'});
 
         AjaxSend.loader(true);
+        let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book', { 'id' : this.props.dayId }), 
             data: { prospects: this.state.prospects, responsable: data } 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-            console.log(data)
             if(code === 1){
-                
+                self.setState({messageInfo: data.message});
+            }else if(code === 2){
+                self.setState({messageInfo: '<div class="alert alert-info">' + data.message + '</div>'})
             }else{
-
+                self.setState({messageInfo: data.message})
             }
         });
     }
@@ -85,8 +88,8 @@ export class Booking extends Component {
     
 
     render () {
-        const {day, dayId} = this.props;
-        const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable} = this.state;
+        const {day} = this.props;
+        const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable, messageInfo} = this.state;
 
         return <>
         
@@ -99,7 +102,7 @@ export class Booking extends Component {
                 <div className="steps">
                     <StepProspects classStep={classStep1} toResponsableStep={this.toResponsableStep}/>
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
-                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} dayId={dayId} onClickPrev={this.backToResponsable}/>
+                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable}/>
                 </div>
             </section>
         </>

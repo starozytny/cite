@@ -93,6 +93,11 @@ class TicketProspect
      */
     private $responsable;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TicketCreneau::class, inversedBy="prospects")
+     */
+    private $creneau;
+
     public function __construct()
     {
         $this->setCreateAt(new DateTime());
@@ -268,6 +273,18 @@ class TicketProspect
     public function setResponsable(?TicketResponsable $responsable): self
     {
         $this->responsable = $responsable;
+
+        return $this;
+    }
+
+    public function getCreneau(): ?TicketCreneau
+    {
+        return $this->creneau;
+    }
+
+    public function setCreneau(?TicketCreneau $creneau): self
+    {
+        $this->creneau = $creneau;
 
         return $this;
     }

@@ -58,7 +58,13 @@ class BookingController extends AbstractController
             if($remaining > 0){ // reste de la place
 
                 if($remaining >= $nbProspects){ // assez de place pour l'inscription
-                    return new JsonResponse($this->createResponsableAndProspects($responsable, $prospects));
+
+                    $retour = $this->createResponsableAndProspects($responsable, $prospects, $creneau);
+                    if(is_array($retour)){
+                        return new JsonResponse(['code' => 2, 'message' => 'Un ou des personnes à inscrire ont déjà été enregistré.', 'duplicated' => $retour]);
+                    }
+                    return new JsonResponse(['code' => 1, 'message' => 'Horaire de passage : ' . date_format($creneau->getHoraire(), 'H\hi')]);
+                    
                 }else{ // pas assez de place pour l'inscription
                     // test le suivant sauf si last creneau
                     if($i == $len - 1) { 
@@ -90,7 +96,7 @@ class BookingController extends AbstractController
         ]);
     }
 
-    private function createResponsableAndProspects($resp, $prospects, $waiting=false)
+    private function createResponsableAndProspects($resp, $prospects, TicketCreneau $creneau, $waiting=false)
     {
         $em = $this->getDoctrine()->getManager();
         $alreadyRegistered = [];
@@ -99,7 +105,7 @@ class BookingController extends AbstractController
         $em->persist($responsable);
 
         foreach($prospects as $item){
-            $prospect = $this->createProspect($item, $responsable);
+            $prospect = $this->createProspect($item, $creneau, $responsable);
 
             if($em->getRepository(TicketProspect::class)->findOneBy(array(
                 'firstname' => $item->firstname,
@@ -114,17 +120,11 @@ class BookingController extends AbstractController
         }
 
         if(count($alreadyRegistered) != 0){
-            return array(
-                'code' => 2,
-                'duplicated' => $alreadyRegistered
-            );
+            return $alreadyRegistered;
         }
 
         $em->flush();
-        return array(
-            'code' => 1,
-            'message' => 'Parfait'
-        );
+        return true;
     }
 
     private function createResponsable($resp, $waiting){
@@ -143,7 +143,7 @@ class BookingController extends AbstractController
         ;
     }
 
-    private function createProspect($item, $responsable){
+    private function createProspect($item, $creneau, $responsable){
         return (new TicketProspect())
             ->setFirstname($item->firstname)
             ->setLastname($item->lastname)
@@ -157,6 +157,7 @@ class BookingController extends AbstractController
             ->setCity($item->city)
             ->setNumAdh($this->setToNullIfEmpty($item->numAdh))
             ->setResponsable($responsable)
+            ->setCreneau($creneau)
         ;
     }
 

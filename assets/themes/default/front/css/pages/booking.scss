@@ -71,16 +71,19 @@
             margin-bottom: 10px;
         }
     
-        h2 + p {
+        h2 + div {
             font-size: 14px;
             opacity: 0.9;
             max-width: 500px;
         }
-        h2 + p .text-regular{
+        h2 + div .text-regular{
             font-size: 16px;
             display: block;
             opacity: 1;
             margin-bottom: 10px;
+        }
+        h2 + div .alert{
+            margin-top: 15px;
         }
     }
     
