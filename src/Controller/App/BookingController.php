@@ -7,6 +7,8 @@ use App\Entity\TicketDay;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
 use App\Service\OpenDay;
+use App\Service\Remaining;
+use App\Service\ResponsableService;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,12 +21,22 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class BookingController extends AbstractController
 {
+    private $remaining;
+    private $responsableService;
+
+    public function __construct(Remaining $remaining, ResponsableService $responsableService)
+    {
+        $this->remaining = $remaining;
+        $this->responsableService = $responsableService;
+    }
+
     /**
      * @Route("/", name="index")
      */
     public function index(OpenDay $openDay, SerializerInterface $serializer)
     {
         $openDay->open();
+        $this->responsableService->deleteNonConfirmed();
         $em = $this->getDoctrine()->getManager();
         $days = $em->getRepository(TicketDay::class)->findAll();
         $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
@@ -47,6 +59,7 @@ class BookingController extends AbstractController
     public function tmpBook(TicketDay $id, Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+
         $day = $id;
         $creneaux = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $id), array('horaire' => 'ASC'));
 
@@ -123,18 +136,7 @@ class BookingController extends AbstractController
 
         if($responsableId != null){
             $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
-
-            $prospects = $responsable->getProspects();
-            $nbProspects = count($prospects);
-            foreach ($prospects as $prospect){
-                $creneau = $prospect->getCreneau();
-                $em->remove($prospect);
-            }
-
-            $this->increaseRemaining($id, $creneau, $nbProspects);
-
-            $em->remove($responsable);
-            $em->flush();
+            $this->responsableService->deleteResponsable($responsable);
         }
         return new JsonResponse(['code' => 1]);
     }
@@ -148,7 +150,7 @@ class BookingController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $alreadyRegistered = [];
 
-        $responsable = $this->createResponsable($resp, $waiting);
+        $responsable = $this->responsableService->createResponsable($resp, $waiting);
         $em->persist($responsable);
 
         foreach($prospects as $item){
@@ -170,55 +172,13 @@ class BookingController extends AbstractController
             return $alreadyRegistered;
         }
 
-        $this->decreaseRemaining($day, $creneau, count($prospects));
+        $this->remaining->decreaseRemaining($day, $creneau, count($prospects));
 
         $em->flush();
         return $responsable->getId();
     }
 
-    /**
-     * Increase remaining number for Ticket Creneau and Ticket Day
-     */
-    private function increaseRemaining(TicketDay $day, TicketCreneau $creneau, $nb)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $creneau->setRemaining($creneau->getRemaining() + $nb);
-        $day->setRemaining($day->getRemaining() + $nb);
-
-        $em->persist($day); $em->persist($creneau); 
-    }
-
-    /**
-     * Reduce remaining number for Ticket Creneau and Ticket Day
-     */
-    private function decreaseRemaining(TicketDay $day, TicketCreneau $creneau, $nb)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $creneau->setRemaining($creneau->getRemaining() - $nb);
-        $day->setRemaining($day->getRemaining() - $nb);
-
-        $em->persist($day); $em->persist($creneau); 
-    }
-
-    /**
-     * Create Ticket Responsable
-     */
-    private function createResponsable($resp, $waiting)
-    {
-        return (new TicketResponsable())
-            ->setFirstname($resp->firstname)
-            ->setLastname($resp->lastname)
-            ->setCivility($resp->civility)
-            ->setEmail($resp->email)
-            ->setPhoneDomicile($this->setToNullIfEmpty($resp->phoneDomicile))
-            ->setPhoneMobile($this->setToNullIfEmpty($resp->phoneMobile))
-            ->setAdr($resp->adr)
-            ->setComplement($this->setToNullIfEmpty($resp->complement))
-            ->setCp($resp->cp)
-            ->setCity($resp->city)
-            ->setIsWaiting($waiting)
-        ;
-    }
+   
 
     /**
      * Create Ticket Prospect

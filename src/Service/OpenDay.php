@@ -9,7 +9,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class OpenDay
 {
-
     private $em;
 
     public function __construct(EntityManagerInterface $em)
