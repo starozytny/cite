@@ -20,7 +20,8 @@ export class Booking extends Component {
             classStep3: '',
             prospects: [],
             responsable: '',
-            messageInfo: ''
+            messageInfo: '', // for review page
+            responsableId: null // pour delete si go back in review page
         }
 
         this.handleClickStart = this.handleClickStart.bind(this);
@@ -46,6 +47,18 @@ export class Booking extends Component {
     }
     backToResponsable (e) {
         this.setState({classDot: 'active-2', classStep2: 'active', classStep3: ''});
+
+        // remove
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_tmp_book_delete', { 'id' : this.props.dayId }), 
+            data: { responsable: this.state.responsableId } 
+        }).then(function (response) {
+            AjaxSend.loader(false);
+            self.setState({messageInfo: '', responsableId: null})
+        });
     }
 
     /**
@@ -71,12 +84,12 @@ export class Booking extends Component {
         let self = this;
         axios({ 
             method: 'post', 
-            url: Routing.generate('app_booking_tmp_book', { 'id' : this.props.dayId }), 
+            url: Routing.generate('app_booking_tmp_book_add', { 'id' : this.props.dayId }), 
             data: { prospects: this.state.prospects, responsable: data } 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             if(code === 1){
-                self.setState({messageInfo: data.message});
+                self.setState({messageInfo: data.message, responsableId: data.responsableId});
             }else if(code === 2){
                 self.setState({messageInfo: '<div class="alert alert-info">' + data.message + '</div>'})
             }else{
