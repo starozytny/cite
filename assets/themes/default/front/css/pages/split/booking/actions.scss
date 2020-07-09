@@ -17,6 +17,12 @@
         width: 50%;
         border-radius: 0;
         height: 100%;
+        
+        &.inactive{
+            cursor: not-allowed;
+            background-color: $color7;
+            border-color: $color7
+        }
     }
 }
 

@@ -61,8 +61,10 @@ export class StepReview extends Component {
             </div>
         </>
 
+        let nextText =  code == 1 ? (timeExpired ? "Expirée" : "Valider (" + min +"min " + second + "s)") : 'Indisponible';
+
         return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} body={body} 
-        nextText={timeExpired ? "Expirée" : "Valider (" + min +"min " + second + "s)"} expired={timeExpired}>
+        nextText={nextText} expired={timeExpired} code={code}>
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>
                 {ReactHtmlParser(messageInfo)}
