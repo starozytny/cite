@@ -22,6 +22,7 @@ export class Booking extends Component {
             responsable: '',
             messageInfo: '', // for review page
             responsableId: null, // pour delete si go back in review page
+            code: 0,
             min: 4,
             second: 60,
             timeExpired: false
@@ -96,7 +97,7 @@ export class Booking extends Component {
             
             if(code === 1){
 
-                self.setState({ messageInfo: data.message, responsableId: data.responsableId });
+                self.setState({ code: 1, messageInfo: data.message, responsableId: data.responsableId});
                 setInterval(() => self.tick(), 1000);
                 
             }else if(code === 2){ // some already registered
@@ -112,10 +113,10 @@ export class Booking extends Component {
                     });
                     newProspects.push(newProspect);
                 });
-                self.setState({ prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
+                self.setState({ code: 2, prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
 
             }else{
-                self.setState({ messageInfo: data.message })
+                self.setState({ code: 3, messageInfo: data.message })
             }
         });
     }
@@ -143,7 +144,7 @@ export class Booking extends Component {
 
     render () {
         const {day, days} = this.props;
-        const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable, messageInfo, min, second, timeExpired} = this.state;
+        const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable, messageInfo, min, second, timeExpired, code} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -156,7 +157,7 @@ export class Booking extends Component {
                     <StepProspects classStep={classStep1} prospects={prospects} toResponsableStep={this.toResponsableStep}/>
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
-                                timeExpired={timeExpired} min={min} second={second}/>
+                                timeExpired={timeExpired} min={min} second={second} code={code}/>
                 </div>
             </section>
         </>

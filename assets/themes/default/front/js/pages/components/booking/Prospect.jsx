@@ -300,7 +300,7 @@ function ProspectCard({id, registered, valide, firstname, lastname, civility, bi
                 <div className="registered">Déjà inscrit</div>
                 <div>{civility.value}. {lastname.value} {firstname.value}</div>
                 <div>{email.value}</div>
-                <div>{birthday.value}</div>
+                <div>{(new Date(birthday.value)).toLocaleDateString('fr-FR')}</div>
             </div>
             <div className="actions">
                 <button className="delete" onClick={onDelete}>Supprimer</button>

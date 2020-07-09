@@ -2,6 +2,20 @@ import React, {Component} from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import {Step} from './Step';
 
+function formattedPhone(elem){
+    if(elem != "" && elem != undefined){
+        let a = elem.substr(0,2);
+        let b = elem.substr(2,2);
+        let c = elem.substr(4,2);
+        let d = elem.substr(6,2);
+        let e = elem.substr(8,2);
+
+        elem = a + " " + b + " " + c + " " + d + " " + e;
+    }
+
+    return elem;
+}
+
 export class StepReview extends Component {
 
     constructor(props){
@@ -9,16 +23,16 @@ export class StepReview extends Component {
     }    
 
     render () {
-        const {classStep, onClickPrev, prospects, responsable, day, messageInfo, min, second, timeExpired} = this.props;
+        const {classStep, onClickPrev, prospects, responsable, day, messageInfo, min, second, timeExpired, code} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
             return (
                 <div className={elem.registered ? 'review-card registered' : 'review-card' } key={index}>
                     <div>{elem.civility}. {elem.lastname} {elem.firstname}</div>
                     <div className="review-card-email">{elem.email}</div>
-                    <div className="txt-discret">{elem.birthday}</div>
-                    <div className="txt-discret">{elem.phoneDomicile}</div>
-                    <div className="txt-discret">{elem.phoneMobile}</div>
+                    <div className="txt-discret">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')}</div>
+                    <div className="txt-discret">{formattedPhone(elem.phoneDomicile)}</div>
+                    <div className="txt-discret">{formattedPhone(elem.phoneMobile)}</div>
                     <div className="review-card-registered">Déjà inscrit</div>
                 </div>
             )
@@ -39,8 +53,8 @@ export class StepReview extends Component {
                         <div className="review-card">
                             <div>{responsable.civility}. {responsable.lastname} {responsable.firstname}</div>
                             <div className="review-card-email">{responsable.email}</div>
-                            <div className="txt-discret">{responsable.phoneDomicile}</div>
-                            <div className="txt-discret">{responsable.phoneMobile}</div>
+                            <div className="txt-discret">{formattedPhone(responsable.phoneDomicile)}</div>
+                            <div className="txt-discret">{formattedPhone(responsable.phoneMobile)}</div>
                         </div>
                     </div>
                 </div>
@@ -52,9 +66,7 @@ export class StepReview extends Component {
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>
                 {ReactHtmlParser(messageInfo)}
-                <div>
-                    La réservation est valide pendant {timeExpired ? <b>Expirée</b> : <b>{min}min {second}s</b>}
-                </div>
+                { code == 1 ? <div> La réservation est valide pendant {timeExpired ? <b>Expirée</b> : <b>{min}min {second}s</b>} </div> : null }
             </div>
         </Step>
     }
