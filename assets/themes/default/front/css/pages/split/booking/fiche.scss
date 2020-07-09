@@ -64,6 +64,19 @@
         .infos{
             @include flex(column, center, center);
 
+            .registered{
+                border: 2px solid $info;
+                padding: 5px 10px;
+                border-radius: 3px;
+                color: $info;
+                transform: scale(1.2) rotate(-8deg);
+                background-color: $alpha;
+                z-index: -2;
+                opacity: 0;
+                margin-bottom: 35px;
+                transition: all 0.6s ease-in-out 0.2s;
+            }
+
             & > *{
                 margin-bottom: 10px;
             }
@@ -79,7 +92,20 @@
         }
     }
     
-    &.active{
-        background-color: $successBg;
+    &.true{
+        .valideDiv{
+            &.valide{
+                &:before{
+                    background-color: $infoBg;
+                }
+                .infos{
+                    .registered{
+                        opacity: 1;
+                        z-index: 2;
+                        transform: scale(1) rotate(-8deg);
+                    }
+                }
+            }
+        }
     }
 }

@@ -67,7 +67,9 @@ export class StepProspects extends Component {
                         cp: st.cp.value,
                         city: st.city.value,
                         isAdh: st.isAdh.value,
-                        numAdh: st.numAdh.value
+                        numAdh: st.numAdh.value,
+                        idReact: st.idReact,
+                        registered: false
                     }
                     data.push(d);
                 }else{
@@ -89,13 +91,20 @@ export class StepProspects extends Component {
     }
 
     render () {
-        const {classStep} = this.props;
+        const {classStep, prospects} = this.props;
         const {added, classAdd} = this.state;
-
         let arr = [];
         for (let i=0 ; i<added ; i++) {
+            let registered = false;
+            prospects.forEach(element => {
+                if(parseInt(element.idReact) === i){
+                    registered = true;
+                }
+            });
+
+            
             arr.push(
-                <Prospect key={i} id={i} ref={"child" + i} onDeleteCard={this.handleClickDelete} />
+                <Prospect key={i} id={i} ref={"child" + i} registered={registered} onDeleteCard={this.handleClickDelete} />
             )
         }
         
@@ -133,6 +142,7 @@ class Prospect extends Component {
         this.state = {
             renderCompo: true,
             valide: '',
+            idReact: this.props.id,
             deleted: false,
             firstname: {value: '', error: ''},
             lastname: {value: '', error: ''},
@@ -241,10 +251,10 @@ class Prospect extends Component {
         const {firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email,
             adr, cp, city, isAdh, numAdh, 
             renderCompo, valide} = this.state;
-        const {id} = this.props;
+        const {id, registered} = this.props;
 
         return <>
-            {renderCompo ? <ProspectCard id={id} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
+            {renderCompo ? <ProspectCard id={id} registered={registered} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
                             birthday={birthday} phoneDomicile={phoneDomicile} phoneMobile={phoneMobile} email={email}
                             adr={adr} cp={cp} city={city} isAdh={isAdh} numAdh={numAdh}
                             onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit}/> 
@@ -253,10 +263,10 @@ class Prospect extends Component {
     }
 } 
 
-function ProspectCard({id, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email, adr, cp, city, isAdh, numAdh,
+function ProspectCard({id, registered, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email, adr, cp, city, isAdh, numAdh,
                         onChange, onDelete, onClickEdit}) 
     {
-    return <div className={"step-card step-prospect " + valide}>
+    return <div className={"step-card step-prospect " + registered}>
 
         <span className="title"><span className="icon-infos"></span></span>
 
@@ -287,6 +297,7 @@ function ProspectCard({id, valide, firstname, lastname, civility, birthday, phon
 
         <div className={"valideDiv " + valide}>
             <div className="infos">
+                <div className="registered">Déjà inscrit</div>
                 <div>{civility.value}. {lastname.value} {firstname.value}</div>
                 <div>{email.value}</div>
                 <div>{birthday.value}</div>

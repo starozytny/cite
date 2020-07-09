@@ -13,12 +13,13 @@ export class StepReview extends Component {
 
         let itemsProspects = prospects.map((elem, index) => {
             return (
-                <div className="review-card" key={index}>
+                <div className={elem.registered ? 'review-card registered' : 'review-card' } key={index}>
                     <div>{elem.civility}. {elem.lastname} {elem.firstname}</div>
                     <div className="review-card-email">{elem.email}</div>
                     <div className="txt-discret">{elem.birthday}</div>
                     <div className="txt-discret">{elem.phoneDomicile}</div>
                     <div className="txt-discret">{elem.phoneMobile}</div>
+                    <div className="review-card-registered">Déjà inscrit</div>
                 </div>
             )
         })

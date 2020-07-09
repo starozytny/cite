@@ -48,7 +48,7 @@ export class Booking extends Component {
     backToResponsable (e) {
         this.setState({classDot: 'active-2', classStep2: 'active', classStep3: ''});
 
-        // remove
+        // remove 
         AjaxSend.loader(true);
         let self = this;
         axios({ 
@@ -80,25 +80,37 @@ export class Booking extends Component {
     toReviewStep (data) {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active'});
 
+        const {prospects} = this.state;
+
         AjaxSend.loader(true);
         let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_add', { 'id' : this.props.dayId }), 
-            data: { prospects: this.state.prospects, responsable: data } 
+            data: { prospects: prospects, responsable: data } 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
+
             if(code === 1){
-                self.setState({messageInfo: data.message, responsableId: data.responsableId});
-            }else if(code === 2){
-                self.setState({messageInfo: '<div class="alert alert-info">' + data.message + '</div>'})
+                self.setState({ messageInfo: data.message, responsableId: data.responsableId });
+            }else if(code === 2){ // some already registered
+                let newProspects = [];
+                prospects.forEach(element => {
+                    let newProspect = element;
+                    data.duplicated.forEach(duplicate => {
+                        if(JSON.stringify(element) === JSON.stringify(duplicate)){
+                            duplicate.registered = true
+                            newProspect = duplicate;
+                        }
+                    });
+                    newProspects.push(newProspect);
+                });
+                self.setState({ prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
             }else{
-                self.setState({messageInfo: data.message})
+                self.setState({ messageInfo: data.message })
             }
         });
     }
-
-    
 
     render () {
         const {day, days} = this.props;
@@ -113,7 +125,7 @@ export class Booking extends Component {
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} />
                 <div className="steps">
-                    <StepProspects classStep={classStep1} toResponsableStep={this.toResponsableStep}/>
+                    <StepProspects classStep={classStep1} prospects={prospects} toResponsableStep={this.toResponsableStep}/>
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable}/>
                 </div>
