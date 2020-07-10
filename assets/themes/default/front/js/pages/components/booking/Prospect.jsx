@@ -102,7 +102,6 @@ export class StepProspects extends Component {
                 }
             });
 
-            
             arr.push(
                 <Prospect key={i} id={i} dayType={dayType} ref={"child" + i} registered={registered} onDeleteCard={this.handleClickDelete} />
             )

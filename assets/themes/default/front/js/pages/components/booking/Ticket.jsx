@@ -14,12 +14,8 @@ export class StepTicket extends Component {
             <div className="final-content">
                 <div>{finalMessage}</div>
                 <div className="alert alert-info ticket">
-                    <div>
-                        TICKET : <b>{ticket}</b>
-                    </div>
-                    <div>
-                        Pour le {day} à {horaire}.
-                    </div>
+                    <div>TICKET : <b>{ticket}</b></div>
+                    <div>Pour le {day} à {horaire}.</div>
                 </div>
                 <div className="alert">
                     <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
@@ -30,20 +26,25 @@ export class StepTicket extends Component {
 
         let textRegular = <>
             <div>Inscription pour la journée du : <b>{day}</b></div>
-            <div>
-                Horaire de passage : <b>{horaire}</b>
-            </div>
-            <div>
-                Nombre de personnes à inscrire : <b>{prospects.length}</b>
-            </div>
+            <div>Horaire de passage : <b>{horaire}</b></div>
+            <div>Nombre de personnes à inscrire : <b>{prospects.length}</b></div>
         </>
 
         if(code != 1){
             body = <>
-                <div>{finalMessage}</div>
+                <div className="final-content">
+                    <div>{finalMessage}</div>
+                    <div className="alert alert-info ticket">
+                        Si une place se libère, vous serez automatiquement prévenu par mail. <br/>
+                        Ce mail contiendra votre numéro de ticket et votre horaire de passage.
+                    </div>
+                    <div className="alert">
+                        <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
+                    </div>
+                </div>
             </>
 
-            textRegular = null
+            textRegular = <div>En file d'attente pour la journée du : <b>{day}</b></div>
         }
 
         return <Step id="4" classStep={classStep} title="Ticket" body={body} final="true">

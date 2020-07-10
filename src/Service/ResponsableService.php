@@ -40,12 +40,16 @@ class ResponsableService
         $prospects = $responsable->getProspects();
         $nbProspects = count($prospects);
         foreach ($prospects as $prospect){
-            $creneau = $prospect->getCreneau();
-            $day = $creneau->getTicketDay();
+            if(!$responsable->getIsWaiting()){
+                $creneau = $prospect->getCreneau();
+                $day = $creneau->getTicketDay();
+            }
             $this->em->remove($prospect);
         }
 
-        $this->remaining->increaseRemaining($day, $creneau, $nbProspects);
+        if(!$responsable->getIsWaiting()){
+            $this->remaining->increaseRemaining($day, $creneau, $nbProspects);
+        }
 
         $this->em->remove($responsable);
         $this->em->flush();

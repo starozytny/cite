@@ -123,7 +123,7 @@ export class Booking extends Component {
                 self.setState({ code: 2, prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
 
             }else{
-                self.setState({ code: 0, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
+                self.setState({ code: 0, responsableId: data.responsableId, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
             }
         });
     }

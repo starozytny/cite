@@ -75,7 +75,7 @@ class BookingController extends AbstractController
         dump($alreadyRegistered);
         if(count($alreadyRegistered) != 0){
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered,
-                                    'message' => 'Un ou des personnes souhaitant s\'inscrire a déjà été enregistré par une autre réservation. <br/> <br/>
+                                    'message' => 'Un ou des personnes souhaitant s\'inscrire ont <b>déjà été enregistré par une autre réservation</b>. <br/> <br/>
                                                 S\'il s\'agit d\'une nouvelle tentative de réservation, veuillez patienter l\'expiration de la précèdente. <br/>
                                                 Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.']);
         }
@@ -92,9 +92,9 @@ class BookingController extends AbstractController
     
                     if($remaining >= $nbProspects){ // assez de place pour l'inscription
     
-                        $retour = $this->createResponsableAndProspects($responsable, $prospects, $creneau, $day);
+                        $responsableId = $this->createResponsableAndProspects($responsable, $prospects, $creneau, $day);
                         $horaire = date_format($creneau->getHoraire(), 'H\hi');
-                        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $retour, 
+                        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $responsableId, 
                             'message' => 'Horaire de passage : <b>' . $horaire . '</b> <br/><br/>
                                          Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.']);
                         
@@ -119,8 +119,12 @@ class BookingController extends AbstractController
                 }
             }
         }else{
+
+            $responsableId = $this->createResponsableAndProspects($responsable, $prospects, null, $day, true);
+
             return new JsonResponse([
                 'code' => 0,
+                'responsableId' => $responsableId,
                 'message' => 'Il n\'y a plus assez de place. En validant la réservation, vous serez <b>en file d\'attente</b>.'
             ]);
         }
@@ -169,34 +173,45 @@ class BookingController extends AbstractController
         $responsable->setTicket($ticket);
         $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
 
-        $prospects = $responsable->getProspects();
-        foreach ($prospects as $prospect) {
-            $prospect->setStatus(TicketProspect::ST_CONFIRMED);
-            $horaire = $prospect->getCreneau()->getHoraire();
-            $em->persist($prospect);
+        if(!$responsable->getIsWaiting()){
+            $prospects = $responsable->getProspects();
+            foreach ($prospects as $prospect) {
+                $prospect->setStatus(TicketProspect::ST_CONFIRMED);
+                $horaire = $prospect->getCreneau()->getHoraire();
+                $em->persist($prospect);
+            }
+
+            $title = 'Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
+            $html = 'root/app/email/booking/index.html.twig';
+            $params =  ['ticket' => $ticket, 'horaire' => $horaire, 'day' => $id->getDay()];
+        }else{
+            $title = '[FILE ATTENTE] - Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
+            $html = 'root/app/email/booking/index.html.twig';
+            $params =  ['day' => $id->getDay()];
         }
+       
 
         // Send mail     
-        $title = 'Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
-        if($mailer->sendMail(
-            $title, $title,
-            'root/app/email/booking/index.html.twig',
-            ['ticket' => $ticket, 'horaire' => $horaire, 'day' => $id->getDay()],
-            $responsable->getEmail()
-        ) != true){
+        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail() ) != true){
             return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
         }
 
         $em->persist($responsable); $em->flush();
-        return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse
+        if(!$responsable->getIsWaiting()){
+            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse
             du responsable : ' . $responsable->getEmail()]);
+        }else{
+            return new JsonResponse(['code' => 0, 'message' => 'Réservation en file d\'attente. Un mail récapitulatif a été envoyé à l\'adresse
+            du responsable : ' . $responsable->getEmail()]);
+        }
+       
     }
 
     /**
      * Create Responsable and Prospects and check if At least one prospect is not exist else
      * decrease remaining creneau and day 
      */
-    private function createResponsableAndProspects($resp, $prospects, TicketCreneau $creneau, TicketDay $day, $waiting=false)
+    private function createResponsableAndProspects($resp, $prospects, ?TicketCreneau $creneau, TicketDay $day, $waiting=false)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -204,11 +219,13 @@ class BookingController extends AbstractController
         $em->persist($responsable);
 
         foreach($prospects as $item){
-            $prospect = $this->createProspect($item, $creneau, $responsable);
+            $prospect = $this->createProspect($item, $creneau, $responsable, $waiting);
             $em->persist($prospect);
         }
 
-        $this->remaining->decreaseRemaining($day, $creneau, count($prospects));
+        if(!$waiting){
+            $this->remaining->decreaseRemaining($day, $creneau, count($prospects));
+        }        
 
         $em->flush();
         return $responsable->getId();
@@ -220,7 +237,7 @@ class BookingController extends AbstractController
         $alreadyRegistered = [];
 
         if($dayType == TicketDay::TYPE_NOUVEAU){
-            
+
             foreach($prospects as $item){
                 if($em->getRepository(TicketProspect::class)->findOneBy(array(
                     'civility' => $item->civility,
@@ -245,15 +262,14 @@ class BookingController extends AbstractController
 
         return $alreadyRegistered;
     }
-
    
 
     /**
      * Create Ticket Prospect
      */
-    private function createProspect($item, $creneau, $responsable)
+    private function createProspect($item, $creneau, $responsable, $waiting=false)
     {
-        return (new TicketProspect())
+        $pro = (new TicketProspect())
             ->setFirstname($item->firstname)
             ->setLastname($item->lastname)
             ->setCivility($item->civility)
@@ -268,6 +284,10 @@ class BookingController extends AbstractController
             ->setResponsable($responsable)
             ->setCreneau($creneau)
         ;
+        if($waiting){
+            $pro->setStatus(TicketProspect::ST_WAITING);
+        }
+        return $pro;
     }
 
     private function setToNullIfEmpty($item){

@@ -14,6 +14,7 @@ class TicketProspect
     const ST_ATTENTE = 0;
     const ST_CONFIRMED = 1;
     const ST_REGISTERED = 2;
+    const ST_WAITING = 99;
 
     /**
      * @ORM\Id()
@@ -255,6 +256,9 @@ class TicketProspect
 
     public function getStatusString(){
         switch($this->getStatus()){
+            case self::ST_WAITING:
+                return "File attente";
+                break;
             case self::ST_ATTENTE:
                 return "Attente";
                 break;
