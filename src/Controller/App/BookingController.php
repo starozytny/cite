@@ -49,7 +49,7 @@ class BookingController extends AbstractController
 
         $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen']]);
 
-        return $this->render('root/app/pageS/booking/index.html.twig', [
+        return $this->render('root/app/pages/booking/index.html.twig', [
             'day' => $day,
             'days' => $days
         ]);
