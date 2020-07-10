@@ -47,7 +47,7 @@ class BookingController extends AbstractController
             return $this->render('root/app/pages/booking/index.html.twig');
         }
 
-        $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen']]);
+        $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen', 'remaining']]);
 
         return $this->render('root/app/pages/booking/index.html.twig', [
             'day' => $day,
@@ -117,7 +117,7 @@ class BookingController extends AbstractController
         }else{
             return new JsonResponse([
                 'code' => 0,
-                'message' => 'Plus de place pour cette journée.'
+                'message' => 'Il n\'y a plus assez de place. En validant la réservation, vous serez <b>en file d\'attente</b>.'
             ]);
         }
     }

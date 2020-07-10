@@ -123,7 +123,7 @@ export class Booking extends Component {
                 self.setState({ code: 2, prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
 
             }else{
-                self.setState({ code: 3, messageInfo: data.message })
+                self.setState({ code: 0, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
             }
         });
     }
@@ -171,7 +171,7 @@ export class Booking extends Component {
     } 
 
     render () {
-        const {day, days, dayType} = this.props;
+        const {day, days, dayType } = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
             horaire, messageInfo, min, second, timeExpired, code, finalMessage, ticket} = this.state;
 
@@ -189,7 +189,7 @@ export class Booking extends Component {
                                 timeExpired={timeExpired} min={min} second={second} code={code} toTicketStep={this.toTicketStep}/>
                     <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire} code={code} finalMessage={finalMessage} ticket={ticket}/>
                 </div>
-            </section>
+            </section> 
         </>
     }
 }
@@ -245,11 +245,18 @@ function Infos({day}) {
 
 function Starter({onClick, days}) {
 
+    let remaining = true;
     let items = JSON.parse(days).map((elem, index) => {
+        if(elem.remaining <= 0 ){
+            remaining = false;
+        }
         return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
             <span>{(new Date(Date.parse(elem.day))).toLocaleDateString('fr-FR')}</span>
-            <span className="txt-discret"> - Journée des {elem.typeString} <span>{elem.isOpen ? ' | ouverte aux tickets' : null}</span></span>
+            <span className="txt-discret">
+                 - Journée des {elem.typeString} 
+                 <span>{elem.isOpen ? (elem.remaining > 0 ? ' | ouverte aux tickets' : ' | ouverte en liste d\'attente') : null}</span>
+            </span>
         </div>
     });
 
@@ -266,9 +273,8 @@ function Starter({onClick, days}) {
                         {items}
                     </div>
 
-                    <div className="alert alert-info">
-                        A la journée d'inscription veuillez apporter votre <b>avis d'impôt sur le revenu</b>
-                    </div>
+                    <div className="alert alert-info"> A la journée d'inscription veuillez apporter votre <b>avis d'impôt sur le revenu</b> </div>
+                    {remaining ? null : <div className="alert"> Il n'y a plus de place pour le moment. Vous serez placez en file d'attente. </div>}
                 </div>
                 <div className="starter-btn">
                     <button className="btn btn-primary" onClick={onClick}>Réserver un ticket</button>
