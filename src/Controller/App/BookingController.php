@@ -44,7 +44,7 @@ class BookingController extends AbstractController
         $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
 
         if(!$day){
-            return $this->render('root/app/pageS/booking/index.html.twig');
+            return $this->render('root/app/pages/booking/index.html.twig');
         }
 
         $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen']]);
