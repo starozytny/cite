@@ -87,9 +87,9 @@ class BookingController extends AbstractController
                                          S\'il s\'agit d\'une nouvelle tentative, veuillez patienter l\'expiration de la précèdente réservation. <br/>
                                          Le temps de sauvegarde est de 5 minutes à partir de cette page.']);
                         }
-                        return new JsonResponse(['code' => 1, 'responsableId' => $retour, 
-                            'message' => 'Horaire de passage : <b>' . date_format($creneau->getHoraire(), 'H\hi' . '</b> <br/>
-                                         Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.')]);
+                        return new JsonResponse(['code' => 1, 'horaire' => date_format($creneau->getHoraire(), 'H\hi'), 'responsableId' => $retour, 
+                            'message' => 'Horaire de passage : <b>' . date_format($creneau->getHoraire(), 'H\hi') . '</b> <br/>
+                                         Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.']);
                         
                     }else{ // pas assez de place pour l'inscription
                         // test le suivant sauf si last creneau
@@ -180,7 +180,7 @@ class BookingController extends AbstractController
 
         $this->remaining->decreaseRemaining($day, $creneau, count($prospects));
 
-        $em->flush();
+        // $em->flush();
         return $responsable->getId();
     }
 

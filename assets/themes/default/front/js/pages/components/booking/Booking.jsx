@@ -27,9 +27,11 @@ export class Booking extends Component {
             code: 0,
             min: 4,
             second: 60,
+            timer: null,
             timeExpired: false
         }
 
+        this.interval = null;
         this.handleClickStart = this.handleClickStart.bind(this);
 
         this.toResponsableStep = this.toResponsableStep.bind(this);
@@ -53,7 +55,7 @@ export class Booking extends Component {
         this.setState({classDot: 'active-1', classStep1: 'active', classStep2: ''});
     }
     backToResponsable (e) {
-        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: ''});
+        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', timer: clearInterval(this.state.timer)});
 
         // remove 
         AjaxSend.loader(true);
@@ -100,8 +102,7 @@ export class Booking extends Component {
             
             if(code === 1){
 
-                self.setState({ code: 1, messageInfo: data.message, responsableId: data.responsableId});
-                setInterval(() => self.tick(), 1000);
+                self.setState({ code: 1, messageInfo: data.message, horaire: data.horaire, responsableId: data.responsableId, timer: setInterval(() => self.tick(), 1000)});
                 
             }else if(code === 2){ // some already registered
 
@@ -145,12 +146,12 @@ export class Booking extends Component {
     }
 
     toTicketStep () {
-        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active'});
+        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer)});
     } 
 
     render () {
         const {day, days} = this.props;
-        const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, messageInfo, min, second, timeExpired, code} = this.state;
+        const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, horaire, messageInfo, min, second, timeExpired, code} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -164,7 +165,7 @@ export class Booking extends Component {
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
                                 timeExpired={timeExpired} min={min} second={second} code={code} toTicketStep={this.toTicketStep}/>
-                    <StepTicket classStep={classStep4} />
+                    <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire}/>
                 </div>
             </section>
         </>
