@@ -13,7 +13,8 @@ export class Booking extends Component {
 
         this.state = {
             day: this.props.day,
-            dayId: this.props.id,
+            dayId: this.props.dayId,
+            dayType: this.props.dayType,
             classDot: '',
             classStart: '',
             classStep1: '',
@@ -170,8 +171,9 @@ export class Booking extends Component {
     } 
 
     render () {
-        const {day, days} = this.props;
-        const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, horaire, messageInfo, min, second, timeExpired, code, finalMessage, ticket} = this.state;
+        const {day, days, dayType} = this.props;
+        const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
+            horaire, messageInfo, min, second, timeExpired, code, finalMessage, ticket} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -181,7 +183,7 @@ export class Booking extends Component {
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
                 <div className="steps">
-                    <StepProspects classStep={classStep1} prospects={prospects} toResponsableStep={this.toResponsableStep}/>
+                    <StepProspects classStep={classStep1} dayType={dayType} prospects={prospects} toResponsableStep={this.toResponsableStep}/>
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
                                 timeExpired={timeExpired} min={min} second={second} code={code} toTicketStep={this.toTicketStep}/>

@@ -164,6 +164,12 @@
     margin-bottom: 15px;
 }
 
+.form-group.disabled{
+    opacity: 0 !important;
+    z-index: -20; 
+    position: absolute;
+}
+
 .error{font-size: 12px;}
 
 .form-group-radio{

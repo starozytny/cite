@@ -5,6 +5,6 @@ import {Booking} from './components/booking/Booking.jsx';
 
 let booking = document.getElementById("booking");
 ReactDOM.render(
-    <Booking day={booking.dataset.day} dayId={booking.dataset.id} days={booking.dataset.days} />,
+    <Booking day={booking.dataset.day} dayId={booking.dataset.id} dayType={booking.dataset.type} days={booking.dataset.days} />,
     booking
 )

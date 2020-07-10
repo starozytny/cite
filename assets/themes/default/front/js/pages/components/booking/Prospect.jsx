@@ -91,7 +91,7 @@ export class StepProspects extends Component {
     }
 
     render () {
-        const {classStep, prospects} = this.props;
+        const {classStep, prospects, dayType} = this.props;
         const {added, classAdd} = this.state;
         let arr = [];
         for (let i=0 ; i<added ; i++) {
@@ -104,7 +104,7 @@ export class StepProspects extends Component {
 
             
             arr.push(
-                <Prospect key={i} id={i} ref={"child" + i} registered={registered} onDeleteCard={this.handleClickDelete} />
+                <Prospect key={i} id={i} dayType={dayType} ref={"child" + i} registered={registered} onDeleteCard={this.handleClickDelete} />
             )
         }
         
@@ -154,7 +154,7 @@ class Prospect extends Component {
             adr: {value: '', error: ''},
             cp: {value: '', error: ''},
             city: {value: '', error: ''},
-            isAdh: {value: false, error: ''},
+            isAdh: {value: this.props.dayType == 0 ? true : false, error: ''},
             numAdh: {value: '', error: ''}
         }
 
@@ -250,10 +250,10 @@ class Prospect extends Component {
         const {firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email,
             adr, cp, city, isAdh, numAdh, 
             renderCompo, valide} = this.state;
-        const {id, registered} = this.props;
+        const {id, registered, dayType} = this.props;
 
         return <>
-            {renderCompo ? <ProspectCard id={id} registered={registered} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
+            {renderCompo ? <ProspectCard id={id} dayType={dayType} registered={registered} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
                             birthday={birthday} phoneDomicile={phoneDomicile} phoneMobile={phoneMobile} email={email}
                             adr={adr} cp={cp} city={city} isAdh={isAdh} numAdh={numAdh}
                             onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit}/> 
@@ -262,13 +262,13 @@ class Prospect extends Component {
     }
 } 
 
-function ProspectCard({id, registered, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email, adr, cp, city, isAdh, numAdh,
+function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email, adr, cp, city, isAdh, numAdh,
                         onChange, onDelete, onClickEdit}) 
     {
     return <div className={"step-card step-prospect " + registered}>
 
         <span className="title"><span className="icon-infos"></span></span>
-        <IsAdh id={id} isAdh={isAdh} numAdh={numAdh} onChange={onChange}/>
+        <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
         <div className="line line-2">
             <Input type="text" identifiant={"firstname-" + id} value={firstname.value} onChange={onChange} error={firstname.error}>Prénom</Input>
@@ -322,12 +322,13 @@ function RadioCivility({id, civility, onChange}) {
     )
 }
 
-function IsAdh({id, isAdh, numAdh, onChange}) {
+function IsAdh({id, isAdh, dayType, numAdh, onChange}) {
+    let dis = dayType == 0 ? "disabled" : "";
     return (
         <div className="line line-2">
-            <div className="form-group">
+            <div className={"form-group " + dis}>
                 <label htmlFor={"isAdh-" + id}>Déjà adhérent ?</label>
-                <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} onChange={onChange} />
+                <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} disabled={dis} onChange={onChange} />
             </div>
             {isAdh.value ? <Input type="text" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error}>Numéro adhérent</Input> 
                 : null}

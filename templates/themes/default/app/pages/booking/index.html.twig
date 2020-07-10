@@ -12,12 +12,12 @@
     <div class="ariane">
         <span><a href="{{ path('app_homepage') }}">Accueil</a></span>
         <span class="active"><a href="{{ path('app_booking_index') }}">
-            Réservation {{ day is defined ? 'de ticket pour le' ~ day.day | date('d/m/Y') : null }}
+            Réservation {{ day is defined ? 'de ticket pour le ' ~ day.day | date('d/m/Y') : null }}
         </a></span>
     </div>
 
     {% if day is defined %}
-        <div id="booking" data-day="{{ day.day | date('d/m/Y') }}" data-id="{{ day.id }}" data-days="{{ days }}"></div>
+        <div id="booking" data-day="{{ day.day | date('d/m/Y') }}" data-id="{{ day.id }}" data-type="{{ day.type}}" data-days="{{ days }}"></div>
     {% else %}
         <div>
             <div class="section-infos">
