@@ -28,7 +28,9 @@ export class Booking extends Component {
             min: 4,
             second: 60,
             timer: null,
-            timeExpired: false
+            timeExpired: false,
+            finalMessage: '',
+            ticket: null
         }
 
         this.interval = null;
@@ -147,11 +149,29 @@ export class Booking extends Component {
 
     toTicketStep () {
         this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer)});
+
+        const {responsableId} = this.state;
+        
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_confirmed_book_add', { 'id' : this.props.dayId }), 
+            data: { responsable: responsableId } 
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+
+            if(code === 1){
+                self.setState({ code: 1, finalMessage: data.message, ticket: data.ticket})
+            }else{
+                self.setState({ code: 0, finalMessage: data.message })
+            }
+        });
     } 
 
     render () {
         const {day, days} = this.props;
-        const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, horaire, messageInfo, min, second, timeExpired, code} = this.state;
+        const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, horaire, messageInfo, min, second, timeExpired, code, finalMessage, ticket} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -165,7 +185,7 @@ export class Booking extends Component {
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
                                 timeExpired={timeExpired} min={min} second={second} code={code} toTicketStep={this.toTicketStep}/>
-                    <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire}/>
+                    <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire} code={code} finalMessage={finalMessage} ticket={ticket}/>
                 </div>
             </section>
         </>

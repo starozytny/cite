@@ -9,6 +9,7 @@ use App\Entity\TicketResponsable;
 use App\Service\OpenDay;
 use App\Service\Remaining;
 use App\Service\ResponsableService;
+use App\Service\TicketGenerator;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -141,9 +142,45 @@ class BookingController extends AbstractController
 
         if($responsableId != null){
             $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
-            $this->responsableService->deleteResponsable($responsable);
+            if($responsable->getStatus() == TicketResponsable::ST_TMP){
+                $this->responsableService->deleteResponsable($responsable);
+            }
         }
         return new JsonResponse(['code' => 1]);
+    }
+
+    /**
+     * @Route("/confirmed/book/{id}/add", options={"expose"=true}, name="confirmed_book_add")
+     */
+    public function book(TicketDay $id, TicketGenerator $ticketGenerator, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $data = json_decode($request->getContent());
+        $responsableId = $data->responsable;
+
+        $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
+
+        if(!$responsable){
+            return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
+        }
+
+        do{
+            $ticket = $ticketGenerator->generate($responsable);
+            $existe = $em->getRepository(TicketResponsable::class)->findOneBy(array('ticket' => $ticket));
+        }while($existe);
+
+        $responsable->setTicket($ticket);
+        $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
+
+        $prospects = $responsable->getProspects();
+        foreach ($prospects as $prospect) {
+            $prospect->setStatus(TicketProspect::ST_CONFIRMED);
+            $em->persist($prospect);
+        }
+
+        $em->persist($responsable); $em->flush();
+        return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'message' => 'Réservation réussie.']);
     }
 
     /**
@@ -180,7 +217,7 @@ class BookingController extends AbstractController
 
         $this->remaining->decreaseRemaining($day, $creneau, count($prospects));
 
-        // $em->flush();
+        $em->flush();
         return $responsable->getId();
     }
 
