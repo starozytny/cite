@@ -72,13 +72,14 @@ class BookingController extends AbstractController
 
         // Check if already registered
         $alreadyRegistered = $this->alreadyRegistered($prospects, $day->getType());
-        dump($alreadyRegistered);
         if(count($alreadyRegistered) != 0){
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered,
                                     'message' => 'Un ou des personnes souhaitant s\'inscrire ont <b>déjà été enregistré par une autre réservation</b>. <br/> <br/>
                                                 S\'il s\'agit d\'une nouvelle tentative de réservation, veuillez patienter l\'expiration de la précèdente. <br/>
                                                 Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.']);
         }
+
+        $messageWaiting ='Il n\'y a plus assez de place. En validant la réservation, vous serez <b>en file d\'attente</b>.';
 
         // Check place in each creneaux orderBy ASC horaire
         $i = 0; $len = count($creneaux);
@@ -111,6 +112,7 @@ class BookingController extends AbstractController
                 }else{ // pas de place 
                     // test le suivant sauf si last creneau
                     if($i == $len - 1) {
+                        $responsableId = $this->createResponsableAndProspects($responsable, $prospects, null, $day, true);
                         return new JsonResponse([
                             'code' => 0,
                             'message' => 'Plus de place dispo sur tous les créneaux -> file attente'
@@ -119,13 +121,11 @@ class BookingController extends AbstractController
                 }
             }
         }else{
-
             $responsableId = $this->createResponsableAndProspects($responsable, $prospects, null, $day, true);
-
             return new JsonResponse([
                 'code' => 0,
                 'responsableId' => $responsableId,
-                'message' => 'Il n\'y a plus assez de place. En validant la réservation, vous serez <b>en file d\'attente</b>.'
+                'message' => $messageWaiting
             ]);
         }
     }

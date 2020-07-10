@@ -36,7 +36,9 @@ export class StepTicket extends Component {
                     <div>{finalMessage}</div>
                     <div className="alert alert-info ticket">
                         Si une place se libère, vous serez automatiquement prévenu par mail. <br/>
-                        Ce mail contiendra votre numéro de ticket et votre horaire de passage.
+                        Ce mail contiendra votre numéro de ticket et votre horaire de passage. <br/> <br/>
+                        <b>Attention !</b> Vous êtes en file d'attente que pour la journée du <b>{day}</b>. Pour les prochaines journées, il faudra 
+                        réitérer la demande.
                     </div>
                     <div className="alert">
                         <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
