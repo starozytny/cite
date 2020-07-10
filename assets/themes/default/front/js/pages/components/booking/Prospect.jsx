@@ -97,7 +97,7 @@ export class StepProspects extends Component {
         for (let i=0 ; i<added ; i++) {
             let registered = false;
             prospects.forEach(element => {
-                if(parseInt(element.idReact) === i){
+                if(parseInt(element.idReact) === i && element.registered == true){
                     registered = true;
                 }
             });

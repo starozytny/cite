@@ -61,7 +61,12 @@ export class StepReview extends Component {
             </div>
         </>
 
-        let nextText =  code == 1 ? (timeExpired ? "Expirée" : "Valider (" + min +"min " + second + "s)") : 'Indisponible';
+        let nextText = "Valider en file d'attente";
+        if(code == 1){
+            nextText = (timeExpired ? "Expirée" : "Valider (" + min +"min " + second + "s)");
+        }else if(code == 2){
+            nextText = "Indisponible"
+        }
 
         return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} onClickNext={toTicketStep} body={body} 
         nextText={nextText} expired={timeExpired} code={code}>

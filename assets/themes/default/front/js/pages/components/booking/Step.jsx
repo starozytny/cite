@@ -4,7 +4,7 @@ export function Step({id, classStep, title, body, specialFull=null, onClickNext,
 
     let classBtn = "btn btn-primary ";
     let disabled = "";
-    if(code != 1 || expired != false){
+    if(code == 2 || expired != false){
         classBtn += "inactive";
         disabled = "disabled";
     }

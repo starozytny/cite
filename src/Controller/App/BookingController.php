@@ -70,6 +70,16 @@ class BookingController extends AbstractController
         $nbProspects = count($prospects);
         $responsable = $data->responsable;
 
+        // Check if already registered
+        $alreadyRegistered = $this->alreadyRegistered($prospects, $day->getType());
+        dump($alreadyRegistered);
+        if(count($alreadyRegistered) != 0){
+            return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered,
+                                    'message' => 'Un ou des personnes souhaitant s\'inscrire a déjà été enregistré par une autre réservation. <br/> <br/>
+                                                S\'il s\'agit d\'une nouvelle tentative de réservation, veuillez patienter l\'expiration de la précèdente. <br/>
+                                                Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.']);
+        }
+
         // Check place in each creneaux orderBy ASC horaire
         $i = 0; $len = count($creneaux);
         if($day->getRemaining() >= $nbProspects){ // suffisament de place pour le nombre de prospects
@@ -83,12 +93,6 @@ class BookingController extends AbstractController
                     if($remaining >= $nbProspects){ // assez de place pour l'inscription
     
                         $retour = $this->createResponsableAndProspects($responsable, $prospects, $creneau, $day);
-                        if(is_array($retour)){
-                            return new JsonResponse(['code' => 2, 'duplicated' => $retour,
-                            'message' => 'Un ou des personnes souhaitant s\'inscrire a déjà été enregistré par une autre réservation. <br/> <br/>
-                                         S\'il s\'agit d\'une nouvelle tentative de réservation, veuillez patienter l\'expiration de la précèdente. <br/>
-                                         Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.']);
-                        }
                         $horaire = date_format($creneau->getHoraire(), 'H\hi');
                         return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $retour, 
                             'message' => 'Horaire de passage : <b>' . $horaire . '</b> <br/><br/>
@@ -195,35 +199,51 @@ class BookingController extends AbstractController
     private function createResponsableAndProspects($resp, $prospects, TicketCreneau $creneau, TicketDay $day, $waiting=false)
     {
         $em = $this->getDoctrine()->getManager();
-        $alreadyRegistered = [];
 
         $responsable = $this->responsableService->createResponsable($resp, $waiting);
         $em->persist($responsable);
 
         foreach($prospects as $item){
             $prospect = $this->createProspect($item, $creneau, $responsable);
-
-            if($em->getRepository(TicketProspect::class)->findOneBy(array(
-                'civility' => $item->civility,
-                'firstname' => $item->firstname,
-                'lastname' => $item->lastname,
-                'email' => $item->email,
-                'birthday' => new DateTime($item->birthday)
-            ))){
-                array_push($alreadyRegistered, $item);
-            }else{
-                $em->persist($prospect);
-            }            
-        }
-
-        if(count($alreadyRegistered) != 0){
-            return $alreadyRegistered;
+            $em->persist($prospect);
         }
 
         $this->remaining->decreaseRemaining($day, $creneau, count($prospects));
 
         $em->flush();
         return $responsable->getId();
+    }
+
+    public function alreadyRegistered($prospects, $dayType)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $alreadyRegistered = [];
+
+        if($dayType == TicketDay::TYPE_NOUVEAU){
+            
+            foreach($prospects as $item){
+                if($em->getRepository(TicketProspect::class)->findOneBy(array(
+                    'civility' => $item->civility,
+                    'firstname' => $item->firstname,
+                    'lastname' => $item->lastname,
+                    'email' => $item->email,
+                    'birthday' => new DateTime($item->birthday)
+                ))){
+                    array_push($alreadyRegistered, $item);
+                } 
+            }
+           
+        }else{
+
+            foreach($prospects as $item){
+                if($em->getRepository(TicketProspect::class)->findOneBy(array( 'numAdh' => $item->numAdh ))){
+                    array_push($alreadyRegistered, $item);
+                } 
+            }
+
+        }
+
+        return $alreadyRegistered;
     }
 
    

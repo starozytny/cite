@@ -264,14 +264,9 @@ function Starter({onClick, days}) {
         <div className="starter">
             <div className="starter-card">
                 <div className="starter-infos">
+                    <p> Planning des journées d'inscriptions : </p>
 
-                    <p>
-                        Planning des journées d'inscriptions :
-                    </p>
-
-                    <div className="starter-dates">
-                        {items}
-                    </div>
+                    <div className="starter-dates">{items} </div>
 
                     <div className="alert alert-info"> A la journée d'inscription veuillez apporter votre <b>avis d'impôt sur le revenu</b> </div>
                     {remaining ? null : <div className="alert"> Il n'y a plus de place pour le moment. Vous serez placez en file d'attente. </div>}
