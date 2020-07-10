@@ -40,6 +40,11 @@
             width: 68%;
         }
     }
+    &.active-4{
+        &:after{
+            width: 98%;
+        }
+    }
 
     .item{
         position: relative;
@@ -51,7 +56,7 @@
             }
         }
 
-        &.full{
+        &.item-4.active, &.full{
             &:before, .circle{
                 background-color: $color0;
             }
@@ -109,6 +114,12 @@
                 width: 62%;
             }
         }
+        &.active-4{
+            &:after{
+                width: 88%;
+            }
+        }
+    
         .item{
             .numero{display: none;}
             .text{ display: block;}

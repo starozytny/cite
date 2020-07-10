@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-export function Step({id, classStep, title, body, specialFull=null, onClickNext, onClickPrev, nextText="Suivant", expired=false, code=1, children}) {
+export function Step({id, classStep, title, body, specialFull=null, onClickNext, onClickPrev, nextText="Suivant", expired=false, code=1, final=false, children}) {
 
     let classBtn = "btn btn-primary ";
     let disabled = "";
@@ -18,10 +18,11 @@ export function Step({id, classStep, title, body, specialFull=null, onClickNext,
             <div className="step-content">
                 {body}
             </div>
-            <div className={"step-actions " + specialFull}>
+            {final ? null : <div className={"step-actions " + specialFull}>
                 <button className="btn btn-back" onClick={onClickPrev}>Retour</button>
                 <button className={classBtn} disabled={disabled} onClick={onClickNext}>{nextText}</button>
-            </div>
+            </div>}
+            
         </div>
     )
 }

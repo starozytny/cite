@@ -5,6 +5,7 @@ import AjaxSend from '../../../components/functions/ajax_classique';
 import {StepProspects} from './Prospect';
 import {StepResponsable} from './Responsable';
 import {StepReview} from './Review';
+import {StepTicket} from './Ticket';
 
 export class Booking extends Component {
     constructor(props){
@@ -18,6 +19,7 @@ export class Booking extends Component {
             classStep1: '',
             classStep2: '',
             classStep3: '',
+            classStep4: '',
             prospects: [],
             responsable: '',
             messageInfo: '', // for review page
@@ -34,6 +36,7 @@ export class Booking extends Component {
         this.backToProspects = this.backToProspects.bind(this);
         this.toReviewStep = this.toReviewStep.bind(this);
         this.backToResponsable = this.backToResponsable.bind(this);
+        this.toTicketStep = this.toTicketStep.bind(this);
     }
 
     /**
@@ -120,7 +123,6 @@ export class Booking extends Component {
             }
         });
     }
-
     tick(){
         const {min, second} = this.state;
         
@@ -142,9 +144,13 @@ export class Booking extends Component {
         this.setState({ second: nSecond, min: nMin, timeExpired: expired });
     }
 
+    toTicketStep () {
+        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active'});
+    } 
+
     render () {
         const {day, days} = this.props;
-        const {classDot, classStart, classStep1, classStep2, classStep3, prospects, responsable, messageInfo, min, second, timeExpired, code} = this.state;
+        const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, messageInfo, min, second, timeExpired, code} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -152,12 +158,13 @@ export class Booking extends Component {
                 <Starter onClick={this.handleClickStart} days={days}/>
             </section>
             <section className="section-steps">
-                <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} />
+                <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
                 <div className="steps">
                     <StepProspects classStep={classStep1} prospects={prospects} toResponsableStep={this.toResponsableStep}/>
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
-                                timeExpired={timeExpired} min={min} second={second} code={code}/>
+                                timeExpired={timeExpired} min={min} second={second} code={code} toTicketStep={this.toTicketStep}/>
+                    <StepTicket classStep={classStep4} />
                 </div>
             </section>
         </>
@@ -173,7 +180,7 @@ function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
     ];
     let liste = items.map((elem, index) => {
         let numero = index + 1;
-        return <div className={"item " + elem.active } key={index}>
+        return <div className={"item item-" + numero + " " + elem.active } key={index}>
             <div className="circle"></div>
             <span className="numero">{numero}</span>
             <span className="text">{elem.text}</span>
