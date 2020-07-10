@@ -37,11 +37,16 @@ class BookingController extends AbstractController
      */
     public function index(OpenDay $openDay, SerializerInterface $serializer)
     {
+        // Open day
         $openDay->open();
+        // Delete user no confirme register
         $this->responsableService->deleteNonConfirmed();
         $em = $this->getDoctrine()->getManager();
         $days = $em->getRepository(TicketDay::class)->findAll();
         $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
+
+        // Waiting list to active
+        $openDay->passWaiting($day);
 
         if(!$day){
             return $this->render('root/app/pages/booking/index.html.twig');
@@ -76,11 +81,11 @@ class BookingController extends AbstractController
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered,
                                     'message' => 'Un ou des personnes souhaitant s\'inscrire ont <b>déjà été enregistré par une autre réservation</b>. <br/> <br/>
                                                 S\'il s\'agit d\'une nouvelle tentative de réservation, veuillez patienter l\'expiration de la précèdente. <br/>
-                                                Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.']);
+                                                Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.'
+            ]);
         }
 
         $messageWaiting ='Il n\'y a plus assez de place. En validant la réservation, vous serez <b>en file d\'attente</b>.';
-
         // Check place in each creneaux orderBy ASC horaire
         $i = 0; $len = count($creneaux);
         if($day->getRemaining() >= $nbProspects){ // suffisament de place pour le nombre de prospects
@@ -88,7 +93,6 @@ class BookingController extends AbstractController
             foreach($creneaux as $creneau){
 
                 $remaining = $creneau->getRemaining();
-    
                 if($remaining > 0){ // reste de la place
     
                     if($remaining >= $nbProspects){ // assez de place pour l'inscription
@@ -97,7 +101,8 @@ class BookingController extends AbstractController
                         $horaire = date_format($creneau->getHoraire(), 'H\hi');
                         return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $responsableId, 
                             'message' => 'Horaire de passage : <b>' . $horaire . '</b> <br/><br/>
-                                         Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.']);
+                                         Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.'
+                        ]);
                         
                     }else{ // pas assez de place pour l'inscription
                         // test le suivant sauf si last creneau
