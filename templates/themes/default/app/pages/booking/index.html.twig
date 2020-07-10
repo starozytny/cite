@@ -11,7 +11,9 @@
 
     <div class="ariane">
         <span><a href="{{ path('app_homepage') }}">Accueil</a></span>
-        <span class="active"><a href="{{ path('app_booking_index') }}">Réservation de ticket pour le {{ day.day | date('d/m/Y') }}</a></span>
+        <span class="active"><a href="{{ path('app_booking_index') }}">
+            Réservation {{ day is defined ? 'de ticket pour le' ~ day.day | date('d/m/Y') : null }}
+        </a></span>
     </div>
 
     {% if day is defined %}
