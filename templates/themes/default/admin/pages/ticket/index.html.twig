@@ -1,10 +1,6 @@
-{% extends 'themes/default/admin/layout/layout.html.twig' %}
+{% extends 'themes/default/admin/pages/ticket/template.html.twig' %}
 
 {% block title %}Gestion des journées{% endblock %}
-
-{% block stylesheets %}
-    {{ encore_entry_link_tags('default_admin_ticket') }}
-{% endblock %}
 
 {% block main_content %}
 
@@ -31,7 +27,7 @@
                         </div>
                         <div class="day-card-type">Journée des {{ day.typeString }}</div>
                         <div class="day-card-numbers">
-                            <div class="day-card-max">max : {{ day.max }}</div>
+                            <div class="day-card-max">Tickets max : {{ day.max }}</div>
                             <div class="day-card-remaining">reste : {{ day.remaining }}</div>
                         </div>
                         <div class="day-card-actions">
@@ -44,8 +40,4 @@
         </div>
 
     </section>
-{% endblock %}
-
-{% block javascripts %}
-    {{ encore_entry_script_tags('default_admin_ticket') }}
 {% endblock %}

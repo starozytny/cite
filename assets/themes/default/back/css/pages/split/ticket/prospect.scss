@@ -1,0 +1,164 @@
+@import "../../../vars/vars.scss";
+
+.prospects-header{
+    display: none;
+}
+
+.prospects-body{
+    & > .item{
+        position: relative;
+        @include boxsh();
+        background-color: $alpha;
+        padding: 15px 10px;
+        border-radius: 5px;
+
+        .name{
+            @include fontSemibold();
+
+            & > span{
+                text-transform: uppercase;
+            }
+        }
+        .birthday, .adresse{
+            display: none;
+        }
+
+        .email{
+            margin-bottom: 10px;
+        }
+        .telephone{
+            color: $color7;
+            font-size: 14px;
+        }
+        .status{
+            display: inline-block;
+            background-color: $color7;
+            color: $alpha;
+            padding: 5px 15px;
+            border-radius: 8px;
+            float: right;
+            margin-top: -25px;
+
+            &.status-1{
+                background-color: $color0;
+            }
+            &.status-2{
+                background-color: $color1;
+            }
+        }
+        .horaire{
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .col-1{
+        width: 40%;
+    }
+    .col-2{
+        width: 30%;
+    }
+    .col-4{
+        width: 10%;
+    }
+    .col-5{
+        width: 20%;
+    }
+    .prospects-header{
+        @include flex(row, center, flex-start);
+        padding: 0 10px 15px 10px;
+
+        & > *{
+            text-transform: uppercase;
+            color: $color6;
+        }
+        & > *:not(:last-child){
+            margin-right: 10px;
+        }
+
+        .col-3{
+            display: none;
+        }
+    }
+    .prospects-body{
+        & > .item{
+            @include flex(row, flex-start, flex-start);
+
+            & > *:not(:last-child){
+                margin-right: 10px;
+            }
+
+            .birthday{
+                display: block;
+                font-size: 14px;
+                color: $color7;
+            }
+            .email{
+                margin-bottom: 0;
+            }
+            .horaire{
+                margin-top: 0;
+            }
+            .status{
+                float: none;
+                margin-top: 0;
+            }
+        }
+    }
+}
+
+//                      __   _  ___ ____  _  _     __
+//                     | _| / |/ _ \___ \| || |   |_ |
+//    _____ _____ _____| |  | | | | |__) | || |_   | |_____ _____ _____
+//   |_____|_____|_____| |  | | |_| / __/|__   _|  | |_____|_____|_____|
+//                     | |  |_|\___/_____|  |_|    | |
+//                     |__|                       |__|
+@media (min-width: 1024px) {
+    .col-1{
+        width: 30%;
+    }
+    .col-2{
+        width: 30%;
+    }
+    .col-3{
+        width: 18%;
+    }
+    .col-4{
+        width: 10%;
+    }
+    .col-5{
+        width: 12%;
+    }
+    .prospects-header{
+        .col-3{
+            display: block;
+        }
+    }
+    .prospects-body{
+        & > .item{
+            .adresse{
+                display: block;
+                font-size: 14px;
+            }
+        }
+    }
+
+}
+
+//                      __   _ ____  ___   ___    __
+//                     | _| / |___ \( _ ) / _ \  |_ |
+//    _____ _____ _____| |  | | __) / _ \| | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | |/ __/ (_) | |_| |  | |_____|_____|_____|
+//                     | |  |_|_____\___/ \___/   | |
+//                     |__|                      |__|
+@media (min-width:1280px) {
+
+}

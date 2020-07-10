@@ -4,9 +4,11 @@ namespace App\Controller\Admin;
 
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
+use App\Entity\TicketProspect;
 use App\Service\OpenDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/admin/ticket", name="admin_ticket_")
@@ -30,14 +32,22 @@ class TicketController extends AbstractController
      /**
      * @Route("/jour/{ticketDay}/details", name="show")
      */
-    public function show(TicketDay $ticketDay)
+    public function show(TicketDay $ticketDay, SerializerInterface $serializer)
     {
         $em = $this->getDoctrine()->getManager();
         $slots = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $ticketDay), array('horaire' => 'ASC'));
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('creneau' => $slots));
+
+        $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'max', 'remaining']]);
+        $prospects = $serializer->serialize($prospects, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 'responsable' => ['id'], 'creneau' => ['id', 'horaireString']
+        ]]);
 
         return $this->render('root/admin/pages/ticket/show.html.twig', [
             'day' => $ticketDay,
-            'slots' => $slots
+            'slots' => $slots,
+            'prospects' => $prospects
         ]);
     }
 }

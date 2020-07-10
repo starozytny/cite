@@ -253,6 +253,20 @@ class TicketProspect
         return $this;
     }
 
+    public function getStatusString(){
+        switch($this->getStatus()){
+            case self::ST_ATTENTE:
+                return "Attente";
+                break;
+            case self::ST_CONFIRMED:
+                return "Confirmé";
+                break;
+            case self::ST_CONFIRMED:
+                return "Inscrit";
+                break;
+        }
+    }
+
     public function getCreateAt(): ?\DateTimeInterface
     {
         return $this->createAt;

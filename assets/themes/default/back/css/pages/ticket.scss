@@ -1,5 +1,7 @@
 @import '../vars/vars.scss';
 
+@import './split/ticket/prospect.scss';
+
 .days-cards, .slots-cards{
     @include flex(row, stretch, flex-start);
     flex-wrap: wrap;

@@ -103,6 +103,10 @@ class TicketCreneau
         return $this;
     }
 
+    public function getHoraireString(){
+        return date_format($this->getHoraire(), 'H\hi');
+    }
+
     /**
      * @return Collection|TicketProspect[]
      */

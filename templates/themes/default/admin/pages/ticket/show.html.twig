@@ -1,10 +1,6 @@
-{% extends 'themes/default/admin/layout/layout.html.twig' %}
+{% extends 'themes/default/admin/pages/ticket/template.html.twig' %}
 
 {% block title %}Détails de la journée du {{ day.day | date('d-m-Y') }}{% endblock %}
-
-{% block stylesheets %}
-    {{ encore_entry_link_tags('default_admin_ticket') }}
-{% endblock %}
 
 {% block main_content %}
 
@@ -21,24 +17,22 @@
             </div>
         </div>
 
-        <div class="slots">
-            <div class="slots-cards">
-                {% for slot in slots %}
-                    <div class="slot-card">
-                        <div class="slot-card-date">
-                            <div>{{ slot.horaire }} </div>
-                        </div>
-                        <div class="slot-card-numbers">
-                            <div class="slot-card-max">max : {{ slot.max }}</div>
-                            <div class="slot-card-remaining">reste : {{ slot.remaining }}</div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-{% endblock %}
+        <div id="details" data-slots="{{ slots | json_encode() }}" data-prospects="{{ prospects | json_encode() }}"></div>
 
-{% block javascripts %}
-    {{ encore_entry_script_tags('default_admin_ticket') }}
+        {#
+        <div class="slots-cards">
+            {% for slot in slots %}
+                <div class="slot-card">
+                    <div class="slot-card-date">
+                        <div>{{ slot.horaire | date('H \\h i')}} </div>
+                    </div>
+                    <div class="slot-card-numbers">
+                        <div class="slot-card-max">place max : {{ slot.max }}</div>
+                        <div class="slot-card-remaining">reste : {{ slot.remaining }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        #}
+    </section>
 {% endblock %}
