@@ -228,9 +228,8 @@ class Prospect extends Component {
             ])
 
             if(!validateAdh.code){
-                v2 = {...validate.errors, ...validateAdh.errors};
                 validate.code = false;
-                validate.errors = v2;
+                validate.errors = {...validate.errors, ...validateAdh.errors};
             }
         }
 
@@ -269,7 +268,7 @@ function ProspectCard({id, registered, valide, firstname, lastname, civility, bi
     return <div className={"step-card step-prospect " + registered}>
 
         <span className="title"><span className="icon-infos"></span></span>
-
+        <IsAdh id={id} isAdh={isAdh} numAdh={numAdh} onChange={onChange}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
         <div className="line line-2">
             <Input type="text" identifiant={"firstname-" + id} value={firstname.value} onChange={onChange} error={firstname.error}>Prénom</Input>
@@ -288,8 +287,6 @@ function ProspectCard({id, registered, valide, firstname, lastname, civility, bi
             <Input type="number" identifiant={"cp-" + id} value={cp.value} onChange={onChange} error={cp.error}>Code postal</Input>
             <Input type="text" identifiant={"city-" + id} value={city.value} onChange={onChange} error={city.error}>Ville</Input>
         </div>
-        
-        <IsAdh id={id} isAdh={isAdh} numAdh={numAdh} onChange={onChange}/>
 
         <div className="actions">
             <button className="delete" onClick={onDelete}>Supprimer</button>
