@@ -6,6 +6,7 @@ use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
+use App\Service\Mailer;
 use App\Service\OpenDay;
 use App\Service\Remaining;
 use App\Service\ResponsableService;
@@ -88,8 +89,9 @@ class BookingController extends AbstractController
                                          S\'il s\'agit d\'une nouvelle tentative de réservation, veuillez patienter l\'expiration de la précèdente. <br/>
                                          Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.']);
                         }
-                        return new JsonResponse(['code' => 1, 'horaire' => date_format($creneau->getHoraire(), 'H\hi'), 'responsableId' => $retour, 
-                            'message' => 'Horaire de passage : <b>' . date_format($creneau->getHoraire(), 'H\hi') . '</b> <br/><br/>
+                        $horaire = date_format($creneau->getHoraire(), 'H\hi');
+                        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $retour, 
+                            'message' => 'Horaire de passage : <b>' . $horaire . '</b> <br/><br/>
                                          Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.']);
                         
                     }else{ // pas assez de place pour l'inscription
@@ -118,16 +120,6 @@ class BookingController extends AbstractController
                 'message' => 'Plus de place pour cette journée.'
             ]);
         }
-        
-        // persist & flush data
-        // (set un timer pour supprimer l'inscription)
-        // ------- [sinon]
-        // message informatif de file d'attente
-
-
-        return new JsonResponse([
-            'code' => 1
-        ]);
     }
 
     /**
@@ -152,7 +144,7 @@ class BookingController extends AbstractController
     /**
      * @Route("/confirmed/book/{id}/add", options={"expose"=true}, name="confirmed_book_add")
      */
-    public function book(TicketDay $id, TicketGenerator $ticketGenerator, Request $request)
+    public function book(TicketDay $id, TicketGenerator $ticketGenerator, Mailer $mailer, Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -176,7 +168,19 @@ class BookingController extends AbstractController
         $prospects = $responsable->getProspects();
         foreach ($prospects as $prospect) {
             $prospect->setStatus(TicketProspect::ST_CONFIRMED);
+            $horaire = $prospect->getCreneau()->getHoraire();
             $em->persist($prospect);
+        }
+
+        // Send mail     
+        $title = 'Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
+        if($mailer->sendMail(
+            $title, $title,
+            'root/app/email/booking/index.html.twig',
+            ['ticket' => $ticket, 'horaire' => $horaire, 'day' => $id->getDay()],
+            $responsable->getEmail()
+        ) != true){
+            return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
         }
 
         $em->persist($responsable); $em->flush();
