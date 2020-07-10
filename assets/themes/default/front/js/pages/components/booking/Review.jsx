@@ -69,7 +69,9 @@ export class StepReview extends Component {
                 <div>Inscription pour la journée du : <b>{day}</b></div>
                 {ReactHtmlParser(messageInfo)}
                 { code == 1 ? <div>Cette réservation est sauvegardée pendant {timeExpired ? <b>Expirée</b> : <b>{min}min {second}s</b>}. <br/> <br/>
-                                <b className="txt-primary">Veuillez valider la réservation</b> pour obtenir votre ticket et bloquer définitivement cette plage horaire.</div> : null }
+                                <b className="txt-primary">Veuillez valider la réservation</b> 
+                                pour obtenir votre ticket et bloquer définitivement cette plage horaire. 
+                                (bouton en bas a droite de votre écran)</div> : null }
             </div>
         </Step>
     }

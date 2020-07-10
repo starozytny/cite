@@ -11,10 +11,21 @@ export class StepTicket extends Component {
         const {classStep, day, horaire, prospects, code, finalMessage, ticket} = this.props;
 
         let body = <>
-            <div>{finalMessage}</div>
-            <div>
-                TICKET : <b>{ticket}</b>
+            <div className="final-content">
+                <div>{finalMessage}</div>
+                <div className="alert alert-info ticket">
+                    <div>
+                        TICKET : <b>{ticket}</b>
+                    </div>
+                    <div>
+                        Pour le {day} à {horaire}.
+                    </div>
+                </div>
+                <div className="alert">
+                    <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
+                </div>
             </div>
+            
         </>
 
         let textRegular = <>

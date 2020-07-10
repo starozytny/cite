@@ -84,12 +84,12 @@ class BookingController extends AbstractController
                         $retour = $this->createResponsableAndProspects($responsable, $prospects, $creneau, $day);
                         if(is_array($retour)){
                             return new JsonResponse(['code' => 2, 'duplicated' => $retour,
-                            'message' => 'Un ou des personnes à inscrire ont déjà été enregistré. <br/> 
-                                         S\'il s\'agit d\'une nouvelle tentative, veuillez patienter l\'expiration de la précèdente réservation. <br/>
-                                         Le temps de sauvegarde est de 5 minutes à partir de cette page.']);
+                            'message' => 'Un ou des personnes souhaitant s\'inscrire a déjà été enregistré par une autre réservation. <br/> <br/>
+                                         S\'il s\'agit d\'une nouvelle tentative de réservation, veuillez patienter l\'expiration de la précèdente. <br/>
+                                         Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.']);
                         }
                         return new JsonResponse(['code' => 1, 'horaire' => date_format($creneau->getHoraire(), 'H\hi'), 'responsableId' => $retour, 
-                            'message' => 'Horaire de passage : <b>' . date_format($creneau->getHoraire(), 'H\hi') . '</b> <br/>
+                            'message' => 'Horaire de passage : <b>' . date_format($creneau->getHoraire(), 'H\hi') . '</b> <br/><br/>
                                          Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.']);
                         
                     }else{ // pas assez de place pour l'inscription
@@ -180,7 +180,8 @@ class BookingController extends AbstractController
         }
 
         $em->persist($responsable); $em->flush();
-        return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'message' => 'Réservation réussie.']);
+        return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse
+            du responsable : ' . $responsable->getEmail()]);
     }
 
     /**

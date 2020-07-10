@@ -14,6 +14,7 @@
 body {
     background-color: $color5;
     @include fontRegular();
+    line-height: 1.37;
 }
 
 h1, h2, h3, h4, p{
@@ -33,7 +34,9 @@ main{
 .txt-danger{
     color: $error;
 }
-
 .txt-primary{
     color: $color0;
+}
+.txt-info{
+    color: $info;
 }

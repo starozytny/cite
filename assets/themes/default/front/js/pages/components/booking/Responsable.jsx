@@ -149,6 +149,9 @@ export class StepResponsable extends Component {
                             <Input type="text" auto="none" identifiant={"lastname"} value={lastname.value} onChange={this.handleChange} error={lastname.error}>Nom</Input>
                         </div>
                         <div className="line line-2">
+                            <p className="txt-info">
+                                C'est à cette adresse e-mail que le <b>ticket</b> sera envoyé.
+                            </p>
                             <Input type="text" auto="none" identifiant={"email"} value={email.value} onChange={this.handleChange} error={email.error}>Adresse e-mail</Input>
                         </div>
                         <div className="line line-2">
