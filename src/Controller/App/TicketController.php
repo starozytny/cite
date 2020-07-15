@@ -18,7 +18,7 @@ class TicketController extends AbstractController
 {
 
     /**
-     * @Route("/responsable/{id}-{ticket}-{ticketDay}", name="index")
+     * @Route("/responsable/{id}-{ticket}-{ticketDay}", options={"expose"=true}, name="index")
      */
     public function getTicket(TicketResponsable $id, $ticket, TicketDay $ticketDay)
     {
