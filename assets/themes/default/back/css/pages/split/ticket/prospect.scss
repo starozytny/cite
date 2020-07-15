@@ -39,11 +39,19 @@
             float: right;
             margin-top: -25px;
 
+            &:hover{
+                opacity: 0.8;
+            }
+
             &.status-1{
                 background-color: $color0;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
             }
             &.status-2{
                 background-color: $color1;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
             }
         }
         .horaire{
@@ -91,6 +99,7 @@
     .prospects-body{
         & > .item{
             @include flex(row, flex-start, flex-start);
+            margin-bottom: 10px;
 
             & > *:not(:last-child){
                 margin-right: 10px;

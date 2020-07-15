@@ -29,9 +29,9 @@ class TicketController extends AbstractController
             'days' => $days
         ]);
     }
-     /**
-     * @Route("/jour/{ticketDay}/details", name="show")
-     */
+    /**
+    * @Route("/jour/{ticketDay}/details", name="show")
+    */
     public function show(TicketDay $ticketDay, SerializerInterface $serializer)
     {
         $em = $this->getDoctrine()->getManager();
@@ -49,5 +49,12 @@ class TicketController extends AbstractController
             'slots' => $slots,
             'prospects' => $prospects
         ]);
+    }
+
+    /**
+     * @Route("/prospect/{id}/update/status", name="prospect_update_status")
+     */
+    public function changeStatus(TicketProspect $id)
+    {
     }
 }

@@ -7,6 +7,14 @@ export class Details extends Component {
         this.state = {
             prospects: JSON.parse(JSON.parse(this.props.prospects))
         }
+
+        this.handleChangeStatus = this.handleChangeStatus.bind(this);
+    }
+
+    handleChangeStatus (e) {
+        let id = parseInt(e.currentTarget.dataset.id);
+
+        // this.setState({})
     }
 
     render () {
@@ -15,7 +23,7 @@ export class Details extends Component {
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
                 <div className="col-1">
-                    {elem.numAdh != null ? <div>elem.numAdh</div> : null}
+                    {elem.numAdh != null ? <div>#{elem.numAdh}</div> : null}
                     <div className="name">{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
                     <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')}</div>
                 </div>
@@ -27,14 +35,14 @@ export class Details extends Component {
                 <div className="col-3">
                     <div className="adresse">
                         <div>{elem.adr}, </div>
-                        <div> {elem.cp} {elem.city}</div>
+                        <div>{elem.cp} {elem.city}</div>
                     </div>
                 </div>
                 <div className="col-4">
                     <div className="horaire">{elem.creneau.horaireString}</div>
                 </div>
                 <div className="col-5">
-                    <div className={"status status-" + elem.status}>{elem.statusString}</div>
+                    <div className={"status status-" + elem.status} data-id={elem.id} onClick={elem.status == 1 || elem.status == 2 ? this.handleChangeStatus : null}>{elem.statusString}</div>
                 </div>
             </div>
         })
