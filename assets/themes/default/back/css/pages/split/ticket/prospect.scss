@@ -58,6 +58,21 @@
             margin-top: 20px;
             font-size: 14px;
         }
+        .btn-delete{
+            width: 100%;
+            margin-top: 30px;
+            border: none;
+            background-color: transparent;
+            padding: 5px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+
+            &:hover{
+                background-color: $errorBg;
+                border-radius: 8px;
+                color: $color5;
+            }
+        }
     }
 }
 
@@ -75,10 +90,13 @@
         width: 30%;
     }
     .col-4{
-        width: 10%;
+        display: none;
     }
     .col-5{
-        width: 20%;
+        width: 15%;
+    }
+    .col-6{
+        width: 15%;
     }
     .prospects-header{
         @include flex(row, center, flex-start);
@@ -120,6 +138,9 @@
                 float: none;
                 margin-top: 0;
             }
+            .btn-delete{
+                margin-top: 2px;
+            }
         }
     }
 }
@@ -132,18 +153,22 @@
 //                     |__|                       |__|
 @media (min-width: 1024px) {
     .col-1{
-        width: 30%;
+        width: 22%;
     }
     .col-2{
-        width: 30%;
+        width: 22%;
     }
     .col-3{
-        width: 18%;
+        width: 16%;
     }
     .col-4{
+        display: block;
         width: 10%;
     }
     .col-5{
+        width: 12%;
+    }
+    .col-6{
         width: 12%;
     }
     .prospects-header{

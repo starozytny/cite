@@ -44,6 +44,9 @@ export class Details extends Component {
                 <div className="col-5">
                     <div className={"status status-" + elem.status} data-id={elem.id} onClick={elem.status == 1 || elem.status == 2 ? this.handleChangeStatus : null}>{elem.statusString}</div>
                 </div>
+                <div className="col-6">
+                    <button className="btn-delete">Supprimer</button>
+                </div>
             </div>
         })
 
@@ -54,6 +57,7 @@ export class Details extends Component {
                 <div className="col-3">Adresse</div>
                 <div className="col-4">Horaire</div>
                 <div className="col-5">Status</div>
+                <div className="col-6"></div>
             </div>
             <div className="prospects-body">
                 {items}

@@ -18,21 +18,5 @@
         </div>
 
         <div id="details" data-slots="{{ slots | json_encode() }}" data-prospects="{{ prospects | json_encode() }}"></div>
-
-        {#
-        <div class="slots-cards">
-            {% for slot in slots %}
-                <div class="slot-card">
-                    <div class="slot-card-date">
-                        <div>{{ slot.horaire | date('H \\h i')}} </div>
-                    </div>
-                    <div class="slot-card-numbers">
-                        <div class="slot-card-max">place max : {{ slot.max }}</div>
-                        <div class="slot-card-remaining">reste : {{ slot.remaining }}</div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        #}
     </section>
 {% endblock %}
