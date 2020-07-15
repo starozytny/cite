@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import axios from 'axios/dist/axios';
+import Routing from '../../../../../../../../public/bundles/fosjsrouting/js/router.min.js';
+import AjaxSend from '../../../components/functions/ajax_classique';
 
 export class Details extends Component {
     constructor(props){
@@ -9,12 +12,35 @@ export class Details extends Component {
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     handleChangeStatus (e) {
         let id = parseInt(e.currentTarget.dataset.id);
 
         // this.setState({})
+    }
+
+    handleDelete (e) {
+        let id = e.currentTarget.dataset.id;
+
+        console.log(this.state)
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('admin_ticket_prospect_delete', { 'id' : id })
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            
+            let arr = self.state.prospects.filter((elem, index) => {
+                return parseInt(elem.id) != parseInt(id)
+            })
+
+            self.setState({prospects: arr});
+        });
+
     }
 
     render () {
@@ -45,7 +71,7 @@ export class Details extends Component {
                     <div className={"status status-" + elem.status} data-id={elem.id} onClick={elem.status == 1 || elem.status == 2 ? this.handleChangeStatus : null}>{elem.statusString}</div>
                 </div>
                 <div className="col-6">
-                    <button className="btn-delete">Supprimer</button>
+                    <button className="btn-delete" data-id={elem.id} onClick={this.handleDelete}>Supprimer</button>
                 </div>
             </div>
         })

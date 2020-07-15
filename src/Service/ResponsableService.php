@@ -39,6 +39,7 @@ class ResponsableService
     {
         $prospects = $responsable->getProspects();
         $nbProspects = count($prospects);
+        dump($nbProspects);
         foreach ($prospects as $prospect){
             if(!$responsable->getIsWaiting()){
                 $creneau = $prospect->getCreneau();

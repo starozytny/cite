@@ -1,7 +1,7 @@
 import '../../css/pages/ticket.scss';
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Details} from './components/ticket/details.jsx';
+import {Details} from './components/ticket/Details.jsx';
 
 let details = document.getElementById("details");
 if(details){

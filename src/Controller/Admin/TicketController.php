@@ -5,9 +5,13 @@ namespace App\Controller\Admin;
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketProspect;
+use App\Entity\TicketResponsable;
 use App\Form\TicketDayType;
 use App\Service\OpenDay;
+use App\Service\Remaining;
+use App\Service\ResponsableService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -83,5 +87,32 @@ class TicketController extends AbstractController
      */
     public function changeStatus(TicketProspect $id)
     {
+    }
+
+    /**
+     * @Route("/prospect/{id}/delete", options={"expose"=true}, name="prospect_delete")
+     */
+    public function deleteProspect(TicketProspect $id, Remaining $remaining, ResponsableService $responsableService)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $prospect = $id;
+        $responsable = $prospect->getResponsable();
+        $prospects = $responsable->getProspects();
+        $nbProspects = count($prospects);
+        if($nbProspects == 1){
+            $responsableService->deleteResponsable($responsable);
+        }else{
+            $creneau = $prospect->getCreneau();
+            $day = $creneau->getTicketDay();
+            $em->remove($prospect);
+
+            if(!$responsable->getIsWaiting()){
+                $remaining->increaseRemaining($day, $creneau, 1);
+            }
+        }
+
+        $em->flush();
+        return new JsonResponse(['code' => 1]);
     }
 }

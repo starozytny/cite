@@ -13,6 +13,8 @@
 	{% block stylesheets %}{% endblock %}
     </head>
     <body>
+		<div id="loader"><span>Chargement...</span></div>
+		
 		{% block body %}{% endblock %}
 	
         {{ encore_entry_script_tags('default_admin') }}
