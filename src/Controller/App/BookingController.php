@@ -193,8 +193,7 @@ class BookingController extends AbstractController
             $title = '[FILE ATTENTE] - Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
             $html = 'root/app/email/booking/index.html.twig';
             $params =  ['day' => $id->getDay()];
-        }
-       
+        }      
 
         // Send mail     
         if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail() ) != true){
