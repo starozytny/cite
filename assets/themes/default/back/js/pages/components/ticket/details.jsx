@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios/dist/axios';
 import Routing from '../../../../../../../../public/bundles/fosjsrouting/js/router.min.js';
 import AjaxSend from '../../../components/functions/ajax_classique';
+import Swal from 'sweetalert2';
 
 export class Details extends Component {
     constructor(props){
@@ -24,23 +25,38 @@ export class Details extends Component {
     handleDelete (e) {
         let id = e.currentTarget.dataset.id;
 
-        console.log(this.state)
+        Swal.fire({
+            title: 'Etes-vous sur ?',
+            text: "La suppression est irréversible.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, je supprime'
+          }).then((result) => {
+            if (result.value) {
+                AjaxSend.loader(true);
+                let self = this;
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('admin_ticket_prospect_delete', { 'id' : id })
+                }).then(function (response) {
+                    let data = response.data; let code = data.code; AjaxSend.loader(false);
+                    
+                    let arr = self.state.prospects.filter((elem, index) => {
+                        return parseInt(elem.id) != parseInt(id)
+                    })
 
-        AjaxSend.loader(true);
-        let self = this;
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('admin_ticket_prospect_delete', { 'id' : id })
-        }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
-            
-            let arr = self.state.prospects.filter((elem, index) => {
-                return parseInt(elem.id) != parseInt(id)
-            })
+                    self.setState({prospects: arr});
 
-            self.setState({prospects: arr});
-        });
-
+                    Swal.fire(
+                        'Supprimé !',
+                        'Cet élément a été supprimé.',
+                        'success'
+                    );
+                });
+            }
+          })
     }
 
     render () {

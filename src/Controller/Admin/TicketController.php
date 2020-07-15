@@ -100,6 +100,7 @@ class TicketController extends AbstractController
         $responsable = $prospect->getResponsable();
         $prospects = $responsable->getProspects();
         $nbProspects = count($prospects);
+        
         if($nbProspects == 1){
             $responsableService->deleteResponsable($responsable);
         }else{
