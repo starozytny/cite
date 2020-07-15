@@ -1,0 +1,3 @@
+<label for="{{ formInput.vars.id }}">{{ formInput.vars.label | raw }}</label>
+{{ form_widget(formInput) }}
+<div class="alert alert-danger error {% if not formInput.vars.valid %}active{% endif %}"><span class="icon-info"></span>{{ form_errors(formInput) | raw }}</div>

@@ -1,0 +1,29 @@
+{% extends 'themes/default/admin/pages/ticket/template.html.twig' %}
+
+{% block title %}Editer une journée{% endblock %}
+
+{% block main_content %}
+
+    <section class="title">
+        <h1>Editer une journée</h1>
+    </section>
+
+    <section class="content">
+        <div class="toolbar"></div>
+
+        <div class="days">
+            <div class="days-cards">
+                {{ form_start(form) }}
+                    <div class="form-group">
+                        {% include 'themes/default/admin/components/form/display_input.html.twig' with {'formInput': form.max} %}
+                    </div>
+                    <div class="form-group">
+                        {% include 'themes/default/admin/components/form/display_input.html.twig' with {'formInput': form.remaining} %}
+                    </div>
+                    <button type="submit" class="btn">Modifier</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+    </section>
+{% endblock %}

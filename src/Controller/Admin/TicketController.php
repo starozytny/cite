@@ -5,8 +5,10 @@ namespace App\Controller\Admin;
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketProspect;
+use App\Form\TicketDayType;
 use App\Service\OpenDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -29,6 +31,7 @@ class TicketController extends AbstractController
             'days' => $days
         ]);
     }
+
     /**
     * @Route("/jour/{ticketDay}/details", name="show")
     */
@@ -48,6 +51,30 @@ class TicketController extends AbstractController
             'day' => $ticketDay,
             'slots' => $slots,
             'prospects' => $prospects
+        ]);
+    }
+
+    /**
+    * @Route("/jour/{ticketDay}/editer", name="edit")
+    */
+    public function edit(Request $request, TicketDay $ticketDay)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $form = $this->createForm(TicketDayType::class, $ticketDay);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $day = $form->getData();
+
+            $em->persist($day);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_ticket_index');
+        }
+
+        return $this->render('root/admin/pages/ticket/edit.html.twig', [
+            'day' => $ticketDay,
+            'form' => $form->createView()
         ]);
     }
 
