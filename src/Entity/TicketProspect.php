@@ -265,7 +265,7 @@ class TicketProspect
             case self::ST_CONFIRMED:
                 return "Confirmé";
                 break;
-            case self::ST_CONFIRMED:
+            case self::ST_REGISTERED:
                 return "Inscrit";
                 break;
         }

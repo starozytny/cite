@@ -83,10 +83,31 @@ class TicketController extends AbstractController
     }
 
     /**
-     * @Route("/prospect/{id}/update/status", name="prospect_update_status")
+     * @Route("/prospect/{id}/update/status", options={"expose"=true}, name="prospect_update_status")
      */
     public function changeStatus(TicketProspect $id)
     {
+        $em = $this->getDoctrine()->getManager();
+
+        $prospect = $id;
+        if(!$prospect){
+            return new JsonResponse(['code' => 0]);
+        }
+
+        if($prospect->getStatus() == TicketProspect::ST_CONFIRMED){
+            $prospect->setStatus(TicketProspect::ST_REGISTERED);
+            $status = TicketProspect::ST_REGISTERED;
+            $statusString = "Inscrit";
+        }else{
+            $prospect->setStatus(TicketProspect::ST_CONFIRMED);
+            $status = TicketProspect::ST_CONFIRMED;
+            $statusString = "Confirmé";
+        }
+
+        $em->persist($prospect);
+        $em->flush();
+
+        return new JsonResponse(['code' => 1, 'status' => $status, 'statusString' => $statusString]);
     }
 
     /**
@@ -97,10 +118,13 @@ class TicketController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         $prospect = $id;
+        if(!$prospect){
+            return new JsonResponse(['code' => 0]);
+        }
         $responsable = $prospect->getResponsable();
         $prospects = $responsable->getProspects();
         $nbProspects = count($prospects);
-        
+
         if($nbProspects == 1){
             $responsableService->deleteResponsable($responsable);
         }else{

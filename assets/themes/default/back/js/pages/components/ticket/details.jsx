@@ -19,7 +19,25 @@ export class Details extends Component {
     handleChangeStatus (e) {
         let id = parseInt(e.currentTarget.dataset.id);
 
-        // this.setState({})
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('admin_ticket_prospect_update_status', { 'id' : id })
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            
+            let arr = [];
+            self.state.prospects.forEach((elem) => {
+                if(parseInt(elem.id) === parseInt(id)){
+                    elem.status = data.status;
+                    elem.statusString = data.statusString;
+                }
+                arr.push(elem);
+            })
+
+            self.setState({prospects: arr});
+        });
     }
 
     handleDelete (e) {
