@@ -48,7 +48,40 @@ export class Booking extends Component {
     * Fonction pour commencer le processus de demande de ticket.
     */
     handleClickStart (e) {
-        this.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active'})
+        this.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active'});
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }), 
+            data: { prospects: prospects, responsable: data } 
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            
+            if(code === 1){
+
+                self.setState({ code: 1, messageInfo: data.message, horaire: data.horaire, responsableId: data.responsableId, timer: setInterval(() => self.tick(), 1000)});
+                
+            }else if(code === 2){ // some already registered
+
+                let newProspects = [];
+                prospects.forEach(element => {
+                    let newProspect = element;
+                    data.duplicated.forEach(duplicate => {
+                        if(JSON.stringify(element) === JSON.stringify(duplicate)){
+                            duplicate.registered = true
+                            newProspect = duplicate;
+                        }
+                    });
+                    newProspects.push(newProspect);
+                });
+                self.setState({ code: 2, prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
+
+            }else{
+                self.setState({ code: 0, responsableId: data.responsableId, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
+            }
+        });
     }
 
     /**

@@ -61,6 +61,37 @@ class BookingController extends AbstractController
     }
 
     /**
+     * @Route("/tmp/book/start", options={"expose"=true}, name="tmp_book_start")
+     */
+    public function start(TicketDay $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $day = $id;
+        $creneaux = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $id), array('horaire' => 'ASC'));
+    
+        $i = 0; $len = count($creneaux);
+        if($day->getRemaining() > 0 ){ // il reste des tickets
+            
+            foreach($creneaux as $creneau){
+                $remaining = $creneau->getRemaining();
+                if($remaining > 0){ // reste de la place dans ce creneau
+                    $responsable = $this->responsableService->createTmpResponsable();
+                    return new JsonResponse(['code' => 1, 'creneau' => $creneau->getId(), 'responsableId' => $responsable->getId()]);    
+                }else{ // pas de place -> test le suivant sauf si last creneau
+                    if($i == $len - 1) {
+                        return new JsonResponse([ 'code' => 0, 'message' => "il n\'y a plus de place."]);
+                    }
+                }
+            }
+        }else{
+            return new JsonResponse([ 'code' => 0, 'message' => "il n\'y a plus de place."]);
+        }
+    }
+
+
+
+    /**
      * @Route("/tmp/book/{id}/add", options={"expose"=true}, name="tmp_book_add")
      */
     public function tmpBook(TicketDay $id, Request $request)

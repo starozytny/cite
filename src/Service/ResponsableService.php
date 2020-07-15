@@ -75,6 +75,25 @@ class ResponsableService
         ;
     }
 
+    /**
+     * Create TMP Responsable
+     */
+    private function createTmpResponsable()
+    {
+        return (new TicketResponsable())
+            ->setFirstname('')
+            ->setLastname('')
+            ->setCivility('')
+            ->setEmail(time())
+            ->setPhoneDomicile(null)
+            ->setPhoneMobile(null)
+            ->setAdr('')
+            ->setComplement(null)
+            ->setCp('')
+            ->setCity('')
+        ;
+    }
+
     private function setToNullIfEmpty($item){
         return $item != "" ? $item : null;
     }
