@@ -44,7 +44,7 @@ class AdminCreateTicketsCommand extends Command
 
         $days = array(
             [
-                'type' => TicketDay::TYPE_ANCIEN,
+                'type' => TicketDay::TYPE_NOUVEAU,
                 'day' => new DateTime('2020-07-16'),
                 'max' => 100,
                 'remaining' => 100,

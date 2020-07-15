@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div class="main">
+    <h1>JOURNEE DES {{ day.typeString | upper }} du {{ day.day | date('d-m-Y') }}</h1>
+
+    <table class="table lieu">
+        <tbody>
+          <tr>
+            <td class="lieu-horaire">Horaire de passage : {{ creneau.horaire | date('H\\hi') }}</td>
+            <td class="lieu-adresse">
+                <div>CITE DE LA MUSIQUE</div>
+                <div>4 rue Bernard de Bois, 13001 Marseille</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="table main-table">
+        <tbody>
+          <tr>
+            <td>
+                <table class="table infos-inscrits">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div>RESPONSABLE : {{ responsable.firstname | capitalize }} {{ responsable.lastname | upper }}</div> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="liste-personnes">Liste des personnes à inscrire : </div>
+                            <td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ol>
+                                    {% for prospect in prospects %}
+                                            <li>{{ prospect.firstname | capitalize }} {{ prospect.lastname | upper }} - {{ prospect.birthday | date('d/m/Y') }}</li>
+                                    {% endfor %}
+                                </ol>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>                   
+            </td>
+            <td>
+                <table class="table infos-inscrits">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div>NUMERO DU TICKET : <b class="numero-ticket">{{ responsable.ticket }}</b></div> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="barcode">
+                                    <img src="{{ "data:image/png;base64," ~ image }}">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+h1{
+    font-weight: bold;
+    margin-bottom: 125px;
+}
+
+.lieu{
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    padding: 25px 0;
+}
+
+.lieu-horaire{
+    font-size: 20px;
+    border-right: 1px solid black;
+}
+
+.lieu td{
+    padding: 25px;
+}
+
+.liste-personnes{
+    display: block;
+}
+
+.infos-inscrits td{
+    padding: 10px;
+}
+
+.main-table .infos-inscrits td:nth-child(1){
+    padding-right: 25px;
+    border-right: 1px solid
+}
+
+b{
+    font-weight: bold;
+}
+
+.numero-ticket{
+    font-size: 24px;
+}
