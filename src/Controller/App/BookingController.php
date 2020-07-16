@@ -74,7 +74,7 @@ class BookingController extends AbstractController
                 $remaining = $creneau->getRemaining();
                 if($remaining > 0){ // reste de la place dans ce creneau
 
-                    $responsable = $this->responsableService->createTmpResponsable($creneau);
+                    $responsable = $this->responsableService->createTmpResponsable($creneau, $day);
                     $this->remaining->decreaseRemaining($day, $creneau);
 
                     $em->persist($responsable); $em->flush();
@@ -149,7 +149,7 @@ class BookingController extends AbstractController
         $prospects = $data->prospects;
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
-        $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau);
+        $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau, $id);
         if($responsable != false){
             do{
                 $ticket = $ticketGenerator->generate($responsable);
@@ -191,7 +191,7 @@ class BookingController extends AbstractController
      * Create Responsable and Prospects and check if At least one prospect is not exist else
      * decrease remaining creneau and day 
      */
-    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, $waiting=false)
+    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, $day, $waiting=false)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -202,7 +202,7 @@ class BookingController extends AbstractController
         $em->persist($responsable);
 
         foreach($prospects as $item){
-            $prospect = $this->createProspect($item, $creneau, $responsable, $waiting);
+            $prospect = $this->createProspect($item, $day, $creneau, $responsable, $waiting);
             $em->persist($prospect);
         }     
 
@@ -246,7 +246,7 @@ class BookingController extends AbstractController
     /**
      * Create Ticket Prospect
      */
-    private function createProspect($item, $creneau, $responsable, $waiting=false)
+    private function createProspect($item, $day, $creneau, $responsable, $waiting=false)
     {
         $pro = (new TicketProspect())
             ->setFirstname($item->firstname)
@@ -262,6 +262,7 @@ class BookingController extends AbstractController
             ->setNumAdh($this->setToNullIfEmpty($item->numAdh))
             ->setResponsable($responsable)
             ->setCreneau($creneau)
+            ->setDay($day)
         ;
         if($waiting){
             $pro->setStatus(TicketProspect::ST_WAITING);

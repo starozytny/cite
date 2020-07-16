@@ -6,6 +6,7 @@
 parameters:
     barcode_directory: '%kernel.project_dir%/barcode'
     public_directory: '%kernel.project_dir%'
+    export_directory: '%kernel.project_dir%/export'
 
 services:
     # default configuration for services in *this* file
@@ -29,6 +30,10 @@ services:
         arguments:
             $barcodeDirectory: '%barcode_directory%'
             $publicDirectory: '%public_directory%'
+
+    App\Service\Export:
+        arguments:
+            $exportDirectory: '%export_directory%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

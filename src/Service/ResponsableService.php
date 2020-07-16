@@ -81,7 +81,7 @@ class ResponsableService
     /**
      * Create TMP Responsable
      */
-    public function createTmpResponsable(TicketCreneau $creneau)
+    public function createTmpResponsable(TicketCreneau $creneau, TicketDay $day)
     {
         return (new TicketResponsable())
             ->setFirstname('')
@@ -95,6 +95,7 @@ class ResponsableService
             ->setCp('')
             ->setCity('')
             ->setCreneau($creneau)
+            ->setDay($day)
         ;
     }
 

@@ -23,7 +23,7 @@ export class Details extends Component {
         let self = this;
         axios({ 
             method: 'post', 
-            url: Routing.generate('admin_ticket_prospect_update_status', { 'id' : id })
+            url: Routing.generate('admin_prospect_update_status', { 'id' : id })
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             
@@ -57,7 +57,7 @@ export class Details extends Component {
                 let self = this;
                 axios({ 
                     method: 'post', 
-                    url: Routing.generate('admin_ticket_prospect_delete', { 'id' : id })
+                    url: Routing.generate('admin_prospect_delete', { 'id' : id })
                 }).then(function (response) {
                     let data = response.data; let code = data.code; AjaxSend.loader(false);
                     

@@ -26,14 +26,10 @@ class TicketGenerator
         $this->twig = $twig;
     }
 
-    public function getPrefix(TicketResponsable $responsable){
-        return $responsable->getId() . substr(strtoupper($responsable->getFirstname()), 0, 1) . substr(strtoupper($responsable->getLastname()), 0, 1);
-    }
-
     public function generate(TicketResponsable $responsable)
     {
-        $uniq = hexdec(uniqid());
-        $ticket = $this->getPrefix($responsable) . substr($uniq, strlen($uniq) - 5, 5);
+        $uniq = time();
+        $ticket = $responsable->getId() . $uniq;
         $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
         if(!is_dir($this->getBarcodeDirectory())){
             mkdir($this->getBarcodeDirectory());

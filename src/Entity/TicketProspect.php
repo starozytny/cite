@@ -99,6 +99,11 @@ class TicketProspect
      */
     private $creneau;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TicketDay::class, inversedBy="prospects")
+     */
+    private $day;
+
     public function __construct()
     {
         $this->setCreateAt(new DateTime());
@@ -303,6 +308,18 @@ class TicketProspect
     public function setCreneau(?TicketCreneau $creneau): self
     {
         $this->creneau = $creneau;
+
+        return $this;
+    }
+
+    public function getDay(): ?TicketDay
+    {
+        return $this->day;
+    }
+
+    public function setDay(?TicketDay $day): self
+    {
+        $this->day = $day;
 
         return $this;
     }

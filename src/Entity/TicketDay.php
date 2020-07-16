@@ -52,10 +52,22 @@ class TicketDay
      */
     private $ticketCreneaux;
 
+    /**
+     * @ORM\OneToMany(targetEntity=TicketProspect::class, mappedBy="day")
+     */
+    private $prospects;
+
+    /**
+     * @ORM\OneToMany(targetEntity=TicketResponsable::class, mappedBy="day")
+     */
+    private $responsables;
+
     public function __construct()
     {
         $this->setIsOpen(false);
         $this->ticketCreneaux = new ArrayCollection();
+        $this->prospects = new ArrayCollection();
+        $this->responsables = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -153,6 +165,68 @@ class TicketDay
             // set the owning side to null (unless already changed)
             if ($ticketCreneaux->getTicketDay() === $this) {
                 $ticketCreneaux->setTicketDay(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TicketProspect[]
+     */
+    public function getProspects(): Collection
+    {
+        return $this->prospects;
+    }
+
+    public function addProspect(TicketProspect $prospect): self
+    {
+        if (!$this->prospects->contains($prospect)) {
+            $this->prospects[] = $prospect;
+            $prospect->setDay($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProspect(TicketProspect $prospect): self
+    {
+        if ($this->prospects->contains($prospect)) {
+            $this->prospects->removeElement($prospect);
+            // set the owning side to null (unless already changed)
+            if ($prospect->getDay() === $this) {
+                $prospect->setDay(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TicketResponsable[]
+     */
+    public function getResponsables(): Collection
+    {
+        return $this->responsables;
+    }
+
+    public function addResponsable(TicketResponsable $responsable): self
+    {
+        if (!$this->responsables->contains($responsable)) {
+            $this->responsables[] = $responsable;
+            $responsable->setDay($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResponsable(TicketResponsable $responsable): self
+    {
+        if ($this->responsables->contains($responsable)) {
+            $this->responsables->removeElement($responsable);
+            // set the owning side to null (unless already changed)
+            if ($responsable->getDay() === $this) {
+                $responsable->setDay(null);
             }
         }
 

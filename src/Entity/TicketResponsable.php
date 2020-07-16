@@ -103,6 +103,11 @@ class TicketResponsable
      */
     private $creneau;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TicketDay::class, inversedBy="responsables")
+     */
+    private $day;
+
     public function __construct()
     {
         $this->prospects = new ArrayCollection();
@@ -323,6 +328,18 @@ class TicketResponsable
     public function setCreneau(?TicketCreneau $creneau): self
     {
         $this->creneau = $creneau;
+
+        return $this;
+    }
+
+    public function getDay(): ?TicketDay
+    {
+        return $this->day;
+    }
+
+    public function setDay(?TicketDay $day): self
+    {
+        $this->day = $day;
 
         return $this;
     }

@@ -7,13 +7,14 @@ use App\Entity\TicketDay;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
 use App\Form\TicketDayType;
+use App\Service\Export;
 use App\Service\OpenDay;
-use App\Service\Remaining;
-use App\Service\ResponsableService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -83,55 +84,52 @@ class TicketController extends AbstractController
     }
 
     /**
-     * @Route("/prospect/{id}/update/status", options={"expose"=true}, name="prospect_update_status")
-     */
-    public function changeStatus(TicketProspect $id)
+    * @Route("/jour/{ticketDay}/export", name="export")
+    */
+    public function export(TicketDay $ticketDay, Export $export)
     {
         $em = $this->getDoctrine()->getManager();
+        $responsables = $em->getRepository(TicketResponsable::class)->findBy(array('day' => $ticketDay));
+        $data = array();
 
-        $prospect = $id;
-        if(!$prospect){
-            return new JsonResponse(['code' => 0]);
+        foreach ($responsables as $responsable) {
+            $prospects = $responsable->getProspects();
+            if(count($prospects) > 0 && $responsable->getStatus() != TicketResponsable::ST_TMP){
+
+                $commentary = "[" . date_format($responsable->getCreneau()->getHoraire(), 'H\hi') . "] - [". count($prospects) ."] - ";
+                $i=0;
+                foreach ($prospects as $prospect){
+                    $i++;
+                    $commentary .= $prospect->getCivility() . ' ' . $prospect->getFirstName() . " " . $prospect->getLastname();
+                    $commentary .= count($prospects) == $i ? "" : " / ";
+                }
+
+                $tmp = array(
+                    $responsable->getTicket(),
+                    "Tarif gratuit",
+                    0,
+                    $responsable->getLastname(),
+                    $responsable->getFirstname(),
+                    $responsable->getEmail(),
+                    date_format($responsable->getCreneau()->getHoraire(), 'H\hi'),
+                    $commentary
+                );
+                if(!in_array($tmp, $data)){
+                    array_push($data, $tmp);
+                }
+            }
+            
         }
 
-        if($prospect->getStatus() == TicketProspect::ST_CONFIRMED){
-            $prospect->setStatus(TicketProspect::ST_REGISTERED);
-            $status = TicketProspect::ST_REGISTERED;
-            $statusString = "Inscrit";
-        }else{
-            $prospect->setStatus(TicketProspect::ST_CONFIRMED);
-            $status = TicketProspect::ST_CONFIRMED;
-            $statusString = "Confirmé";
-        }
+        $fileName = 'liste-' . $ticketDay->getId() . '.csv';
 
-        $em->persist($prospect);
-        $em->flush();
+        $header = array(array('CODE-BARRE', 'NOM DU TARIF', 'PRIX', 'NOM', 'PRENOM', 'E-MAIL', 'SOCIETE', 'COMMENTAIRE'));
+        $json = $export->createFile('csv', 'Liste des utilisateurs du ' . $ticketDay->getId(), $fileName , $header, $data, 8, null);
 
-        return new JsonResponse(['code' => 1, 'status' => $status, 'statusString' => $statusString]);
-    }
+        dump($this->getParameter('export_directory'). '/' . $fileName);
 
-    /**
-     * @Route("/prospect/{id}/delete", options={"expose"=true}, name="prospect_delete")
-     */
-    public function deleteProspect(TicketProspect $id, Remaining $remaining, ResponsableService $responsableService)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $prospect = $id;
-        if(!$prospect){
-            return new JsonResponse(['code' => 0]);
-        }
-        $responsable = $prospect->getResponsable();
-        $prospects = $responsable->getProspects();
-        $nbProspects = count($prospects);
-
-        if($nbProspects == 1){
-            $responsableService->deleteResponsable($responsable);
-        }else{
-            $em->remove($prospect);
-        }
-
-        $em->flush();
-        return new JsonResponse(['code' => 1]);
+        header('Content-Type: application/csv');
+        header('Content-Disposition: attachment; filename="liste-' . $ticketDay->getId() .'.csv"');
+        return new BinaryFileResponse($this->getParameter('export_directory'). '/' . $fileName);
     }
 }

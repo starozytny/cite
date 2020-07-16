@@ -6,6 +6,10 @@
     margin-bottom: 25px;
 }
 
+.toolbar-right{
+    margin-top: 10px;
+}
+
 
 //                      __   _____ __    ___    __
 //                     | _| |___  / /_  ( _ )  |_ |
@@ -14,7 +18,11 @@
 //                     | |   /_/  \___/ \___/   | |
 //                     |__|                    |__|
 @media (min-width:768px) {
-    .toolbar-left{
-        display: flex;
+    .toolbar{
+        @include flex(row, flex-start, space-between);
+    }
+
+    .toolbar-right{
+        margin-top: 0;
     }
 }
