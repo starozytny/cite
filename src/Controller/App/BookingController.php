@@ -93,6 +93,20 @@ class BookingController extends AbstractController
     }
 
     /**
+     * @Route("/tmp/book/reset/timer/{responsableId}", options={"expose"=true}, name="reset_timer")
+     */
+    public function resetTimer(TicketResponsable $responsableId, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $responsable = $responsableId;
+        $responsable->setCreateAt(new DateTime());
+        $em->persist($responsable); $em->flush();
+    
+        return new JsonResponse([ 'code' => 1 ]);
+    }
+
+    /**
      * @Route("/tmp/book/{id}/duplicate", options={"expose"=true}, name="tmp_book_duplicate")
      */
     public function duplicateProspect(TicketDay $id, Request $request)

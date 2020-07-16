@@ -6,6 +6,7 @@ import {StepProspects} from './Prospect';
 import {StepResponsable} from './Responsable';
 import {StepReview} from './Review';
 import {StepTicket} from './Ticket';
+import Swal from 'sweetalert2';
 
 export class Booking extends Component {
     constructor(props){
@@ -57,7 +58,9 @@ export class Booking extends Component {
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             if(code === 1){
-                self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', creneauId: data.creneauId, responsableId: data.responsableId})
+                self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
+                               creneauId: data.creneauId, responsableId: data.responsableId,
+                               timer: setInterval(() => self.tick(), 1000), min: 4, second: 60})
             }            
         });
     }
@@ -66,10 +69,10 @@ export class Booking extends Component {
      * Fonction go back step
      */
     backToProspects (e) {
-        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: ''});
+        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: '', min: 4, second: 60});
     }
     backToResponsable (e) {
-        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', timer: clearInterval(this.state.timer)});
+        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', min: 4, second: 60});
 
         // remove 
         AjaxSend.loader(true);
@@ -150,7 +153,7 @@ export class Booking extends Component {
         });
     }
     tick(){
-        const {min, second} = this.state;
+        const {min, second, responsableId} = this.state;
         
         let oldMin = parseInt(min);
         let oldSecond = parseInt(second);
@@ -166,8 +169,23 @@ export class Booking extends Component {
                 nMin = oldMin - 1;       
             }
         }
-        
+
         this.setState({ second: nSecond, min: nMin, timeExpired: expired });
+
+        if(nMin == 1 && nSecond == 60){
+            
+            let self = this;
+            AjaxSend.loader(false);
+            axios({ 
+                method: 'post', 
+                url: Routing.generate('app_booking_reset_timer', {'responsableId': responsableId})
+            }).then(function (response) {
+                AjaxSend.loader(false);
+                self.setState({ min: 4, second: 60, timeExpired: false });
+            });
+        }
+        
+        
     }
 
     toTicketStep () {

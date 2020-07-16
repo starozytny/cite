@@ -30,7 +30,7 @@ class ResponsableService
 
         foreach($responsables as $responsable){
             if($this->checkTime->moreFiveMinutes($responsable->getCreateAt())){
-                // $this->deleteResponsable($responsable);
+                $this->deleteResponsable($responsable);
             }
         }      
     }
@@ -47,8 +47,8 @@ class ResponsableService
             $this->em->remove($prospect);
         }
 
-        if(!$responsable->getIsWaiting()){
-            $this->remaining->increaseRemaining($day, $creneau, $nbProspects);
+        if(!$responsable->getIsWaiting() && $nbProspects > 0){
+            $this->remaining->increaseRemaining($day, $creneau);
         }
 
         $this->em->remove($responsable);
