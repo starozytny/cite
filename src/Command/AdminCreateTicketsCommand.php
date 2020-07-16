@@ -44,28 +44,20 @@ class AdminCreateTicketsCommand extends Command
 
         $days = array(
             [
-                'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-07-16'),
-                'max' => 100,
-                'remaining' => 100,
-            ],
-            [
-                'type' => TicketDay::TYPE_NOUVEAU,
+                'type' => TicketDay::TYPE_ANCIEN,
                 'day' => new DateTime('2020-07-17'),
-                'max' => 100,
-                'remaining' => 100,
             ],
             [
-                'type' => TicketDay::TYPE_NOUVEAU,
+                'type' => TicketDay::TYPE_ANCIEN,
                 'day' => new DateTime('2020-07-18'),
-                'max' => 100,
-                'remaining' => 100,
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
                 'day' => new DateTime('2020-07-19'),
-                'max' => 100,
-                'remaining' => 100,
+            ],
+            [
+                'type' => TicketDay::TYPE_NOUVEAU,
+                'day' => new DateTime('2020-07-20'),
             ]
         );
 
@@ -74,13 +66,12 @@ class AdminCreateTicketsCommand extends Command
             $new = (new TicketDay())
                 ->setType($day['type'])
                 ->setDay($day['day'])
-                ->setMax($day['max'])
-                ->setRemaining($day['remaining'])
             ;
 
             $this->em->persist($new);
 
             $horaires = ['8:00', '8:15', '8:30', '8:45', '9:00'];
+            $totalPlace = 0;
             foreach($horaires as $horaire){
                 $s = (new TicketCreneau())
                     ->setHoraire(date_create_from_format('H:i', $horaire))
@@ -89,9 +80,15 @@ class AdminCreateTicketsCommand extends Command
                     ->setTicketDay($new)
                 ;
 
+                $totalPlace += 20;
+
+                
                 $this->em->persist($s);
             }
 
+            $new->setMax($totalPlace);
+            $new->setRemaining($totalPlace);
+            $this->em->persist($new);
             $io->text('Journée : ' . date_format($day['day'], 'd-m-Y') . ' créée' );
         }
         $this->em->flush();

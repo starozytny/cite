@@ -270,11 +270,7 @@ function Infos({day}) {
 
 function Starter({onClick, days, dayRemaining}) {
 
-    let remaining = true;
     let items = JSON.parse(days).map((elem, index) => {
-        if(elem.remaining <= 0 ){
-            remaining = false;
-        }
         return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
             <span>{(new Date(Date.parse(elem.day))).toLocaleDateString('fr-FR')}</span>
@@ -294,7 +290,7 @@ function Starter({onClick, days, dayRemaining}) {
                     <div className="starter-dates">{items} </div>
 
                     <div className="alert alert-info"> A la journée d'inscription veuillez apporter votre <b>avis d'impôt sur le revenu</b> </div>
-                    {remaining ? null : <div className="alert"> Il n'y a plus de place pour le moment. Vous serez placez en file d'attente. </div>}
+                    {dayRemaining ? null : <div className="alert"> Il n'y a plus de place. </div>}
                 </div>
                 <div className="starter-btn">
                     <button className="btn btn-primary" onClick={onClick}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
