@@ -47,7 +47,10 @@ class OpenDay
         $findOne = false;
         foreach($days as $day){
 
-            if($now >= $openAncien && $day->getType() == TicketDay::TYPE_ANCIEN){
+            if($now >= $openAncien 
+                && $day->getType() == TicketDay::TYPE_ANCIEN
+                && $now < $day->getDay()
+                ){
 
                 if($day->getRemaining() > 0){
 
