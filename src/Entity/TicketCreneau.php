@@ -45,9 +45,15 @@ class TicketCreneau
      */
     private $prospects;
 
+    /**
+     * @ORM\OneToMany(targetEntity=TicketResponsable::class, mappedBy="creneau")
+     */
+    private $responsables;
+
     public function __construct()
     {
         $this->prospects = new ArrayCollection();
+        $this->responsables = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -132,6 +138,37 @@ class TicketCreneau
             // set the owning side to null (unless already changed)
             if ($prospect->getCreneau() === $this) {
                 $prospect->setCreneau(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TicketResponsable[]
+     */
+    public function getResponsables(): Collection
+    {
+        return $this->responsables;
+    }
+
+    public function addResponsable(TicketResponsable $responsable): self
+    {
+        if (!$this->responsables->contains($responsable)) {
+            $this->responsables[] = $responsable;
+            $responsable->setCreneau($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResponsable(TicketResponsable $responsable): self
+    {
+        if ($this->responsables->contains($responsable)) {
+            $this->responsables->removeElement($responsable);
+            // set the owning side to null (unless already changed)
+            if ($responsable->getCreneau() === $this) {
+                $responsable->setCreneau(null);
             }
         }
 

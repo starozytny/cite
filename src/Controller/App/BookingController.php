@@ -74,7 +74,7 @@ class BookingController extends AbstractController
                 $remaining = $creneau->getRemaining();
                 if($remaining > 0){ // reste de la place dans ce creneau
 
-                    $responsable = $this->responsableService->createTmpResponsable();
+                    $responsable = $this->responsableService->createTmpResponsable($creneau);
                     $this->remaining->decreaseRemaining($day, $creneau);
 
                     $em->persist($responsable); $em->flush();

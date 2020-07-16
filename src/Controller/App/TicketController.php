@@ -45,8 +45,6 @@ class TicketController extends AbstractController
             $img = file_get_contents($file);
             $data = base64_encode($img);
 
-            dump($data);
-
             $mpdf->SetTitle('Ticket cité de la musique - ' . $responsable->getFirstname() . ' ' . $responsable->getLastname());
             $stylesheet = file_get_contents($this->getParameter('kernel.project_dir') . '/public/pdf/css/bootstrap.min.css');
             $stylesheet2 = file_get_contents($this->getParameter('kernel.project_dir') . '/public/pdf/css/custom-pdf.css');

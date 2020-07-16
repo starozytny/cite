@@ -98,6 +98,11 @@ class TicketResponsable
      */
     private $status;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TicketCreneau::class, inversedBy="responsables")
+     */
+    private $creneau;
+
     public function __construct()
     {
         $this->prospects = new ArrayCollection();
@@ -306,6 +311,18 @@ class TicketResponsable
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCreneau(): ?TicketCreneau
+    {
+        return $this->creneau;
+    }
+
+    public function setCreneau(?TicketCreneau $creneau): self
+    {
+        $this->creneau = $creneau;
 
         return $this;
     }

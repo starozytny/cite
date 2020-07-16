@@ -3,6 +3,7 @@
 
 namespace App\Service;
 
+use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketResponsable;
 use DateTime;
@@ -40,14 +41,12 @@ class ResponsableService
         $prospects = $responsable->getProspects();
         $nbProspects = count($prospects);
         foreach ($prospects as $prospect){
-            if(!$responsable->getIsWaiting()){
-                $creneau = $prospect->getCreneau();
-                $day = $creneau->getTicketDay();
-            }
             $this->em->remove($prospect);
         }
 
-        if(!$responsable->getIsWaiting() && $nbProspects > 0){
+        if(!$responsable->getIsWaiting()){
+            $creneau = $responsable->getCreneau();
+            $day = $creneau->getTicketDay();
             $this->remaining->increaseRemaining($day, $creneau);
         }
 
@@ -85,7 +84,7 @@ class ResponsableService
     /**
      * Create TMP Responsable
      */
-    public function createTmpResponsable()
+    public function createTmpResponsable(TicketCreneau $creneau)
     {
         return (new TicketResponsable())
             ->setFirstname('')
@@ -98,6 +97,7 @@ class ResponsableService
             ->setComplement(null)
             ->setCp('')
             ->setCity('')
+            ->setCreneau($creneau)
         ;
     }
 
