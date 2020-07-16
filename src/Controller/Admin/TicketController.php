@@ -11,10 +11,8 @@ use App\Service\Export;
 use App\Service\OpenDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -106,7 +104,7 @@ class TicketController extends AbstractController
 
                 $tmp = array(
                     $responsable->getTicket(),
-                    "Tarif gratuit",
+                    "Tarif Gratuit",
                     0,
                     $responsable->getLastname(),
                     $responsable->getFirstname(),
@@ -125,9 +123,7 @@ class TicketController extends AbstractController
 
         $header = array(array('CODE-BARRE', 'NOM DU TARIF', 'PRIX', 'NOM', 'PRENOM', 'E-MAIL', 'SOCIETE', 'COMMENTAIRE'));
         $json = $export->createFile('csv', 'Liste des utilisateurs du ' . $ticketDay->getId(), $fileName , $header, $data, 8, null);
-
-        dump($this->getParameter('export_directory'). '/' . $fileName);
-
+        
         header('Content-Type: application/csv');
         header('Content-Disposition: attachment; filename="liste-' . $ticketDay->getId() .'.csv"');
         return new BinaryFileResponse($this->getParameter('export_directory'). '/' . $fileName);
