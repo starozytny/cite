@@ -116,7 +116,6 @@ class BookingController extends AbstractController
         $prospects = $data->prospects;
 
         $alreadyRegistered = $this->alreadyRegistered($prospects, $day->getType());
-        dump($alreadyRegistered);
         if(count($alreadyRegistered) != 0){
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered]);
         }
@@ -143,8 +142,7 @@ class BookingController extends AbstractController
         if($res){
             $horaire = date_format($creneau->getHoraire(), 'H\hi');
             return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $responsableId, 
-                'message' => 'Horaire de passage : <b>' . $horaire . '</b> <br/><br/>
-                                Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.'
+                'message' => 'Horaire de passage : <b>' . $horaire . '</b>'
             ]);
         }else{
             return new JsonResponse([

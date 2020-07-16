@@ -23,7 +23,7 @@ export class StepReview extends Component {
     }    
 
     render () {
-        const {classStep, onClickPrev, toTicketStep, prospects, responsable, day, messageInfo, min, second, timeExpired, code} = this.props;
+        const {classStep, onClickPrev, toTicketStep, prospects, responsable, day, messageInfo, timeExpired, code} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
             return (
@@ -61,9 +61,9 @@ export class StepReview extends Component {
             </div>
         </>
 
-        let nextText = "Valider en file d'attente";
+        let nextText = "Valider";
         if(code == 1){
-            nextText = (timeExpired ? "Expirée" : "Valider (" + min +"min " + second + "s)");
+            nextText = (timeExpired ? "Expirée" : "Valider");
         }else if(code == 2){
             nextText = "Indisponible"
         }
@@ -73,8 +73,8 @@ export class StepReview extends Component {
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>
                 {ReactHtmlParser(messageInfo)}
-                { code == 1 ? <div>Cette réservation est sauvegardée pendant {timeExpired ? <b>Expirée</b> : <b>{min}min {second}s</b>}. <br/> <br/>
-                                <b className="txt-primary">Veuillez valider la réservation</b> 
+                { code == 1 ? <div> <br/>Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour réitérer la demande. <br/><br/> 
+                                <b className="txt-primary">Veuillez valider la réservation </b> 
                                 pour obtenir votre ticket et bloquer définitivement cette plage horaire. 
                                 (bouton en bas a droite de votre écran)</div> : null }
             </div>

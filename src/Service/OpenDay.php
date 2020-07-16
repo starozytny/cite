@@ -42,26 +42,4 @@ class OpenDay
 
         $this->em->flush();
     }
-
-    private function getFirstWaiter(){
-
-    }
-
-    public function passWaiting(?TicketDay $day, $waiter=null)
-    {
-        if($day) {
-            if($day->getRemaining() > 0){
-                $waiters = $this->em->getRepository(TicketResponsable::class)->findBy(array('isWaiting' => true), array('createAt' => 'ASC'));
-    
-                // s'il y en a en file d'attente 
-                dump($waiters);
-    
-                //get nbProspects
-                //check place
-                //if ok - ok and update remaining
-                //else 
-            }
-        }
-        
-    }
 }
