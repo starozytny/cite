@@ -126,7 +126,7 @@ export class StepProspects extends Component {
             </div>
         </>
 
-        return <Step id="1" classStep={classStep} title="Informations des personnes à inscrire" specialFull={classAdd} onClickNext={this.handleClickNext} body={body}>
+        return <Step id="1" classStep={classStep} title="Famille à inscrire" specialFull={classAdd} onClickNext={this.handleClickNext} body={body}>
             Les informations recueillies à partir de ce formulaire sont transmises au service de la Cité de la musique dans le but 
             de pré-remplir les inscriptions. Plus d'informations sur le traitement de vos données dans notre 
             politique de confidentialité.

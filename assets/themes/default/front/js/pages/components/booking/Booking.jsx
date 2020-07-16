@@ -49,8 +49,6 @@ export class Booking extends Component {
     * Fonction pour commencer le processus de demande de ticket.
     */
     handleClickStart (e) {
-        this.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active'});
-
         AjaxSend.loader(true);
         let self = this;
         axios({ 
@@ -58,7 +56,9 @@ export class Booking extends Component {
             url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }),
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-            self.setState({creneauId: data.creneauId, responsableId: data.responsableId})
+            if(code === 1){
+                self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', creneauId: data.creneauId, responsableId: data.responsableId})
+            }            
         });
     }
 
@@ -193,14 +193,14 @@ export class Booking extends Component {
     } 
 
     render () {
-        const {day, days, dayType } = this.props;
+        const {day, days, dayType, dayRemaining} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
             horaire, messageInfo, min, second, timeExpired, code, finalMessage, ticket} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
                 <Infos day={day} />
-                <Starter onClick={this.handleClickStart} days={days}/>
+                <Starter onClick={this.handleClickStart} days={days} dayRemaining={dayRemaining}/>
             </section>
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
@@ -218,7 +218,7 @@ export class Booking extends Component {
 
 function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
     let items = [
-        { active: classStep1, text: 'Personnes à inscrire'},
+        { active: classStep1, text: 'Famille à inscrire'},
         { active: classStep2, text: 'Responsable'},
         { active: classStep3, text: 'Récapitulatif'},
         { active: classStep4, text: 'Ticket'}
@@ -265,7 +265,7 @@ function Infos({day}) {
     )
 }
 
-function Starter({onClick, days}) {
+function Starter({onClick, days, dayRemaining}) {
 
     let remaining = true;
     let items = JSON.parse(days).map((elem, index) => {
@@ -294,7 +294,7 @@ function Starter({onClick, days}) {
                     {remaining ? null : <div className="alert"> Il n'y a plus de place pour le moment. Vous serez placez en file d'attente. </div>}
                 </div>
                 <div className="starter-btn">
-                    <button className="btn btn-primary" onClick={onClick}>Réserver un ticket</button>
+                    <button className="btn btn-primary" onClick={onClick}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
                 </div>
             </div>
         </div>

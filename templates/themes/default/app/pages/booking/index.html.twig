@@ -17,7 +17,7 @@
     </div>
 
     {% if day is defined %}
-        <div id="booking" data-day="{{ day.day | date('d/m/Y') }}" data-id="{{ day.id }}" data-type="{{ day.type}}" data-days="{{ days }}"></div>
+        <div id="booking" data-day="{{ day.day | date('d/m/Y') }}" data-id="{{ day.id }}" data-type="{{ day.type }}" data-remaining="{{ day.remaining }}" data-days="{{ days }}"></div>
     {% else %}
         <div>
             <div class="section-infos">
