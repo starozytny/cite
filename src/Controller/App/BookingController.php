@@ -38,12 +38,11 @@ class BookingController extends AbstractController
     public function index(OpenDay $openDay, SerializerInterface $serializer)
     {
         // Open day
-        $openDay->open();
         // Delete user no confirme register
         $this->responsableService->deleteNonConfirmed();
         $em = $this->getDoctrine()->getManager();
         $days = $em->getRepository(TicketDay::class)->findAll();
-        $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
+        $day = $openDay->open();
 
         if(!$day){
             return $this->render('root/app/pages/booking/index.html.twig');
