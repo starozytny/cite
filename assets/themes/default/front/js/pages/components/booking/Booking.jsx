@@ -73,18 +73,6 @@ export class Booking extends Component {
     }
     backToResponsable (e) {
         this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', min: 4, second: 60});
-
-        // remove 
-        AjaxSend.loader(true);
-        let self = this;
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('app_booking_tmp_book_delete', { 'id' : this.props.dayId }), 
-            data: { responsable: this.state.responsableId } 
-        }).then(function (response) {
-            AjaxSend.loader(false);
-            self.setState({messageInfo: '', responsableId: null})
-        });
     }
 
     /**

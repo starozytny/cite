@@ -153,25 +153,6 @@ class BookingController extends AbstractController
     }
 
     /**
-     * @Route("/tmp/book/{id}/delete", options={"expose"=true}, name="tmp_book_delete")
-     */
-    public function deleteTmpBook(TicketDay $id, Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $data = json_decode($request->getContent());
-        $responsableId = $data->responsable;
-
-        if($responsableId != null){
-            $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
-            if($responsable->getStatus() == TicketResponsable::ST_TMP){
-                $this->responsableService->deleteResponsable($responsable);
-            }
-        }
-        return new JsonResponse(['code' => 1]);
-    }
-
-    /**
      * @Route("/confirmed/book/{id}/add", options={"expose"=true}, name="confirmed_book_add")
      */
     public function book(TicketDay $id, TicketGenerator $ticketGenerator, Mailer $mailer, Request $request)
@@ -206,14 +187,16 @@ class BookingController extends AbstractController
             $title = 'Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
             $html = 'root/app/email/booking/index.html.twig';
             $params =  ['ticket' => $ticket, 'horaire' => $horaire, 'day' => $id->getDay()];
+            $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
         }else{
             $title = '[FILE ATTENTE] - Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
             $html = 'root/app/email/booking/index.html.twig';
             $params =  ['day' => $id->getDay()];
+            $file = null;
         }      
 
         // Send mail     
-        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail() ) != true){
+        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file ) != true){
             return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
         }
 
@@ -245,11 +228,7 @@ class BookingController extends AbstractController
         foreach($prospects as $item){
             $prospect = $this->createProspect($item, $creneau, $responsable, $waiting);
             $em->persist($prospect);
-        }
-
-        if(!$waiting){
-            $this->remaining->decreaseRemaining($day, $creneau, count($prospects));
-        }        
+        }     
 
         $em->flush();
         return $responsable->getId();

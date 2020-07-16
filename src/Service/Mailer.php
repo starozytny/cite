@@ -17,7 +17,7 @@ class Mailer
         $this->mailer = $mailer;
     }
 
-    public function sendMail($title, $text, $html, $params, $email, $from = 'chanbora@logilink.fr')
+    public function sendMail($title, $text, $html, $params, $email,  $file = null, $from = 'chanbora@logilink.fr')
     {
         $email = (new TemplatedEmail())
             ->from($from)
@@ -27,6 +27,10 @@ class Mailer
             ->htmlTemplate($html)
             ->context($params)
         ;
+
+        if($file != null){
+            $email->attachFromPath($file);
+        }
 
         if($this->mailer->send($email)){
             return true;

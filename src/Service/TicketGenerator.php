@@ -10,6 +10,7 @@ use App\Entity\TicketResponsable;
 use Doctrine\ORM\EntityManagerInterface;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
+use Mpdf\Output\Destination;
 use Twig\Environment;
 
 class TicketGenerator
@@ -37,18 +38,27 @@ class TicketGenerator
         if(!is_dir($this->getBarcodeDirectory())){
             mkdir($this->getBarcodeDirectory());
         }
-        $generatorr = file_put_contents($this->getBarcodeDirectory() . '/' .$responsable->getId() . '-barcode.png', $generator->getBarcode($ticket, $generator::TYPE_CODE_128));
+        $fileImage = $this->getBarcodeDirectory() . '/' .$responsable->getId() . '-barcode.png';
+        $generatorr = file_put_contents($fileImage, $generator->getBarcode($ticket, $generator::TYPE_CODE_128));
 
+        $pdfDirectory = $this->getBarcodeDirectory() . '/pdf';
+        if(!is_dir($pdfDirectory)){
+            mkdir($pdfDirectory);
+        }
 
+        $creneau = $responsable->getCreneau();
+        $day = $creneau->getTicketDay();
+        $mpdf = $this->createFileTicket($fileImage, $responsable, $day, $creneau, $responsable->getprospects());
 
+        $mpdf->Output($pdfDirectory . '/' . $ticket . '-ticket.pdf', Destination::FILE);
 
         return $ticket;
     }
 
-    public function createFileTicket($file, TicketResponsable $responsable, TicketDay $day, TicketCreneau $creneau, $prospects){
+    public function createFileTicket($fileImage, TicketResponsable $responsable, TicketDay $day, TicketCreneau $creneau, $prospects){
         $mpdf = new Mpdf();
 
-        $img = file_get_contents($file);
+        $img = file_get_contents($fileImage);
         $data = base64_encode($img);
 
         $mpdf->SetTitle('Ticket cité de la musique - ' . $responsable->getFirstname() . ' ' . $responsable->getLastname());
