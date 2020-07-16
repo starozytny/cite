@@ -39,18 +39,15 @@ class ResponsableService
     public function deleteResponsable($responsable)
     {
         $prospects = $responsable->getProspects();
-        $nbProspects = count($prospects);
         foreach ($prospects as $prospect){
             $this->em->remove($prospect);
         }
 
-        if(!$responsable->getIsWaiting()){
-            $creneau = $responsable->getCreneau();
-            $day = $creneau->getTicketDay();
-            $this->remaining->increaseRemaining($day, $creneau);
-        }
-
+        $creneau = $responsable->getCreneau();
+        $day = $creneau->getTicketDay();
+        $this->remaining->increaseRemaining($day, $creneau);
         $this->em->remove($responsable);
+        
         $this->em->flush();
     }
 

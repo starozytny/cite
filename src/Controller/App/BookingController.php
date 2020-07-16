@@ -130,26 +130,10 @@ class BookingController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $day = $id;
         $data = json_decode($request->getContent());
-        $prospects = $data->prospects;
-        $responsableId = $data->responsableId;
-        $responsable = $data->responsable;
-        $creneauId = $data->creneauId;
-
-        $creneau = $em->getRepository(TicketCreneau::class)->find($creneauId);
-        $res = $this->createResponsableAndProspects($responsableId, $responsable, $prospects, $creneau, $day);
-        if($res){
-            $horaire = date_format($creneau->getHoraire(), 'H\hi');
-            return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $responsableId, 
-                'message' => 'Horaire de passage : <b>' . $horaire . '</b>'
-            ]);
-        }else{
-            return new JsonResponse([
-                'code' => 0,
-                'message' => 'Une erreur est survenue pendant votre inscription. Veuillez recommencer.'
-            ]);
-        }
+        $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
+        $horaire = date_format($creneau->getHoraire(), 'H\hi');
+        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage : <b>' . $horaire . '</b>' ]);
     }
 
     /**
@@ -160,23 +144,21 @@ class BookingController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         $data = json_decode($request->getContent());
-        $responsableId = $data->responsable;
+        $responsableId = $data->responsableId;
+        $responsableData = $data->responsable;
+        $prospects = $data->prospects;
 
-        $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
-
-        if(!$responsable){
-            return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
-        }
-
-        do{
-            $ticket = $ticketGenerator->generate($responsable);
-            $existe = $em->getRepository(TicketResponsable::class)->findOneBy(array('ticket' => $ticket));
-        }while($existe);
-
-        $responsable->setTicket($ticket);
-        $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
-
-        if(!$responsable->getIsWaiting()){
+        $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
+        $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau);
+        if($responsable != false){
+            do{
+                $ticket = $ticketGenerator->generate($responsable);
+                $existe = $em->getRepository(TicketResponsable::class)->findOneBy(array('ticket' => $ticket));
+            }while($existe);
+    
+            $responsable->setTicket($ticket);
+            $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
+    
             $prospects = $responsable->getProspects();
             foreach ($prospects as $prospect) {
                 $prospect->setStatus(TicketProspect::ST_CONFIRMED);
@@ -186,36 +168,30 @@ class BookingController extends AbstractController
 
             $title = 'Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
             $html = 'root/app/email/booking/index.html.twig';
-            $params =  ['ticket' => $ticket, 'horaire' => $horaire, 'day' => $id->getDay()];
             $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
-        }else{
-            $title = '[FILE ATTENTE] - Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
-            $html = 'root/app/email/booking/index.html.twig';
-            $params =  ['day' => $id->getDay()];
-            $file = null;
-        }      
-
-        // Send mail     
-        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file ) != true){
-            return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
-        }
-
-        $em->persist($responsable); $em->flush();
-        if(!$responsable->getIsWaiting()){
+            $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.png');
+            $barcode = base64_encode($img);
+            $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaire, 'day' => $id->getDay()];
+            
+    
+            // Send mail     
+            if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file ) != true){
+                return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
+            }
+    
+            $em->persist($responsable); $em->flush();
             return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse
             du responsable : ' . $responsable->getEmail()]);
         }else{
-            return new JsonResponse(['code' => 0, 'message' => 'Réservation en file d\'attente. Un mail récapitulatif a été envoyé à l\'adresse
-            du responsable : ' . $responsable->getEmail()]);
-        }
-       
+            return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
+        }       
     }
 
     /**
      * Create Responsable and Prospects and check if At least one prospect is not exist else
      * decrease remaining creneau and day 
      */
-    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, TicketDay $day, $waiting=false)
+    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, $waiting=false)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -231,7 +207,7 @@ class BookingController extends AbstractController
         }     
 
         $em->flush();
-        return $responsable->getId();
+        return $responsable;
     }
 
     public function alreadyRegistered($prospects, $dayType)

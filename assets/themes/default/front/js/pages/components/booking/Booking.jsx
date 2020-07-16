@@ -120,23 +120,20 @@ export class Booking extends Component {
     toReviewStep (data) {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active', min: 4, second: 60});
 
-        const {prospects, responsableId, creneauId} = this.state;
+        const {creneauId} = this.state;
 
         AjaxSend.loader(true);
         let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_add', { 'id' : this.props.dayId }), 
-            data: { prospects: prospects, responsable: data, responsableId: responsableId, creneauId: creneauId} 
+            data: {creneauId: creneauId} 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-            
             if(code === 1){
-
-                self.setState({ code: 1, messageInfo: data.message, horaire: data.horaire, responsableId: data.responsableId, timer: setInterval(() => self.tick(), 1000)});
-                
+                self.setState({ code: 1, messageInfo: data.message, horaire: data.horaire, timer: setInterval(() => self.tick(), 1000)});
             }else{
-                self.setState({ code: 0, responsableId: data.responsableId, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
+                self.setState({ code: 0, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
             }
         });
     }
@@ -177,16 +174,16 @@ export class Booking extends Component {
     }
 
     toTicketStep () {
-        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer)});
+        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer), min: 99, second: 99});
 
-        const {responsableId} = this.state;
+        const {prospects, responsable, responsableId, creneauId} = this.state;
         
         AjaxSend.loader(true);
         let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_confirmed_book_add', { 'id' : this.props.dayId }), 
-            data: { responsable: responsableId } 
+            data: { prospects: prospects, responsable: responsable, responsableId: responsableId, creneauId: creneauId } 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
 

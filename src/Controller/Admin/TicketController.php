@@ -128,13 +128,7 @@ class TicketController extends AbstractController
         if($nbProspects == 1){
             $responsableService->deleteResponsable($responsable);
         }else{
-            $creneau = $prospect->getCreneau();
-            $day = $creneau->getTicketDay();
             $em->remove($prospect);
-
-            if(!$responsable->getIsWaiting()){
-                $remaining->increaseRemaining($day, $creneau, 1);
-            }
         }
 
         $em->flush();
