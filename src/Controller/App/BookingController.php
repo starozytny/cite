@@ -45,9 +45,6 @@ class BookingController extends AbstractController
         $days = $em->getRepository(TicketDay::class)->findAll();
         $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
 
-        // Waiting list to active
-        $openDay->passWaiting($day);
-
         if(!$day){
             return $this->render('root/app/pages/booking/index.html.twig');
         }
@@ -61,7 +58,7 @@ class BookingController extends AbstractController
     }
 
     /**
-     * @Route("/tmp/book/start", options={"expose"=true}, name="tmp_book_start")
+     * @Route("/tmp/book/{id}/start", options={"expose"=true}, name="tmp_book_start")
      */
     public function start(TicketDay $id)
     {
@@ -76,9 +73,15 @@ class BookingController extends AbstractController
             foreach($creneaux as $creneau){
                 $remaining = $creneau->getRemaining();
                 if($remaining > 0){ // reste de la place dans ce creneau
+
                     $responsable = $this->responsableService->createTmpResponsable();
-                    return new JsonResponse(['code' => 1, 'creneau' => $creneau->getId(), 'responsableId' => $responsable->getId()]);    
-                }else{ // pas de place -> test le suivant sauf si last creneau
+                    $this->remaining->decreaseRemaining($day, $creneau);
+
+                    $em->persist($responsable); $em->flush();
+
+                    return new JsonResponse(['code' => 1, 'creneauId' => $creneau->getId(), 'responsableId' => $responsable->getId()]);    
+
+                }else{
                     if($i == $len - 1) {
                         return new JsonResponse([ 'code' => 0, 'message' => "il n\'y a plus de place."]);
                     }
@@ -89,7 +92,23 @@ class BookingController extends AbstractController
         }
     }
 
+    /**
+     * @Route("/tmp/book/{id}/duplicate", options={"expose"=true}, name="tmp_book_duplicate")
+     */
+    public function duplicateProspect(TicketDay $id, Request $request)
+    {
+        $day = $id;
+        $data = json_decode($request->getContent());
+        $prospects = $data->prospects;
 
+        $alreadyRegistered = $this->alreadyRegistered($prospects, $day->getType());
+        dump($alreadyRegistered);
+        if(count($alreadyRegistered) != 0){
+            return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered]);
+        }
+
+        return new JsonResponse(['code' => 1]);
+    }
 
     /**
      * @Route("/tmp/book/{id}/add", options={"expose"=true}, name="tmp_book_add")
@@ -105,16 +124,6 @@ class BookingController extends AbstractController
         $prospects = $data->prospects;
         $nbProspects = count($prospects);
         $responsable = $data->responsable;
-
-        // Check if already registered
-        $alreadyRegistered = $this->alreadyRegistered($prospects, $day->getType());
-        if(count($alreadyRegistered) != 0){
-            return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered,
-                                    'message' => 'Un ou des personnes souhaitant s\'inscrire ont <b>déjà été enregistré par une autre réservation</b>. <br/> <br/>
-                                                S\'il s\'agit d\'une nouvelle tentative de réservation, veuillez patienter l\'expiration de la précèdente. <br/>
-                                                Le temps d\'une sauvegarde de réservation est de 5 minutes à partir de cette page.'
-            ]);
-        }
 
         $messageWaiting ='Il n\'y a plus assez de place. En validant la réservation, vous serez <b>en file d\'attente</b>.';
         // Check place in each creneaux orderBy ASC horaire

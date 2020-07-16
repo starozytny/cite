@@ -15,6 +15,7 @@ export class Booking extends Component {
             day: this.props.day,
             dayId: this.props.dayId,
             dayType: this.props.dayType,
+            creneauId: null,
             classDot: '',
             classStart: '',
             classStep1: '',
@@ -54,33 +55,10 @@ export class Booking extends Component {
         let self = this;
         axios({ 
             method: 'post', 
-            url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }), 
-            data: { prospects: prospects, responsable: data } 
+            url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }),
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-            
-            if(code === 1){
-
-                self.setState({ code: 1, messageInfo: data.message, horaire: data.horaire, responsableId: data.responsableId, timer: setInterval(() => self.tick(), 1000)});
-                
-            }else if(code === 2){ // some already registered
-
-                let newProspects = [];
-                prospects.forEach(element => {
-                    let newProspect = element;
-                    data.duplicated.forEach(duplicate => {
-                        if(JSON.stringify(element) === JSON.stringify(duplicate)){
-                            duplicate.registered = true
-                            newProspect = duplicate;
-                        }
-                    });
-                    newProspects.push(newProspect);
-                });
-                self.setState({ code: 2, prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
-
-            }else{
-                self.setState({ code: 0, responsableId: data.responsableId, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
-            }
+            self.setState({creneauId: data.creneauId, responsableId: data.responsableId})
         });
     }
 
@@ -110,13 +88,41 @@ export class Booking extends Component {
      * Fonction go to step Responsable
      */
     toResponsableStep (data) {
-        data = data.filter((thing, index, self) =>
+        let dataNoDoublon = data.filter((thing, index, self) =>
             index === self.findIndex((t) => (
                 t.civility === thing.civility && t.firstname === thing.firstname && t.lastname === thing.lastname &&
                 t.birthday === thing.birthday
             ))
         )
-        this.setState({prospects: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active'});
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_tmp_book_duplicate', { 'id' : this.props.dayId }), 
+            data: { prospects: dataNoDoublon } 
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            
+            console.log(code)
+            if(code === 1){
+                self.setState({prospects: dataNoDoublon, classDot: 'active-2', classStep1: 'full', classStep2: 'active'});                
+            }else{
+                let newProspects = [];
+                dataNoDoublon.forEach(element => {
+                    let newProspect = element;
+                    data.duplicated.forEach(duplicate => {
+                        if(JSON.stringify(element) === JSON.stringify(duplicate)){
+                            duplicate.registered = true
+                            newProspect = duplicate;
+                        }
+                    });
+                    newProspects.push(newProspect);
+                });
+                console.log(newProspects)
+                self.setState({ code: 2, prospects: newProspects });
+            }
+        });
     }    
 
     /**
@@ -140,21 +146,6 @@ export class Booking extends Component {
 
                 self.setState({ code: 1, messageInfo: data.message, horaire: data.horaire, responsableId: data.responsableId, timer: setInterval(() => self.tick(), 1000)});
                 
-            }else if(code === 2){ // some already registered
-
-                let newProspects = [];
-                prospects.forEach(element => {
-                    let newProspect = element;
-                    data.duplicated.forEach(duplicate => {
-                        if(JSON.stringify(element) === JSON.stringify(duplicate)){
-                            duplicate.registered = true
-                            newProspect = duplicate;
-                        }
-                    });
-                    newProspects.push(newProspect);
-                });
-                self.setState({ code: 2, prospects: newProspects, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' });
-
             }else{
                 self.setState({ code: 0, responsableId: data.responsableId, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
             }

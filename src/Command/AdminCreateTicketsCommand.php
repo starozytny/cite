@@ -50,7 +50,7 @@ class AdminCreateTicketsCommand extends Command
                 'remaining' => 100,
             ],
             [
-                'type' => TicketDay::TYPE_ANCIEN,
+                'type' => TicketDay::TYPE_NOUVEAU,
                 'day' => new DateTime('2020-07-17'),
                 'max' => 100,
                 'remaining' => 100,

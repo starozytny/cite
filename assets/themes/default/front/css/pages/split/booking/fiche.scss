@@ -96,7 +96,7 @@
         .valideDiv{
             &.valide{
                 &:before{
-                    background-color: $infoBg;
+                    background-color: $errorBg;
                 }
                 .infos{
                     .registered{
