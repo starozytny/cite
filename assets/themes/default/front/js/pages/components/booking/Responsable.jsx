@@ -13,6 +13,7 @@ export class StepResponsable extends Component {
             firstname: {value: '', error: ''},
             lastname: {value: '', error: ''},
             email: {value: '', error: ''},
+            confirmeEmail: {value: '', error: ''},
             adr: {value: '', error: ''},
             complement: {value: '', error: ''},
             cp: {value: '', error: ''},
@@ -35,6 +36,7 @@ export class StepResponsable extends Component {
             firstname: {value: '', error: ''},
             lastname: {value: '', error: ''},
             email: {value: '', error: ''},
+            confirmeEmail: {value: '', error: ''},
             adr: {value: '', error: ''},
             complement: {value: '', error: ''},
             cp: {value: '', error: ''},
@@ -63,6 +65,7 @@ export class StepResponsable extends Component {
                         firstname: {value: elem.firstname, error: ''},
                         lastname: {value: elem.lastname, error: ''},
                         email: {value: elem.email, error: ''},
+                        confirmeEmail: {value: '', error: ''},
                         adr: {value: elem.adr, error: ''},
                         complement: {value: '', error: ''},
                         cp: {value: elem.cp, error: ''},
@@ -78,12 +81,15 @@ export class StepResponsable extends Component {
     }
 
     handleClickNext (e) {
-        const {civility, firstname, lastname, email, adr, complement, cp, city, phoneDomicile, phoneMobile} = this.state;
+        const {civility, firstname, lastname, email, confirmeEmail, adr, complement, cp, city, phoneDomicile, phoneMobile} = this.state;
+
+        console.log(confirmeEmail)
 
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
             {type: "email", id: 'email', value: email.value},
+            {type: "confirmeEmail", id: 'confirmeEmail', value: confirmeEmail.value, value2: email.value},
             {type: "text", id: 'adr', value: adr.value},
             {type: "text", id: 'cp', value: cp.value},
             {type: "text", id: 'city', value: city.value}
@@ -132,7 +138,7 @@ export class StepResponsable extends Component {
 
     render () {
         const {classStep, prospects} = this.props;
-        const {firstname, lastname, civility, email, adr, complement, cp, city, phoneDomicile, phoneMobile, radioResp} = this.state;
+        const {firstname, lastname, civility, email, confirmeEmail, adr, complement, cp, city, phoneDomicile, phoneMobile, radioResp} = this.state;
 
         let body = <>
             <div className="step-card">
@@ -148,11 +154,14 @@ export class StepResponsable extends Component {
                             <Input type="text" auto="none" identifiant={"firstname"} value={firstname.value} onChange={this.handleChange} error={firstname.error}>Prénom</Input>
                             <Input type="text" auto="none" identifiant={"lastname"} value={lastname.value} onChange={this.handleChange} error={lastname.error}>Nom</Input>
                         </div>
-                        <div className="line line-2">
+                        <div className="line">
                             <p className="txt-info">
                                 C'est à cette adresse e-mail que le <b>ticket</b> sera envoyé.
                             </p>
+                        </div>
+                        <div className="line line-2">
                             <Input type="text" auto="none" identifiant={"email"} value={email.value} onChange={this.handleChange} error={email.error}>Adresse e-mail</Input>
+                            <Input type="text" auto="none" identifiant={"confirmeEmail"} value={confirmeEmail.value} onChange={this.handleChange} error={confirmeEmail.error}>Confirmer e-mail</Input>
                         </div>
                         <div className="line line-2">
                             <Input type="text" auto="none" identifiant={"phoneDomicile"} value={phoneDomicile.value} onChange={this.handleChange} error={phoneDomicile.error}>Téléphone domicile</Input>

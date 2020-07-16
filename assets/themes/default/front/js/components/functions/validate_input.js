@@ -57,6 +57,16 @@ function validateEmail($value){
     };
 }
 
+function validateConfirmeEmail($value, $value2){
+    if($value != $value2){
+        return {
+            'code': false,
+            'message': 'Les adresses e-mail ne correspondent pas.'
+        }
+    }
+    return {'code': true};
+}
+
 function validateur(values){
     let validate; let code = true;
     let errors = {};
@@ -74,6 +84,9 @@ function validateur(values){
                 break;
             case 'email':
                 validate = validateEmail(element.value);
+                break;
+            case 'confirmeEmail':
+                validate = validateConfirmeEmail(element.value, element.value2);
                 break;
         }
         if(!validate.code){

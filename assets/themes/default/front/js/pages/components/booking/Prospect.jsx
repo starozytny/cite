@@ -194,31 +194,29 @@ class Prospect extends Component {
             {type: "text", id: 'lastname', value: lastname.value},
             {type: "email", id: 'email', value: email.value},
             {type: "date", id: 'birthday', value: birthday.value},
-            {type: "text", id: 'adr', value: adr.value},
-            {type: "text", id: 'cp', value: cp.value},
-            {type: "text", id: 'city', value: city.value}
+            {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
         ]);
 
         // phone facultatif
-        let validatePhone;
-        if((phoneDomicile.value === "" && phoneMobile.value === "") || (phoneDomicile.value !== "" && phoneMobile.value !== "")){
-            validatePhone = Validateur.validateur([
-                {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value},
-                {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
-            ])
-        }else if(phoneDomicile.value !== "" && phoneMobile.value === ""){
-            validatePhone = Validateur.validateur([
-                {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value}
-            ])
-        }else if(phoneDomicile.value === "" && phoneMobile.value !== ""){
-            validatePhone = Validateur.validateur([
-                {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
-            ])
-        }
-        if(!validatePhone.code){
-            validate.code = false;
-            validate.errors = {...validate.errors, ...validatePhone.errors};
-        }
+        // let validatePhone;
+        // if((phoneDomicile.value === "" && phoneMobile.value === "") || (phoneDomicile.value !== "" && phoneMobile.value !== "")){
+        //     validatePhone = Validateur.validateur([
+        //         {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value},
+        //         {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
+        //     ])
+        // }else if(phoneDomicile.value !== "" && phoneMobile.value === ""){
+        //     validatePhone = Validateur.validateur([
+        //         {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value}
+        //     ])
+        // }else if(phoneDomicile.value === "" && phoneMobile.value !== ""){
+        //     validatePhone = Validateur.validateur([
+        //         {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
+        //     ])
+        // }
+        // if(!validatePhone.code){
+        //     validate.code = false;
+        //     validate.errors = {...validate.errors, ...validatePhone.errors};
+        // }
 
         // if isAdh is checked
         if(isAdh.value){
@@ -274,18 +272,18 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
             <Input type="text" identifiant={"lastname-" + id} value={lastname.value} onChange={onChange} error={lastname.error}>Nom</Input>
         </div>
         <div className="line line-2">
+            {/* <Input type="number" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input> */}
             <Input type="text" identifiant={"email-" + id} value={email.value} onChange={onChange} error={email.error}>Adresse e-mail</Input>
-            <Input type="date" identifiant={"birthday-" + id} value={birthday.value} onChange={onChange} placeholder="JJ/MM/AAAA" error={birthday.error}>Date de naissance</Input>
-        </div> 
-        <div className="line line-2">
-            <Input type="number" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input>
             <Input type="number" identifiant={"phoneMobile-" + id} value={phoneMobile.value} onChange={onChange} error={phoneMobile.error}>Téléphone mobile</Input>
         </div>
-        <Input type="text" identifiant={"adr-" + id} value={adr.value} onChange={onChange} error={adr.error}>Adresse postal</Input>
+        <div className="line line-2">
+            <Input type="date" identifiant={"birthday-" + id} value={birthday.value} onChange={onChange} placeholder="JJ/MM/AAAA" error={birthday.error}>Date de naissance</Input>
+        </div> 
+        {/* <Input type="text" identifiant={"adr-" + id} value={adr.value} onChange={onChange} error={adr.error}>Adresse postal</Input>
         <div className="line line-2">
             <Input type="number" identifiant={"cp-" + id} value={cp.value} onChange={onChange} error={cp.error}>Code postal</Input>
             <Input type="text" identifiant={"city-" + id} value={city.value} onChange={onChange} error={city.error}>Ville</Input>
-        </div>
+        </div> */}
 
         <div className="actions">
             <button className="delete" onClick={onDelete}>Supprimer</button>
