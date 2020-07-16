@@ -56,23 +56,30 @@ class ResponsableService
     }
 
      /**
-     * Create Ticket Responsable
+     * Update Ticket Responsable
      */
-    public function createResponsable($resp, $waiting)
+    public function updateResponsable($responsableId, $resp, $waiting)
     {
-        return (new TicketResponsable())
-            ->setFirstname($resp->firstname)
-            ->setLastname($resp->lastname)
-            ->setCivility($resp->civility)
-            ->setEmail($resp->email)
-            ->setPhoneDomicile($this->setToNullIfEmpty($resp->phoneDomicile))
-            ->setPhoneMobile($this->setToNullIfEmpty($resp->phoneMobile))
-            ->setAdr($resp->adr)
-            ->setComplement($this->setToNullIfEmpty($resp->complement))
-            ->setCp($resp->cp)
-            ->setCity($resp->city)
-            ->setIsWaiting($waiting)
-        ;
+
+        $responsable = $this->em->getRepository(TicketResponsable::class)->find($responsableId);
+
+        if(!$responsable){
+            return false;
+        }
+
+        $responsable->setFirstname($resp->firstname);
+        $responsable->setLastname($resp->lastname);
+        $responsable->setCivility($resp->civility);
+        $responsable->setEmail($resp->email);
+        $responsable->setPhoneDomicile($this->setToNullIfEmpty($resp->phoneDomicile));
+        $responsable->setPhoneMobile($this->setToNullIfEmpty($resp->phoneMobile));
+        $responsable->setAdr($resp->adr);
+        $responsable->setComplement($this->setToNullIfEmpty($resp->complement));
+        $responsable->setCp($resp->cp);
+        $responsable->setCity($resp->city);
+        $responsable->setIsWaiting($waiting);
+
+        return $responsable;
     }
 
     /**

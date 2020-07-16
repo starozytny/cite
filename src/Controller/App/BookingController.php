@@ -118,59 +118,24 @@ class BookingController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         $day = $id;
-        $creneaux = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $id), array('horaire' => 'ASC'));
-
         $data = json_decode($request->getContent());
         $prospects = $data->prospects;
-        $nbProspects = count($prospects);
+        $responsableId = $data->responsableId;
         $responsable = $data->responsable;
+        $creneauId = $data->creneauId;
 
-        $messageWaiting ='Il n\'y a plus assez de place. En validant la réservation, vous serez <b>en file d\'attente</b>.';
-        // Check place in each creneaux orderBy ASC horaire
-        $i = 0; $len = count($creneaux);
-        if($day->getRemaining() >= $nbProspects){ // suffisament de place pour le nombre de prospects
-            
-            foreach($creneaux as $creneau){
-
-                $remaining = $creneau->getRemaining();
-                if($remaining > 0){ // reste de la place
-    
-                    if($remaining >= $nbProspects){ // assez de place pour l'inscription
-    
-                        $responsableId = $this->createResponsableAndProspects($responsable, $prospects, $creneau, $day);
-                        $horaire = date_format($creneau->getHoraire(), 'H\hi');
-                        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $responsableId, 
-                            'message' => 'Horaire de passage : <b>' . $horaire . '</b> <br/><br/>
-                                         Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.'
-                        ]);
-                        
-                    }else{ // pas assez de place pour l'inscription
-                        // test le suivant sauf si last creneau
-                        if($i == $len - 1) { 
-                            return new JsonResponse([
-                                'code' => 0,
-                                'message' => 'Reste de la place mais pas assez pour le nombre de prospects -> file attente'
-                            ]);
-                        }
-                    }
-    
-                }else{ // pas de place 
-                    // test le suivant sauf si last creneau
-                    if($i == $len - 1) {
-                        $responsableId = $this->createResponsableAndProspects($responsable, $prospects, null, $day, true);
-                        return new JsonResponse([
-                            'code' => 0,
-                            'message' => 'Plus de place dispo sur tous les créneaux -> file attente'
-                        ]);
-                    }
-                }
-            }
+        $creneau = $em->getRepository(TicketCreneau::class)->find($creneauId);
+        $res = $this->createResponsableAndProspects($responsableId, $responsable, $prospects, $creneau, $day);
+        if($res){
+            $horaire = date_format($creneau->getHoraire(), 'H\hi');
+            return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'responsableId' => $responsableId, 
+                'message' => 'Horaire de passage : <b>' . $horaire . '</b> <br/><br/>
+                                Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour une réitérer la demande.'
+            ]);
         }else{
-            $responsableId = $this->createResponsableAndProspects($responsable, $prospects, null, $day, true);
             return new JsonResponse([
                 'code' => 0,
-                'responsableId' => $responsableId,
-                'message' => $messageWaiting
+                'message' => 'Une erreur est survenue pendant votre inscription. Veuillez recommencer.'
             ]);
         }
     }
@@ -255,11 +220,14 @@ class BookingController extends AbstractController
      * Create Responsable and Prospects and check if At least one prospect is not exist else
      * decrease remaining creneau and day 
      */
-    private function createResponsableAndProspects($resp, $prospects, ?TicketCreneau $creneau, TicketDay $day, $waiting=false)
+    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, TicketDay $day, $waiting=false)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $responsable = $this->responsableService->createResponsable($resp, $waiting);
+        $responsable = $this->responsableService->updateResponsable($responsableId, $resp, $waiting);
+        if($responsable == false){
+            return false;
+        }
         $em->persist($responsable);
 
         foreach($prospects as $item){

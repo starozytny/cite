@@ -104,7 +104,6 @@ export class Booking extends Component {
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             
-            console.log(code)
             if(code === 1){
                 self.setState({prospects: dataNoDoublon, classDot: 'active-2', classStep1: 'full', classStep2: 'active'});                
             }else{
@@ -119,7 +118,6 @@ export class Booking extends Component {
                     });
                     newProspects.push(newProspect);
                 });
-                console.log(newProspects)
                 self.setState({ code: 2, prospects: newProspects });
             }
         });
@@ -131,14 +129,14 @@ export class Booking extends Component {
     toReviewStep (data) {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active', min: 4, second: 60});
 
-        const {prospects} = this.state;
+        const {prospects, responsableId, creneauId} = this.state;
 
         AjaxSend.loader(true);
         let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_add', { 'id' : this.props.dayId }), 
-            data: { prospects: prospects, responsable: data } 
+            data: { prospects: prospects, responsable: data, responsableId: responsableId, creneauId: creneauId} 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             
