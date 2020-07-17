@@ -7,10 +7,17 @@
         </div>
         <div class="nav-menu">
             <div class="items">
-                <a href="{{ path('app_login') }}" class="item">
-                    <span class="icon-user"></span>
-                    <span>Se connecter</span>
-                </a>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <a href="{{ path('admin_dashboard') }}" class="item">
+                        <span class="icon-user"></span>
+                        <span>Espace admin</span>
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="item">
+                        <span class="icon-user"></span>
+                        <span>Se connecter</span>
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -10,23 +10,85 @@
 {% block title %}Home{% endblock %}
 
 {% block main_content %}
-    Hello world 
+    <div class="deroulement-section">
+        <div class="deroulement">
+            <h2>Déroulement de la journée</h2>
+            <p>
+                Durant cette journée, vous pourrez rencontrer les professeurs, et obtenir toutes les informations pratiques 
+                dont vous avez besoin pour faire votre choix : instruments pratiqués, nombre de places disponibles 
+                (en fonction de l’âge et du niveau musical), lieux où se déroulent les activités..
+            </p>
+        </div>
+    </div>
 
-    <div id="r-compteur" class="compteur" data-count="1946">0</div>
+    <div class="rdv-section">
+        <div class="rdv">
+            <p>
+                <span>Rendez-vous à la Cité de la musique </span>
+                <span class="rdv-bold-underline">muni de votre ticket d'entrée</span>
+                <span> et </span>
+                <span class="rdv-bold-underline">votre avis d'impôt.</span>
+            </p>
+        </div>
+    </div>
 
-    <ul>
-        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            <a href="{{ path('app_logout') }}">Logout</a>
-        {% else %}
-            <li><a href="{{ path('app_login') }}">Login</a></li>
-        {% endif %}
-        <li><a href="{{ path('app_mentions') }}">Mentions</a></li>
-        <li><a href="{{ path('app_politique') }}">Politique</a></li>
-        <li><a href="{{ path('app_cookies') }}">Cookies</a></li>
-        <li><a href="{{ path('app_rgpd') }}">RGPD</a></li>
-        <li><a href="{{ path('app_contact') }}">Contact</a></li>
-        <li><a href="{{ path('app_booking_index') }}">Réservation</a></li>
-    </ul>
+    <section class="inscription-sectin">
+        <div class="inscription">
+            <div class="content">
+                <h2>Comment s'inscrire ?</h2>
+                <p>
+                    Les inscriptions aux cours et ateliers de musique auront lieu à la Cité de la musique de Marseille, 
+                    4 rue Bernard du Bois, Marseille 1er arrondissement. 
+                    <br><br>
+                    Etant donné le grand nombre de demandes, un système de tickets d’entrée a été mis en place. 
+                    Ce dispositif permet de limiter au maximum l’attente des enfants et des parents.
+                    <br><br>
+                    <b>Si vous souhaitez assister à une journée, <span class="txt-primary">prenez un ticket</span>.</b>
+                </p>
+                <a href="{{ path('app_booking_index') }}" class="btn btn-primary">Prendre un ticket</a>
+            </div>
+            <div class="illustration">
+                <div class="image">
+                    <img src="{{ asset(path_images ~ "inscription.jpg") }}" alt="Illustation cité de la musique">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="infos-section">
+        <div class="infos">
+            <h2>Infos pratiques</h2>
+            <div class="content">
+                <div>
+                    <h3>Accès</h3>
+                    <p>
+                        Les cours de musique sont répartis entre plusieurs centres d’enseignement répartis sur la ville de Marseille.
+                    </p>
+                    <a href="" class="link link-primary">Découvrir la liste des centres</a>
+                </div>
+                <div>
+                    <h3>Tarifs cours et ateliers</h3>
+                    <p>
+                        La Cité de la Musique propose des tarifs préférentiels pour les personnes résidant à Marseille et les étudiants de moins de 26 ans. 
+                        <br><br>
+                        Le calcul du tarif d’inscription prend aussi en compte le montant de votre imposition. 
+                        Le quotient familial est calculé à partir du revenu fiscal de référence et du nombre de parts fiscales 
+                        figurant sur l'avis d'imposition.
+                    </p>
+                    <a href="" class="link link-primary">Accéder au simulateur de tarif en ligne</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section">
+        <div class="contact">
+            <p>
+                <span class="txt-primary">Contact : </span>
+                04 91 39 28 28 - 4 rue Bernard du Bois, 13001 Marseille
+            </p>
+        </div>
+    </section>
 {% endblock %}
 
 {% block javascripts %}

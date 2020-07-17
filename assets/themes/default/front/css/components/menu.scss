@@ -43,6 +43,10 @@ nav{
 
                 [class^="icon-"]{margin-right: 8px; transform: translateY(-1px);}
             }
+
+            .item:not(:last-child){
+                margin-right: 35px;
+            }
         }
     }
 }
