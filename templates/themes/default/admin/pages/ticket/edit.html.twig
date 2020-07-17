@@ -5,25 +5,12 @@
 {% block main_content %}
 
     <section class="title">
-        <h1>Editer une journée</h1>
+        <h1>Editer la journée des {{ day.typeString }} du {{ day.day | date('d/m/Y') }}</h1>
     </section>
 
     <section class="content">
         <div class="toolbar"></div>
 
-        <div class="days">
-            <div class="days-cards">
-                {{ form_start(form) }}
-                    <div class="form-group">
-                        {% include 'themes/default/admin/components/form/display_input.html.twig' with {'formInput': form.max} %}
-                    </div>
-                    <div class="form-group">
-                        {% include 'themes/default/admin/components/form/display_input.html.twig' with {'formInput': form.remaining} %}
-                    </div>
-                    <button type="submit" class="btn">Modifier</button>
-                {{ form_end(form) }}
-            </div>
-        </div>
-
+        <div id="slots" data-slots="{{ slots | json_encode() }}" data-dayId={{ day.id }}></div>
     </section>
 {% endblock %}

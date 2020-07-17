@@ -1,6 +1,7 @@
 @import '../vars/vars.scss';
 
 @import './split/ticket/prospect.scss';
+@import './split/ticket/edit_slot.scss';
 
 .days-cards, .slots-cards{
     @include flex(row, stretch, flex-start);
@@ -52,7 +53,7 @@
     padding: 0 10px;
 }
 
-.day-card-actions{
+.day-card-actions, .slot-card-actions{
     @include flex(row, flex-end, flex-end);
     border-top: 1px solid $color4;
 
@@ -73,6 +74,10 @@
         &:hover{
             text-decoration: underline;
         }
+    }
+
+    .btn-delete{
+        color: $errorLabel;
     }
 }
 

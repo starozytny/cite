@@ -60,24 +60,16 @@ class TicketController extends AbstractController
     /**
     * @Route("/jour/{ticketDay}/editer", name="edit")
     */
-    public function edit(Request $request, TicketDay $ticketDay)
+    public function edit(SerializerInterface $serializer, TicketDay $ticketDay)
     {
         $em = $this->getDoctrine()->getManager();
-        $form = $this->createForm(TicketDayType::class, $ticketDay);
+        $slots = $ticketDay->getTicketCreneaux();
 
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
-            $day = $form->getData();
-
-            $em->persist($day);
-            $em->flush();
-
-            return $this->redirectToRoute('admin_ticket_index');
-        }
+        $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'horaireString', 'max', 'remaining']]);
 
         return $this->render('root/admin/pages/ticket/edit.html.twig', [
             'day' => $ticketDay,
-            'form' => $form->createView()
+            'slots' => $slots
         ]);
     }
 
