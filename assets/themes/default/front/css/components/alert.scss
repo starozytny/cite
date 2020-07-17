@@ -5,12 +5,12 @@
     font-size: 15px;
 }
 
-.alert-danger{
+.alert-danger, .alert-error{
     background-color: $errorBg;
     color: $errorLabel;
 }
 
-.alert-info{
+.alert-info, .alert-success{
     background-color: $infoBg;
     color: $info;
 }

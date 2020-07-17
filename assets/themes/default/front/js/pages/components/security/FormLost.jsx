@@ -11,16 +11,19 @@ class FormLost extends React.Component {
         this.state = {
             success: '',
             error: '',
-            email: { value: '', error: '' }
+            email: { value: '', error: '' },
+            open: ''
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleClose = this.handleClose.bind(this);
     }
 
     handleChange(e){
-        const name = e.target.name;
-        const value = e.target.value;
+        const name = e.currentTarget.name;
+        const value = e.currentTarget.value;
         this.setState({
             success: '',
             [name]: {value: value}
@@ -45,19 +48,38 @@ class FormLost extends React.Component {
         }
     }
 
+    handleOpen (e) {
+        e.preventDefault();
+        this.setState({open: 'active'})
+    }
+
+    handleClose (e) {
+        this.setState({open: '', email: { value: '', error: '' }, error: '', success: ''})
+    }
+
     render() {
-        const {success, error, email} = this.state;
+        const {success, error, email, open} = this.state;
+
         return (
             <>
-                <Formulaire 
-                    onSubmit={this.handleSubmit}
-                    success={success}
-                    error={error}
-                    inputs={
-                        <Input value={email.value} name="email" id="email" onChange={this.handleChange} error={email.error}>Email</Input>
-                    }
-                    btn="Envoyer"
-                />
+                <button className="link link-primary" onClick={this.handleOpen}>Mot de passe oublié ?</button>
+                <div className={"form-lost-overlay " + open} onClick={this.handleClose}></div>
+                <div className={"form-lost " + open}>
+
+                    <div className="title">
+                        <div>Mot de passe oublié ?</div>
+                    </div>
+
+                    <Formulaire 
+                        onSubmit={this.handleSubmit}
+                        success={success}
+                        error={error}
+                        inputs={
+                            <Input value={email.value} identifiant="email" onChange={this.handleChange} error={email.error}>Email</Input>
+                        }
+                        btn="Envoyer"
+                    />
+                </div>
             </>
         );
     }

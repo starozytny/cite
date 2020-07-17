@@ -1,15 +1,21 @@
-{% extends 'themes/default/app/layout/layout.html.twig' %}
+{% extends 'themes/default/app/pages/security/template.html.twig' %}
 
 {% block title %}Réinitialisation de mot de passe{% endblock %}
 
-{% block stylesheets %}
-    {{ encore_entry_link_tags('default_security') }}
-{% endblock %}
+{% block main_content %}
 
-{% block body %}
-    <div id="form-reinit" data-url={{ path('app_password_reinit', {'token': token, 'code': code}) }}></div>
-{% endblock %}
+    <div class="ariane">
+        <span><a href="{{ path('app_homepage') }}">Accueil</a></span>
+        <span class="active"><a href="{{ path('app_login') }}">Se connecter</a></span>
+    </div>
 
-{% block javascripts %}
-    {{ encore_entry_script_tags('default_security') }}
+    <section class="login login-reinit">
+
+        <h1>Réinitialiser son mot de passe</h1>
+
+        <div class="login-card">
+            <div id="form-reinit" data-url={{ path('app_password_reinit', {'token': token, 'code': code}) }}></div>
+        </div>
+    </section>
+    
 {% endblock %}

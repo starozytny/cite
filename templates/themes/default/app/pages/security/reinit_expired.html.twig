@@ -1,15 +1,7 @@
-{% extends 'themes/default/app/layout/layout.html.twig' %}
+{% extends 'themes/default/app/pages/security/template.html.twig' %}
 
 {% block title %}Réinitialisation de mot de passe{% endblock %}
 
-{% block stylesheets %}
-    {{ encore_entry_link_tags('default_security') }}
-{% endblock %}
-
-{% block body %}
+{% block main_content %}
     {{message}}
-{% endblock %}
-
-{% block javascripts %}
-    {{ encore_entry_script_tags('default_security') }}
 {% endblock %}

@@ -69,8 +69,8 @@ class FormReinit extends React.Component {
                     success={success} error={error}
                     inputs={
                         <>
-                            <Input value={password.value} type="password" name={a} id={a} onChange={this.handleChange} error={password.error}>Mot de passe</Input>
-                            <Input value={password2.value} type="password" name={b} id={b} onChange={this.handleChange} error={password2.error}>Confirmer le mot de passe</Input>
+                            <Input value={password.value} type="password" identifiant={a} onChange={this.handleChange} error={password.error}>Mot de passe</Input>
+                            <Input value={password2.value} type="password" identifiant={b} onChange={this.handleChange} error={password2.error}>Confirmer le mot de passe</Input>
                         </>
                     }
                     btn="Réinitialiser"

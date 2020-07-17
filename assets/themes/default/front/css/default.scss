@@ -60,6 +60,8 @@ main{
     cursor: pointer;
     padding-left: 10px;
     margin: 25px 0 0 0;
+    border: none;
+    background-color: transparent;
 
     &:before{
         content: '';

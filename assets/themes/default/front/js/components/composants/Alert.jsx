@@ -1,7 +1,7 @@
 import React, {Components} from 'react';
 
 function Alert({type, elem}){
-    const className = 'alert-' + type;
+    const className = 'alert alert-' + type;
     return (
         <> {elem ? <div className={className}>{elem}</div> : null} </>
     );
