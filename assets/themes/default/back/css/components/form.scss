@@ -83,7 +83,7 @@ label{
 .alert.active{
     display: block;
 }
-.alert-error{
+.alert-error, .alert-danger{
     background-color: $errorBg;
     color: $error;
 }

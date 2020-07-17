@@ -17,33 +17,72 @@ export class Slots extends Component {
             editHoraire: '',
             editMax: {value: '', error: ''},
             editRemaining: '',
-            openEdit: ''
+            editMinim: '',
+            openEdit: '',
+            error: ''
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange (e) {
-        const {editMax} = this.state
-        let value = e.target.value
-        let name = e.target.name
-
-        this.setState({ [name]: {value: value} });
+        this.setState({ [e.target.name]: {value: e.target.value} });
     }
 
     handleEdit (e) {
         let el = e.currentTarget;
-        this.setState({openEdit: 'active', editId: el.dataset.id, editHoraire: el.dataset.horaire, editMax: {value: el.dataset.max}, editRemaining: el.dataset.remaining})
+        let min = parseInt(el.dataset.max) - parseInt(el.dataset.remaining);
+        this.setState({openEdit: 'active', error: '', editId: el.dataset.id, editHoraire: el.dataset.horaire, 
+        editMax: {value: el.dataset.max}, editRemaining: el.dataset.remaining, editMinim: min})
     }
 
     handleClose (e) {
         this.setState({openEdit: '', editId: '', editHoraire: '', editMax: {value: '', error: ''}, editRemaining: ''})
     }
 
+    handleSubmit (e) {
+        e.preventDefault();
+        const {dayId, editId, slots, editMax, editMinim} = this.state;
+
+        let validate = Validateur.validateur([
+            {type: "text", id: 'editMax', value: editMax.value},
+        ]);
+
+        if(!validate.code){
+            this.setState(validate.errors);
+        }else{
+            if(parseInt(editMax.value) < parseInt(editMinim)){
+                this.setState({editMax: {value: editMax.value, error: 'La valeur doit être supérieur à ' + editMinim}})
+            }else{
+                AjaxSend.loader(true);
+                let self = this;
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('admin_ticket_slot_update', { 'ticketDay' : dayId }), 
+                    data: {slotId: editId, max: editMax.value} 
+                }).then(function (response) {
+                    let data = response.data; let code = data.code; AjaxSend.loader(false);
+                    console.log(response)
+                    if(code === 1){
+                        let arr = [];
+                        slots.forEach((elem) => {
+                            if(elem.id == editId){ elem.max = parseInt(editMax.value) ; elem.remaining = parseInt(data.remaining)}
+                            arr.push(elem);
+                        })
+                        self.setState({error: '', slots: arr, openEdit: ''})
+                    }else{
+                        self.setState({error: data.message})
+                    }
+                });
+            }
+        }
+    }
+
     render () {
-        const {slots, editMax, editHoraire, editRemaining, openEdit} = this.state;
+        const {slots, editMax, editHoraire, editMinim, openEdit, error} = this.state;
 
         let items = slots.map((elem, index) => {
             return <div className="slot-card" key={elem.id}>
@@ -51,8 +90,11 @@ export class Slots extends Component {
                     <div>{elem.horaireString}</div>
                 </div>
                 <div className="slot-card-numbers">
-                    <div className="slot-card-max">max : {elem.max}</div>
-                    <div className="slot-card-remaining">reste : {elem.remaining}</div>
+                    <div className="slot-card-max">
+                        <div>max : {elem.max}</div>
+                        <div>reste : {elem.remaining}</div>
+                    </div>
+                    <div className="slot-card-remaining">participants : {elem.max - elem.remaining}</div>
                 </div>
                 <div className="slot-card-actions">
                     {elem.remaining === elem.max ? <button className="btn-delete">Supprimer</button> : null}
@@ -71,13 +113,16 @@ export class Slots extends Component {
                     <div>Editer {editHoraire}</div>
                     <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
                 </div>
+                {error != "" ? <div className="alert alert-danger">{error}</div> : null}
                 <div className='minimum'>
-                    Valeur minimum : {editRemaining}
+                    Valeur min acceptée : {parseInt(editMinim)}
                 </div>
-                <Input type="text" identifiant="editMax-" value={editMax.value} onChange={this.handleChange} error={editMax.error}>Max</Input>
-                <div className="from-group">
-                    <button className="btn btn-primary">Mettre à jour</button>
-                </div>
+                <form onSubmit={this.handleSubmit}>
+                    <Input type="number" identifiant="editMax" value={editMax.value} onChange={this.handleChange} error={editMax.error}>Max</Input>
+                    <div className="from-group">
+                        <button className="btn btn-primary" type="submit">Mettre à jour</button>
+                    </div>
+                </form>
             </div>
         </div>
     }

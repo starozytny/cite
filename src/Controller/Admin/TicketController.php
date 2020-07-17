@@ -11,6 +11,7 @@ use App\Service\Export;
 use App\Service\OpenDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -62,7 +63,6 @@ class TicketController extends AbstractController
     */
     public function edit(SerializerInterface $serializer, TicketDay $ticketDay)
     {
-        $em = $this->getDoctrine()->getManager();
         $slots = $ticketDay->getTicketCreneaux();
 
         $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'horaireString', 'max', 'remaining']]);
@@ -71,6 +71,35 @@ class TicketController extends AbstractController
             'day' => $ticketDay,
             'slots' => $slots
         ]);
+    }
+
+    /**
+    * @Route("/jour/{ticketDay}/editer/update", options={"expose"=true}, name="slot_update")
+    */
+    public function updateSlot(TicketDay $ticketDay, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent());
+        $slotId = $data->slotId;
+        $max = intval($data->max);
+
+        $slot = $em->getRepository(TicketCreneau::class)->find($slotId);
+
+        if(!$slot){
+            return new JsonResponse(['code' => 0, 'message' => 'Erreur, ce créneau n\'existe pas.']);
+        }
+
+        $min = $slot->getMax() - $slot->getRemaining();
+        if($max < $min){
+            return new JsonResponse(['code' => 0, 'message' => 'La nouvelle valeur min acceptée est ' . $min . '. Veuillez rafraichir la page.']);
+        }
+        $remaining = $max - $min;
+        $slot->setMax($max);
+        $slot->setRemaining($remaining);
+        $em->persist($slot);
+        $em->flush();
+
+        return new JsonResponse(['code' => 1, 'remaining' => $remaining]);
     }
 
     /**
