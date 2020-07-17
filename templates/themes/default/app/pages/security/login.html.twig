@@ -1,40 +1,58 @@
 {% extends 'themes/default/app/layout/layout.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Se connecter{% endblock %}
 
 {% block stylesheets %}
     {{ encore_entry_link_tags('default_security') }}
 {% endblock %}
 
-{% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+{% block main_content %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+    <div class="ariane">
+        <span><a href="{{ path('app_homepage') }}">Accueil</a></span>
+        <span class="active"><a href="{{ path('app_login') }}">Se connecter</a></span>
+    </div>
+
+    <section class="login">
+
+        <h1>Se connecter</h1>
+
+        <div class="login-card">
+        
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+        
+                
+                <div class="form-group">
+                    <label for="inputUsername">Nom utilisateur</label>
+                    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">Mot de passe</label>
+                    <input type="password" name="password" id="inputPassword" required>
+            
+                </div>
+                
+                <input type="hidden" name="_csrf_token"
+                    value="{{ csrf_token('authenticate') }}"
+                >
+        
+                <div class="form-group form-group-btn">
+                    <button class="btn btn-primary" type="submit">
+                        Se connecter
+                    </button>
+                </div>
+
+                <div class="form-group-btn">
+                    <a href="" class="link link-primary">Mot de passe oublié ?</a>
+                </div>
+            </form>
         </div>
-    {% endif %}
-
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputUsername">Username</label>
-    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" required>
-
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
-<div id="test">test</div>
-<br><br><br>
-<div id="form-lost"></div>
+    </section>
+    
+    <div id="form-lost"></div>
 {% endblock %}
 
 {% block javascripts %}

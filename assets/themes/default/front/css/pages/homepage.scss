@@ -92,29 +92,8 @@ main{
     }
 
     .link{
-        display: block;
-        position: relative;
         color: $color5;
-        cursor: pointer;
-        padding-left: 10px;
-        margin: 25px 0 0 0;
         @include fontSemibold();
-
-        &:before{
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 5px;
-            height: 100%;
-            background-color: $color7;
-            display: block;
-        }
-
-        &.link-primary{
-            &:before{
-                background-color: $color0;
-            }
-        }
     }
 }
 
