@@ -253,11 +253,11 @@ function Infos({day}) {
             <h1>Réservation d'un ticket</h1>
             <p className="subtitle">Journée d'inscription du {day}</p>
             <p>
-                La demande de ticket permet de faire une réservation pour X personnes.
-                <br /><br />
+                La demande de ticket permet de faire une réservation pour une famille.
+                <br />
                 Votre <b>numéro de ticket</b> et l’<b>horaire de passage</b> vous seront envoyés par email.
                 <br /><br /><br /><br />
-                <b className="txt-danger">Important :</b> Pour toute information concernant le déroulement de cette journée
+                <b className="txt-danger">Important :</b> ????
             </p>
             <p className="informations-complementaire">
                 Pour toute information concernant le déroulement de cette journée : 
@@ -289,7 +289,7 @@ function Starter({onClick, days, dayRemaining}) {
 
                     <div className="starter-dates">{items} </div>
 
-                    <div className="alert alert-info"> A la journée d'inscription veuillez apporter votre <b>avis d'impôt sur le revenu</b> </div>
+                    <div className="alert alert-info"> A la journée d'inscription, veuillez apporter votre <b>avis d'impôt sur le revenu</b> </div>
                     {dayRemaining ? null : <div className="alert"> Il n'y a plus de place. </div>}
                 </div>
                 <div className="starter-btn">
