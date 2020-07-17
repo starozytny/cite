@@ -12,7 +12,7 @@ export function Formulaire({onSubmit, inputs, success, error, btn, children}) {
             <div>
                 {inputs}
             </div>
-            <div>
+            <div className="form-infos">
                 {children}
             </div>
             <div>
