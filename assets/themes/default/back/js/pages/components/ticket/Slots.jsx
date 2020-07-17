@@ -26,6 +26,7 @@ export class Slots extends Component {
         this.handleEdit = this.handleEdit.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     handleChange (e) {
@@ -65,7 +66,6 @@ export class Slots extends Component {
                     data: {slotId: editId, max: editMax.value} 
                 }).then(function (response) {
                     let data = response.data; let code = data.code; AjaxSend.loader(false);
-                    console.log(response)
                     if(code === 1){
                         let arr = [];
                         slots.forEach((elem) => {
@@ -79,6 +79,45 @@ export class Slots extends Component {
                 });
             }
         }
+    }
+
+    handleDelete (e) {
+        e.preventDefault()
+
+        const {dayId, slots} = this.state;
+
+        let id = e.currentTarget.dataset.id;
+
+        Swal.fire({
+            title: 'Etes-vous sur ?',
+            text: "La suppression est irréversible.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, je supprime'
+            }).then((result) => {
+            if (result.value) {
+                AjaxSend.loader(true);
+                let self = this;
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('admin_ticket_slot_delete', { 'ticketDay' : dayId, 'slot' : id})
+                }).then(function (response) {
+                    let data = response.data; let code = data.code; AjaxSend.loader(false);
+
+                    if(code === 1){
+                        let arr = slots.filter((elem) => { return elem.id != id })
+                        self.setState({slots: arr})
+                        Swal.fire( 'Supprimé !',data.message,'success' );
+                    }else{
+                        Swal.fire( 'Erreur !', data.message, 'error' );
+                    }
+                    
+                });
+            }
+        })
+
     }
 
     render () {
@@ -98,7 +137,7 @@ export class Slots extends Component {
                     <div className="slot-card-remaining">participants : {elem.max - elem.remaining}</div>
                 </div>
                 <div className="slot-card-actions">
-                    {elem.remaining === elem.max ? <button className="btn-delete">Supprimer</button> : null}
+                    {elem.remaining === elem.max ? <button className="btn-delete" onClick={this.handleDelete} data-id={elem.id}>Supprimer</button> : null}
                     <button className="btn-edit" onClick={this.handleEdit} data-id={elem.id} data-horaire={elem.horaireString} data-max={elem.max} data-remaining={elem.remaining}>Editer</button>
                 </div>
             </div>

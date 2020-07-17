@@ -103,6 +103,28 @@ class TicketController extends AbstractController
     }
 
     /**
+    * @Route("/jour/{ticketDay}/delete/{slot}", options={"expose"=true}, name="slot_delete")
+    */
+    public function deleteSlot(TicketDay $ticketDay, TicketCreneau $slot)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $horaire = $slot->getHoraireString();
+
+        if(!$slot){
+            return new JsonResponse(['code' => 0, 'message' => 'Erreur, ce créneau n\'existe pas.']);
+        }
+
+        if($slot->getRemaining() < $slot->getMax()){
+            return new JsonResponse(['code' => 0, 'message' => 'Une personne vient de s\'inscrire. Vous ne pouvez pas supprimer ce créneau. Veuillez rafraichir la page.']);
+        }
+
+        $em->remove($slot);
+        $em->flush();
+
+        return new JsonResponse(['code' => 1, 'message' => 'Le créneau ' . $horaire . ' a été définitivement supprimé.']);
+    }
+
+    /**
     * @Route("/jour/{ticketDay}/export", name="export")
     */
     public function export(TicketDay $ticketDay, Export $export)
