@@ -11,6 +11,7 @@
     &.active{
         opacity: 1;
         z-index: 5;
+        cursor: pointer;
     }
 }
 
@@ -30,6 +31,11 @@
         @include fontSemibold();
         font-size: 24px;
         margin-bottom: 25px;
+        @include flex(row, flex-start, space-between);
+
+        [class^='icon-']{
+            cursor: pointer;
+        }
     }
     .minimum{
         margin-bottom: 10px;

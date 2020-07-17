@@ -68,7 +68,8 @@ export class Slots extends Component {
             <div className={"slots-edit-overlay " + openEdit} onClick={this.handleClose}></div>
             <div className={"slots-edit " + openEdit}>
                 <div className="title">
-                    Editer {editHoraire}
+                    <div>Editer {editHoraire}</div>
+                    <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
                 </div>
                 <div className='minimum'>
                     Valeur minimum : {editRemaining}
