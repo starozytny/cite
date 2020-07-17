@@ -222,12 +222,12 @@ class BookingController extends AbstractController
                     'firstname' => $item->firstname,
                     'lastname' => $item->lastname,
                     'email' => $item->email,
-                    'birthday' => new DateTime($item->birthday)
+                    'birthday' => new DateTime($item->birthday),
+                    'numAdh' => $item->numAdh
                 ))){
                     array_push($alreadyRegistered, $item);
                 } 
             }
-           
         }else{
 
             foreach($prospects as $item){

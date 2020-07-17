@@ -82,7 +82,7 @@ export class Booking extends Component {
         let dataNoDoublon = data.filter((thing, index, self) =>
             index === self.findIndex((t) => (
                 t.civility === thing.civility && t.firstname === thing.firstname && t.lastname === thing.lastname &&
-                t.birthday === thing.birthday
+                t.birthday === thing.birthday && t.numAdh === thing.numAdh
             ))
         )
 

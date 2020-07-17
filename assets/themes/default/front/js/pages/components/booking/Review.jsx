@@ -28,6 +28,7 @@ export class StepReview extends Component {
         let itemsProspects = prospects.map((elem, index) => {
             return (
                 <div className={elem.registered ? 'review-card registered' : 'review-card' } key={index}>
+                    {elem.numAdh != "" ? <div>#{elem.numAdh}</div> : null}
                     <div>{elem.civility}. {elem.lastname} {elem.firstname}</div>
                     <div className="review-card-email">{elem.email}</div>
                     <div className="txt-discret">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')}</div>
@@ -73,7 +74,7 @@ export class StepReview extends Component {
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>
                 {ReactHtmlParser(messageInfo)}
-                { code == 1 ? <div> <br/>Attention ! Si vous fermez ou rafraichissez cette page, vous devrez attendre 5 minutes pour réitérer la demande. <br/><br/> 
+                { code == 1 ? <div> <br/>Attention ! <b>Si vous fermez ou rafraichissez cette page</b>, vous devrez attendre 5 minutes pour réitérer la demande. <br/><br/> 
                                 <b className="txt-primary">Veuillez valider la réservation </b> 
                                 pour obtenir votre ticket et bloquer définitivement cette plage horaire. 
                                 (bouton en bas a droite de votre écran)</div> : null }
