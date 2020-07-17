@@ -26,10 +26,10 @@ h1{
     padding: 10px;
 }
 
-.main-table .infos-inscrits td:nth-child(1){
-    padding-right: 25px;
-    border-right: 1px solid
+.main-table .infos-inscrits{
+    padding: 25px;
 }
+
 
 b{
     font-weight: bold;
@@ -37,4 +37,12 @@ b{
 
 .numero-ticket{
     font-size: 24px;
+}
+
+.logo-ca{
+    width: 150px;
+}
+
+.header td{
+    padding: 25px;
 }
