@@ -10,6 +10,19 @@
 {% block title %}Home{% endblock %}
 
 {% block main_content %}
+
+    <header>
+        <div class="header">
+            <div class="header-title">
+                <h1><span>Cité</span> <span>de la musique</span></h1>
+                <p class="subtitle">de Marseille</p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ path('app_booking_index') }}" class="btn">Prendre un ticket</a>
+            </div>
+        </div>
+    </header>
+
     <div class="deroulement-section">
         <div class="deroulement">
             <h2>Déroulement de la journée</h2>
