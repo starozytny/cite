@@ -143,27 +143,36 @@ export class Slots extends Component {
             </div>
         })
 
-        return <div className="slots">
-            <div className="slots-cards">
-                {items}
-            </div>
-            <div className={"slots-edit-overlay " + openEdit} onClick={this.handleClose}></div>
-            <div className={"slots-edit " + openEdit}>
-                <div className="title">
-                    <div>Editer {editHoraire}</div>
-                    <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
-                </div>
-                {error != "" ? <div className="alert alert-danger">{error}</div> : null}
-                <div className='minimum'>
-                    Valeur min acceptée : {parseInt(editMinim)}
-                </div>
-                <form onSubmit={this.handleSubmit}>
-                    <Input type="number" identifiant="editMax" value={editMax.value} onChange={this.handleChange} error={editMax.error}>Max</Input>
-                    <div className="from-group">
-                        <button className="btn btn-primary" type="submit">Mettre à jour</button>
+        return <>
+            <div class="toolbar">
+                <div className="toolbar-left">
+                    <div className="item">
+                        <button className="btn btn-primary">Ajouter un créneau</button>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
+            <div className="slots">
+                <div className="slots-cards">
+                    {items}
+                </div>
+                <div className={"slots-edit-overlay " + openEdit} onClick={this.handleClose}></div>
+                <div className={"slots-edit " + openEdit}>
+                    <div className="title">
+                        <div>Editer {editHoraire}</div>
+                        <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
+                    </div>
+                    {error != "" ? <div className="alert alert-danger">{error}</div> : null}
+                    <div className='minimum'>
+                        Valeur min acceptée : {parseInt(editMinim)}
+                    </div>
+                    <form onSubmit={this.handleSubmit}>
+                        <Input type="number" identifiant="editMax" value={editMax.value} onChange={this.handleChange} error={editMax.error}>Max</Input>
+                        <div className="from-group">
+                            <button className="btn btn-primary" type="submit">Mettre à jour</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </>
     }
 }
