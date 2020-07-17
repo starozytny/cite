@@ -4,4 +4,32 @@
     .alert{
         margin-top: 15px;
     }
+    .ticket{
+        text-align: center;
+    }
+
+    .ticket-barcode{
+        margin: 15px 0;
+        img{
+            width: 280px;
+        }
+    }
+    .ticket-download{
+        margin-top: 25px;
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .final-content{
+        .ticket{
+            text-align: center;
+            padding: 50px 10px;
+        }
+    }
 }

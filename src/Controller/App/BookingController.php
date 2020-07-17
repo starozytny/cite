@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -171,7 +172,7 @@ class BookingController extends AbstractController
             $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.png');
             $barcode = base64_encode($img);
             $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaire, 'day' => $id->getDay()];
-            
+            $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
     
             // Send mail     
             if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file ) != true){
@@ -179,8 +180,8 @@ class BookingController extends AbstractController
             }
     
             $em->persist($responsable); $em->flush();
-            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse
-            du responsable : ' . $responsable->getEmail()]);
+            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print,
+            'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse du responsable : ' . $responsable->getEmail()]);
         }else{
             return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
         }       

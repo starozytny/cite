@@ -8,14 +8,20 @@ export class StepTicket extends Component {
     }    
 
     render () {
-        const {classStep, day, horaire, prospects, code, finalMessage, ticket} = this.props;
+        const {classStep, day, horaire, prospects, code, finalMessage, ticket, barcode, print} = this.props;
 
         let body = <>
             <div className="final-content">
-                <div>{finalMessage}</div>
+                <div className="txt-success">{finalMessage}</div>
                 <div className="alert alert-info ticket">
                     <div>TICKET : <b>{ticket}</b></div>
+                    <div className="ticket-barcode">
+                        <img src={ "data:image/png;base64," + barcode } />
+                    </div>
                     <div>Pour le {day} à {horaire}.</div>
+                    <div className="ticket-download">
+                        <a href={print} target="_blank" download>Télécharger le billet</a>
+                    </div>
                 </div>
                 <div className="alert">
                     <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
@@ -34,11 +40,12 @@ export class StepTicket extends Component {
             body = <>
                 <div className="final-content">
                     <div>{finalMessage}</div>
-                    <div className="alert alert-info ticket">
-                        Si une place se libère, vous serez automatiquement prévenu par mail. <br/>
+                    <div className="alert alert-error ticket">
+                        Erreur dans la réservation du ticket. Veuillez contacter le support pour plus d'informations.
+                        {/* Si une place se libère, vous serez automatiquement prévenu par mail. <br/>
                         Ce mail contiendra votre numéro de ticket et votre horaire de passage. <br/> <br/>
                         <b>Attention !</b> Vous êtes en file d'attente que pour la journée du <b>{day}</b>. Pour les prochaines journées, il faudra 
-                        réitérer la demande.
+                        réitérer la demande. */}
                     </div>
                     <div className="alert">
                         <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
@@ -46,7 +53,7 @@ export class StepTicket extends Component {
                 </div>
             </>
 
-            textRegular = <div>En file d'attente pour la journée du : <b>{day}</b></div>
+            textRegular = <div>Journée du : <b>{day}</b></div>
         }
 
         return <Step id="4" classStep={classStep} title="Ticket" body={body} final="true">

@@ -33,7 +33,9 @@ export class Booking extends Component {
             timer: null,
             timeExpired: false,
             finalMessage: '',
-            ticket: null
+            ticket: null,
+            barcode: null,
+            print: '#'
         }
 
         this.interval = null;
@@ -188,7 +190,7 @@ export class Booking extends Component {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
 
             if(code === 1){
-                self.setState({ code: 1, finalMessage: data.message, ticket: data.ticket})
+                self.setState({ code: 1, finalMessage: data.message, ticket: data.ticket, barcode: data.barcode, print: data.print})
             }else{
                 self.setState({ code: 0, finalMessage: data.message })
             }
@@ -198,7 +200,7 @@ export class Booking extends Component {
     render () {
         const {day, days, dayType, dayRemaining} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
-            horaire, messageInfo, timeExpired, code, finalMessage, ticket} = this.state;
+            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -212,7 +214,7 @@ export class Booking extends Component {
                     <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
                                 timeExpired={timeExpired} code={code} toTicketStep={this.toTicketStep}/>
-                    <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire} code={code} finalMessage={finalMessage} ticket={ticket}/>
+                    <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire} code={code} finalMessage={finalMessage} ticket={ticket} barcode={barcode} print={print}/>
                 </div>
             </section> 
         </>
