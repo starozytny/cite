@@ -27,7 +27,23 @@ export class StepProspects extends Component {
         Gestion d'ajout et suppression d'inscrits
      */
     handleClickDelete (e) {
-        this.setState({deleted: parseInt(this.state.deleted) + 1, classAdd: ''})
+
+        let self = this;
+        Swal.fire({
+            title: 'Etes-vous sur ?',
+            text: "La suppression est irréversible.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, je supprime'
+            }).then((result) => {
+            if (result.value) {
+                self.setState({deleted: parseInt(this.state.deleted) + 1, classAdd: ''})
+                Swal.fire( 'Supprimé !',data.message,'success' );
+            }
+        })
+        
     }
     handleClickAdd (e) {
         let value = parseInt(this.state.added) + 1;
