@@ -9,6 +9,7 @@
 }
 
 .day-card, .slot-card{
+    position: relative;
     width: 100%;
     background-color: $alpha;
     @include boxsh();
@@ -37,6 +38,18 @@
         @include fontRegular();
         font-size: 14px;
     }
+}
+
+.slot-card-full{
+    border: 2px solid $info;
+    padding: 5px 10px;
+    color: $info;
+    transform: rotate(-5deg);
+    display: inline-block;
+    background-color: $alpha;
+    position: absolute;
+    top: 45px;
+    right: 13px;
 }
 
 .day-card-type{
@@ -125,6 +138,9 @@
     }
     .day-card-type, .day-card-numbers, .slot-card-numbers{
         padding: 0 20px;
+    }
+    .slot-card-full{
+        right: 25px;
     }
 }
 

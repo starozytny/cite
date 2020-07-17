@@ -86,6 +86,7 @@ export class Slots extends Component {
 
         let items = slots.map((elem, index) => {
             return <div className="slot-card" key={elem.id}>
+                {elem.remaining == 0 ? <div className="slot-card-full">Complet</div> : null }
                 <div className="slot-card-date">
                     <div>{elem.horaireString}</div>
                 </div>
