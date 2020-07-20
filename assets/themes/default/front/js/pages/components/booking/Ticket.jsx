@@ -24,7 +24,13 @@ export class StepTicket extends Component {
                     </div>
                 </div>
                 <div className="alert">
-                    <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
+                    <b>RAPPEL</b> : Avant de vous présenter, vérifiez que vous avez : 
+                    <ul>
+                        <li>Photocopie de votre avis d'imposition 2019 sur revenus 2018</li>
+                        <li>Un masque</li>
+                        <li>Photocopie de la carte étudiante pour les étudiants de moins de 26 ans</li>
+                        <li>Moyen de paiement: chèque ou espèce (CB non acceptée)</li>
+                    </ul>
                 </div>
             </div>
             

@@ -296,8 +296,9 @@ function Infos({day, dayTypeString}) {
                 La demande de ticket permet de faire une réservation pour une famille.
                 <br />
                 Votre <b>numéro de ticket</b> et l’<b>horaire de passage</b> vous seront envoyés par email.
-                <br /><br /><br /><br />
-                <b className="txt-danger">Important :</b> ????
+                <br /><br /><br />
+                <b className="txt-danger">Important :</b> Pour des raisons sanitaires, nous vous invitons à limitier le nombre d'accompagnants
+                 et tout particulièrement les petis enfants. Le port du masque est obligatoire
             </p>
             <p className="informations-complementaire">
                 Pour toute information concernant le déroulement de cette journée : 
@@ -330,7 +331,15 @@ function Starter({onClick, days, dayRemaining}) {
 
                     <div className="starter-dates">{items} </div>
 
-                    <div className="alert alert-info"> A la journée d'inscription, veuillez apporter votre <b>avis d'impôt sur le revenu</b> </div>
+                    <div className="alert alert-info">
+                        <b>A apporter</b> : à la journée d'inscription, vérifiez que vous avez : 
+                        <ul>
+                            <li>Photocopie de votre avis d'imposition 2019 sur revenus 2018</li>
+                            <li>Un masque</li>
+                            <li>Photocopie de la carte étudiante pour les étudiants de moins de 26 ans</li>
+                            <li>Moyen de paiement: chèque ou espèce (CB non acceptée)</li>
+                        </ul>
+                    </div>
                     {dayRemaining ? null : <div className="alert"> Il n'y a plus de place. </div>}
                 </div>
                 <div className="starter-btn">
