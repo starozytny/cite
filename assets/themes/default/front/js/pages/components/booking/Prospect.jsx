@@ -27,23 +27,9 @@ export class StepProspects extends Component {
         Gestion d'ajout et suppression d'inscrits
      */
     handleClickDelete (e) {
-
         let self = this;
-        Swal.fire({
-            title: 'Etes-vous sur ?',
-            text: "La suppression est irréversible.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Oui, je supprime'
-            }).then((result) => {
-            if (result.value) {
-                self.setState({deleted: parseInt(this.state.deleted) + 1, classAdd: ''})
-                Swal.fire( 'Supprimé !',data.message,'success' );
-            }
-        })
-        
+        this.setState({deleted: parseInt(this.state.deleted) + 1, classAdd: ''})
+        Swal.fire( 'Supprimé !',data.message,'success' );
     }
     handleClickAdd (e) {
         let value = parseInt(this.state.added) + 1;
@@ -180,8 +166,22 @@ class Prospect extends Component {
     }
 
     handleDelete (e) {
-        this.setState({renderCompo: false, deleted: true})
-        this.props.onDeleteCard();
+        let self = this;
+        Swal.fire({
+            title: 'Etes-vous sur ?',
+            text: "La suppression est irréversible.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, je supprime'
+            }).then((result) => {
+            if (result.value) {
+                self.setState({renderCompo: false, deleted: true})
+                self.props.onDeleteCard();
+            }
+        })
+        
     }
 
     handleChange (e) {
@@ -203,7 +203,7 @@ class Prospect extends Component {
     }
 
     handleClick (e) {
-        const {firstname, lastname, email, birthday, adr, cp, city, phoneDomicile, phoneMobile, isAdh, numAdh} = this.state;
+        const {firstname, lastname, email, birthday, phoneMobile, isAdh, numAdh} = this.state;
 
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
