@@ -295,7 +295,7 @@ function Infos({day, dayTypeString}) {
             <p>
                 La demande de ticket permet de faire une réservation pour une famille.
                 <br />
-                Votre <b>numéro de ticket</b> et l’<b>horaire de passage</b> vous seront envoyés par email.
+                Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email.
                 <br /><br /><br />
                 <b className="txt-danger">Important :</b> Pour des raisons sanitaires, nous vous invitons à limitier le nombre d'accompagnants
                  et tout particulièrement les petis enfants. Le port du masque est obligatoire

@@ -151,7 +151,7 @@ class Prospect extends Component {
             firstname: {value: '', error: ''},
             lastname: {value: '', error: ''},
             civility: {value: 'Mr', error: ''},
-            birthday: {value: '2019-01-01', error: ''},
+            birthday: {value: '1995-01-01', error: ''},
             phoneDomicile: {value: '', error: ''},
             phoneMobile: {value: '', error: ''},
             email: {value: '', error: ''},
