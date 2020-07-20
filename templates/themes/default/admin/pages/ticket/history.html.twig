@@ -19,13 +19,18 @@
 
         <div class="history">
             <div class="history">
-                <div class="history-header">
-                    <div class="col-1">Etape</div>
-                    <div class="col-2">Identifiant</div>
-                    <div class="col-3">Horaire</div>
-                    <div class="col-4">Status</div>
-                    <div class="col-5">Date</div>
-                </div>
+                {% if histories | length > 0 %}
+                    <div class="history-header">
+                        <div class="col-1">Etape</div>
+                        <div class="col-2">Identifiant</div>
+                        <div class="col-3">Horaire</div>
+                        <div class="col-4">Status</div>
+                        <div class="col-5">Date</div>
+                    </div>
+                {% else %}
+                    <div>Aucun essai enregistré.</div>
+                {% endif %}
+                
                 <div class="history-body">
                     {% for hist in histories %}
                         <div class="item">

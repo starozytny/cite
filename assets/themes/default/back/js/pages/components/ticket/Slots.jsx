@@ -131,7 +131,7 @@ export class Slots extends Component {
     handleSubmitAdd (e) {
         e.preventDefault();
 
-        const {dayId, addHours, addMinutes, addMax, slots} = this.state;
+        const {dayId, addHours, addMinutes, addMax} = this.state;
 
         let validate = Validateur.validateur([
             {type: "text", id: 'addHours', value: addHours.value},
@@ -191,6 +191,9 @@ export class Slots extends Component {
         return <>
             <div className="toolbar">
                 <div className="toolbar-left">
+                <div className="item">
+                        <a href={Routing.generate('admin_ticket_index')} className="btn">Retour à la liste</a>
+                    </div>
                     <div className="item">
                         <button className="btn btn-primary" onClick={this.handleAdd}>Ajouter un créneau</button>
                     </div>

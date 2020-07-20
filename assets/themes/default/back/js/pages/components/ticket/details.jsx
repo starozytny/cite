@@ -110,15 +110,17 @@ export class Details extends Component {
             </div>
         })
 
+        console.log()
+
         return <div className="prospects">
-            <div className="prospects-header">
+            {items.length <= 0 ? <div>Aucun enregistrement.</div> : <div className="prospects-header">
                 <div className="col-1">Identifiant</div>
                 <div className="col-2">Contact</div>
                 <div className="col-3">Adresse</div>
                 <div className="col-4">Horaire</div>
                 <div className="col-5">Status</div>
                 <div className="col-6"></div>
-            </div>
+            </div>}
             <div className="prospects-body">
                 {items}
             </div>
