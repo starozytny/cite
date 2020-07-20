@@ -57,7 +57,7 @@
                             <td>
                                 <ul>
                                     {% for prospect in prospects %}
-                                            <li>{{ prospect.civility }} {{ prospect.firstname | capitalize }} {{ prospect.lastname | upper }} - {{ prospect.birthday | date('d/m/Y') }}</li>
+                                            <li>{{ prospect.civility }} {{ prospect.firstname | capitalize }} {{ prospect.lastname | upper }} ({{ prospect.age }}) - {{ prospect.birthday | date('d/m/Y') }}</li>
                                     {% endfor %}
                                 </ul>
                             </td>

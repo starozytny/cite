@@ -1,6 +1,6 @@
 {% extends "themes/default/app/email/template_booking.html.twig" %}
 
-{% block month %}{{ day.day | date('F') }}{% endblock %}
+{% block month %}{{ day.monthFr }}{% endblock %}
 
 {% block day %}{{ day.day | date('d') }}{% endblock %}
 
@@ -19,7 +19,7 @@
     <ul>
         {% for prospect in prospects %}
             <li>
-                {{ prospect.civility }} {{ prospect.firstname | capitalize }} {{ prospect.lastname | upper }} - {{ prospect.birthday | date('d-m-Y') }}
+                {{ prospect.civility }} {{ prospect.firstname | capitalize }} {{ prospect.lastname | upper }} ({{ prospect.age }}) - {{ prospect.birthday | date('d-m-Y') }}
             </li>
         {% endfor %}
     </ul>

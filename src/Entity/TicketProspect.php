@@ -323,4 +323,15 @@ class TicketProspect
 
         return $this;
     }
+
+    public function getAge()
+    {
+        $nowyear = date_format(new DateTime(), 'Y');
+        $birthday = date_format($this->getBirthday(), 'Y');
+        $age = intval($nowyear) - intval($birthday);
+
+        $age = $age > 1 ? $age . ' ans' : $age . ' an';
+
+        return $age;
+    }
 }

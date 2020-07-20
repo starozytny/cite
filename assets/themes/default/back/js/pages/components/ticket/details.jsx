@@ -85,7 +85,7 @@ export class Details extends Component {
                 <div className="col-1">
                     {elem.numAdh != null ? <div>#{elem.numAdh}</div> : null}
                     <div className="name">{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
-                    <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')}</div>
+                    <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
                 </div>
                 <div className="col-2">
                     <div className="email">{elem.email}</div>

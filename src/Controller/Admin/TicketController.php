@@ -48,7 +48,7 @@ class TicketController extends AbstractController
 
         $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'max', 'remaining']]);
         $prospects = $serializer->serialize($prospects, 'json', ['attributes' => [
-            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
             'numAdh', 'status', 'statusString', 'responsable' => ['id'], 'creneau' => ['id', 'horaireString']
         ]]);
 

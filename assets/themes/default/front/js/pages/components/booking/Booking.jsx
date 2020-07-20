@@ -236,13 +236,13 @@ export class Booking extends Component {
     }
 
     render () {
-        const {day, days, dayType, dayRemaining} = this.props;
+        const {day, days, dayType, dayRemaining, dayTypeString} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
             horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
-                <Infos day={day} />
+                <Infos day={day} dayTypeString={dayTypeString}/>
                 <Starter onClick={this.handleClickStart} days={days} dayRemaining={dayRemaining}/>
             </section>
             <section className="section-steps">
@@ -287,11 +287,11 @@ function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
     )
 }
 
-function Infos({day}) {
+function Infos({day, dayTypeString}) {
     return (
         <div className="informations">
             <h1>Réservation d'un ticket</h1>
-            <p className="subtitle">Journée d'inscription du {day}</p>
+            <p className="subtitle">Journée d'inscription des {dayTypeString} du {day} </p>
             <p>
                 La demande de ticket permet de faire une réservation pour une famille.
                 <br />

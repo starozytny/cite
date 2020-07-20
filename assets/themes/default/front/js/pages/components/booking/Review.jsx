@@ -26,12 +26,17 @@ export class StepReview extends Component {
         const {classStep, onClickPrev, toTicketStep, prospects, responsable, day, messageInfo, timeExpired, code, onAnnulation} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
+
+            let birthday = new Date(elem.birthday);
+            let now = new Date()
+            let age = now.getYear() - birthday.getYear();
+
             return (
                 <div className={elem.registered ? 'review-card registered' : 'review-card' } key={index}>
                     {elem.numAdh != "" ? <div>#{elem.numAdh}</div> : null}
                     <div>{elem.civility}. {elem.lastname} {elem.firstname}</div>
                     <div className="review-card-email">{elem.email}</div>
-                    <div className="txt-discret">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')}</div>
+                    <div className="txt-discret">{birthday.toLocaleDateString('fr-FR')} - ({age > 1 ? age + ' ans' : age + ' an'})</div>
                     <div className="txt-discret">{formattedPhone(elem.phoneDomicile)}</div>
                     <div className="txt-discret">{formattedPhone(elem.phoneMobile)}</div>
                     <div className="review-card-registered">Déjà inscrit</div>
