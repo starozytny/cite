@@ -177,7 +177,10 @@ class TicketController extends AbstractController
             return new JsonResponse(['code' => 0, 'message' => 'Une personne vient de s\'inscrire. Vous ne pouvez pas supprimer ce créneau. Veuillez rafraichir la page.']);
         }
 
-        $em->remove($slot);
+        $ticketDay->setMax($ticketDay->getMax() - $slot->getMax());
+        $ticketDay->setRemaining($ticketDay->getRemaining() - $slot->getRemaining());
+
+        $em->persist($ticketDay); $em->remove($slot);
         $em->flush();
 
         return new JsonResponse(['code' => 1, 'message' => 'Le créneau ' . $horaire . ' a été définitivement supprimé.']);
