@@ -93,7 +93,7 @@ export class StepProspects extends Component {
     }
 
     render () {
-        const {classStep, prospects, dayType} = this.props;
+        const {classStep, prospects, dayType, onAnnulation} = this.props;
         const {added, classAdd} = this.state;
         let arr = [];
         for (let i=0 ; i<added ; i++) {
@@ -132,6 +132,9 @@ export class StepProspects extends Component {
             Les informations recueillies à partir de ce formulaire sont transmises au service de la Cité de la musique dans le but 
             de pré-remplir les inscriptions. Plus d'informations sur le traitement de vos données dans notre 
             politique de confidentialité.
+            <div className="annulation">
+                <button className="btn" onClick={onAnnulation}>Annuler la réservation</button>
+            </div>
         </Step>
     }
 }

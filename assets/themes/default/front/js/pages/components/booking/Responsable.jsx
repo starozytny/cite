@@ -137,7 +137,7 @@ export class StepResponsable extends Component {
     }
 
     render () {
-        const {classStep, prospects} = this.props;
+        const {classStep, prospects, onAnnulation} = this.props;
         const {firstname, lastname, civility, email, confirmeEmail, adr, complement, cp, city, phoneDomicile, phoneMobile, radioResp} = this.state;
 
         let body = <>
@@ -189,6 +189,9 @@ export class StepResponsable extends Component {
             Les informations recueillies à partir de ce formulaire sont transmises au service de la Cité de la musique dans le but 
             de pré-remplir les inscriptions. Plus d'informations sur le traitement de vos données dans notre 
             politique de confidentialité.
+            <div className="annulation">
+                <button className="btn" onClick={onAnnulation}>Annuler la réservation</button>
+            </div>
         </Step>
     }
 }

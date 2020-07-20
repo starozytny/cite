@@ -23,7 +23,7 @@ export class StepReview extends Component {
     }    
 
     render () {
-        const {classStep, onClickPrev, toTicketStep, prospects, responsable, day, messageInfo, timeExpired, code} = this.props;
+        const {classStep, onClickPrev, toTicketStep, prospects, responsable, day, messageInfo, timeExpired, code, onAnnulation} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
             return (
@@ -78,6 +78,10 @@ export class StepReview extends Component {
                                 <b className="txt-primary">Veuillez valider la réservation </b> 
                                 pour obtenir votre ticket et bloquer définitivement cette plage horaire. 
                                 (bouton en bas a droite de votre écran)</div> : null }
+            </div>
+            
+            <div className="annulation">
+                <button className="btn" onClick={onAnnulation}>Annuler la réservation</button>
             </div>
         </Step>
     }

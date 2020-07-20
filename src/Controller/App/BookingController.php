@@ -165,7 +165,6 @@ class BookingController extends AbstractController
     
             $responsable->setTicket($ticket);
             $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
-            $horaire = $responsable->getCreneau()->getHoraire();
             $horaireString = $responsable->getCreneau()->getHoraireString();
     
             $prospects = $responsable->getProspects();
@@ -194,6 +193,22 @@ class BookingController extends AbstractController
         }else{
             return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
         }
+    }
+
+    /**
+     * @Route("/tmp/book/{id}/cancel", options={"expose"=true}, name="tmp_book_cancel")
+     */
+    public function cancel(TicketDay $id, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $data = json_decode($request->getContent());
+        $responsableId = $data->responsableId;
+
+        $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
+        $this->responsableService->deleteResponsable($responsable);
+
+        return new JsonResponse(['code' => 1]);
     }
 
     /**

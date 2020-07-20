@@ -47,6 +47,8 @@ export class Booking extends Component {
         this.toReviewStep = this.toReviewStep.bind(this);
         this.backToResponsable = this.backToResponsable.bind(this);
         this.toTicketStep = this.toTicketStep.bind(this);
+
+        this.handleAnnulation = this.handleAnnulation.bind(this);
     }
 
     /**
@@ -198,6 +200,39 @@ export class Booking extends Component {
         });
     } 
 
+    handleAnnulation (e) {
+        e.preventDefault();
+
+        const {responsableId} = this.state;
+
+        let self = this;
+        Swal.fire({
+            title: 'Etes-vous sur d\'annuler la réservation?',
+            text: "L'action est irréversible.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui'
+            }).then((result) => {
+            if (result.value) {
+                AjaxSend.loader(true)
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('app_booking_tmp_book_cancel', { 'id' : self.props.dayId }), 
+                    data: { responsableId: responsableId } 
+                }).then(function (response) {
+                    let data = response.data; let code = data.code; AjaxSend.loader(false);
+
+                    self.setState({classDot: '', classStart: '', classStep1: '', 
+                                    creneauId: null, responsableId: null, historyId: null,
+                                    timer: clearInterval(self.state.timer), min: 99, second: 99})
+                });
+                
+            }
+        })
+    }
+
     render () {
         const {day, days, dayType, dayRemaining} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
@@ -211,10 +246,10 @@ export class Booking extends Component {
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
                 <div className="steps">
-                    <StepProspects classStep={classStep1} dayType={dayType} prospects={prospects} toResponsableStep={this.toResponsableStep}/>
-                    <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} />
+                    <StepProspects classStep={classStep1} dayType={dayType} prospects={prospects} toResponsableStep={this.toResponsableStep} onAnnulation={this.handleAnnulation}/>
+                    <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} onAnnulation={this.handleAnnulation}/>
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
-                                timeExpired={timeExpired} code={code} toTicketStep={this.toTicketStep}/>
+                                timeExpired={timeExpired} code={code} toTicketStep={this.toTicketStep} onAnnulation={this.handleAnnulation}/>
                     <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire} code={code} finalMessage={finalMessage} ticket={ticket} barcode={barcode} print={print}/>
                 </div>
             </section> 
