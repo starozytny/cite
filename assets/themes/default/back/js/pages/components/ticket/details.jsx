@@ -2,49 +2,84 @@ import React, {Component} from 'react';
 import axios from 'axios/dist/axios';
 import Routing from '../../../../../../../../public/bundles/fosjsrouting/js/router.min.js';
 import AjaxSend from '../../../components/functions/ajax_classique';
-import {Input} from '../../../components/composants/Fields';
+import {Input, Select} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
 import Swal from 'sweetalert2';
 
 export class Details extends Component {
     constructor(props){
         super(props)
+
+        let creneaux = [{
+            'value': 999,
+            'libelle': 'Tous'
+        }];
+        JSON.parse(JSON.parse(this.props.prospects)).forEach((elem, index) => {
+            creneaux.push({
+                'value': elem.creneau.id,
+                'libelle': elem.creneau.horaireString
+            });
+        })
+        creneaux = creneaux.filter((thing, index, self) =>
+            index === self.findIndex((t) => ( t.value === thing.value  ))
+        )
         
         this.state = {
             prospects: JSON.parse(JSON.parse(this.props.prospects)),
             saveProspects: JSON.parse(JSON.parse(this.props.prospects)),
-            searched: {value: '', error: ''}
+            saveCreneaux: creneaux,
+            searched: {value: '', error: ''},
+            selectHoraire: {value: '999', error: ''}
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleChange = this.handleChange.bind(this);
+
+        this.handleSearch = this.handleSearch.bind(this);
+        this.handleSelectHoraire = this.handleSelectHoraire.bind(this);
     }
 
     handleChange (e) {
         const {prospects, saveProspects} = this.state;
 
         let value = e.target.value;
+        let name = e.target.name;
+        if(name === 'searched'){
+            this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value)});
+        }else{
+            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: this.handleSelectHoraire(value)});
+        }
+    }
 
-        
-
+    handleSearch (value) {
+        const {prospects, saveProspects, selectHoraire} = this.state;
         if(value != ""){
-           
-            let arr = prospects.filter(function(elem){
+            return prospects.filter(function(elem){
                 let val = value.toLowerCase();
                 let firstname = elem.firstname.toLowerCase();
                 let lastname = elem.lastname.toLowerCase();
                 let numAdh = elem.numAdh ? elem.numAdh.toLowerCase() : "";
-                if(firstname.indexOf(val) > -1 || lastname.indexOf(val) > -1 || numAdh.indexOf(val) > -1){
-                    return elem;
-                }                
+                if(firstname.indexOf(val) > -1 || lastname.indexOf(val) > -1 || numAdh.indexOf(val) > -1){ return elem; }                
             });
-            this.setState({ [e.target.name]: {value: value}, error: '', prospects: arr});
         }else{
-            this.setState({ [e.target.name]: {value: value}, error: '', prospects: saveProspects});
-        }
-        
+            if(selectHoraire.value === "999"){
+                return saveProspects;
+            }else{
+                return this.handleSelectHoraire(selectHoraire.value);
+            }
+        }        
+    }
 
+    handleSelectHoraire (value) {
+        const {saveProspects} = this.state;
+        if(value != "999"){
+            return saveProspects.filter(function(elem){
+                if(elem.creneau.id == value){ return elem; }                
+            });
+        }else{
+            return saveProspects;       
+        }
         
     }
 
@@ -111,7 +146,7 @@ export class Details extends Component {
 
     render () {
         const {dayId} = this.props;
-        const {prospects, searched} = this.state;
+        const {prospects, searched, selectHoraire, saveCreneaux} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
@@ -142,7 +177,7 @@ export class Details extends Component {
                 </div>
             </div>
         })
-
+        
         return <>
             <div className="toolbar">
                 <div className="toolbar-left">
@@ -155,13 +190,23 @@ export class Details extends Component {
                 </div>
                 <div className="toolbar-right">
                     <div className="item">
-                        <Input type="text" identifiant="searched" value={searched.value} onChange={this.handleChange} error={searched.error} placeholder="Recherche"></Input>
-                    </div>
-                    <div className="item">
                         <a href={Routing.generate('admin_ticket_export', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-primary">Exporter pour Weezevent</a>
                     </div>
                 </div>
             </div>
+
+            <div className="toolbar">
+                    <div className="toolbar-left">
+                        <div className="item">
+                            <Select value={selectHoraire.value} identifiant="selectHoraire" onChange={this.handleChange} error={selectHoraire.error} items={saveCreneaux}></Select>
+                        </div>
+                    </div>
+                    <div className="toolbar-right">
+                        <div className="item item-search">
+                            <Input type="text" identifiant="searched" value={searched.value} onChange={this.handleChange} error={searched.error} placeholder="Recherche"></Input>
+                        </div>
+                    </div>
+                </div>
             
             <div className="prospects">
                 {items.length <= 0 ? <div>Aucun enregistrement.</div> : <div className="prospects-header">
