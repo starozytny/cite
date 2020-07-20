@@ -158,11 +158,12 @@ class BookingController extends AbstractController
     
             $responsable->setTicket($ticket);
             $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
+            $horaire = $responsable->getCreneau()->getHoraire();
+            $horaireString = $responsable->getCreneau()->getHoraireString();
     
             $prospects = $responsable->getProspects();
             foreach ($prospects as $prospect) {
                 $prospect->setStatus(TicketProspect::ST_CONFIRMED);
-                $horaire = $prospect->getCreneau()->getHoraire();
                 $em->persist($prospect);
             }
 
@@ -171,7 +172,7 @@ class BookingController extends AbstractController
             $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
             $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.png');
             $barcode = base64_encode($img);
-            $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaire, 'day' => $id->getDay()];
+            $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
             $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
     
             // Send mail     
@@ -184,7 +185,7 @@ class BookingController extends AbstractController
             'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse du responsable : ' . $responsable->getEmail()]);
         }else{
             return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
-        }       
+        }
     }
 
     /**

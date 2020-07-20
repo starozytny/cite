@@ -1,9 +1,26 @@
-<h1>Réservation !</h1>
+{% extends "themes/default/app/email/template.html.twig" %}
 
-<p>
-    REUSSI
-</p>
+{% block month %}{{ day.day | date('F') }}{% endblock %}
 
-<div>
+{% block day %}{{ day.day | date('d') }}{% endblock %}
+
+{% block horaire %}{{ horaire }}{% endblock %}
+
+{% block barcode %}
     <img src="{{ "data:image/png;base64," ~ barcode }}">
-</div>
+{% endblock %}
+
+{% block ticket %}
+    <b>{{ ticket }}</b>
+{% endblock %}
+
+{% block responsable %}{{ responsable.civility }} {{ responsable.firstname | capitalize }} {{ responsable.lastname | upper }}{% endblock %}
+{% block famille %}
+    <ul>
+        {% for prospect in prospects %}
+            <li>
+                {{ prospect.civility }} {{ prospect.firstname | capitalize }} {{ prospect.lastname | upper }} - {{ prospect.birthday | date('d-m-Y') }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
