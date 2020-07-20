@@ -7,7 +7,6 @@ use App\Entity\TicketDay;
 use App\Entity\TicketHistory;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
-use App\Form\TicketDayType;
 use App\Service\Export;
 use App\Service\OpenDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -62,7 +61,7 @@ class TicketController extends AbstractController
     /**
     * @Route("/jour/{ticketDay}/historique", name="history")
     */
-    public function hitstory(TicketDay $ticketDay)
+    public function history(TicketDay $ticketDay)
     {
         $em = $this->getDoctrine()->getManager();
         $histories = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay), array('createAt' => 'ASC'));
@@ -78,8 +77,8 @@ class TicketController extends AbstractController
     */
     public function edit(SerializerInterface $serializer, TicketDay $ticketDay)
     {
-        $slots = $ticketDay->getTicketCreneaux();
-
+        $em = $this->getDoctrine()->getManager();
+        $slots = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $ticketDay), array('horaire' => 'ASC'));
         $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'horaireString', 'max', 'remaining']]);
 
         return $this->render('root/admin/pages/ticket/edit.html.twig', [
@@ -89,7 +88,7 @@ class TicketController extends AbstractController
     }
 
     /**
-    * @Route("/jour/{ticketDay}/editer/update", options={"expose"=true}, name="slot_update")
+    * @Route("/jour/{ticketDay}/slot/editer/update", options={"expose"=true}, name="slot_update")
     */
     public function updateSlot(TicketDay $ticketDay, Request $request)
     {
@@ -115,6 +114,51 @@ class TicketController extends AbstractController
         $em->flush();
 
         return new JsonResponse(['code' => 1, 'remaining' => $remaining]);
+    }
+
+    /**
+    * @Route("/jour/{ticketDay}/slot/add", options={"expose"=true}, name="slot_add")
+    */
+    public function addSlot(TicketDay $ticketDay, Request $request, SerializerInterface $serializer)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent());
+        $hours = intval($data->hours);
+        $minutes = intval($data->minutes);
+        $max = intval($data->max);
+
+        if($max < 0){
+            return new JsonResponse(['code' => 0, 'message' => 'La valeur max doit être supérieur à 0.']);
+        }
+
+        $slots = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $ticketDay));        
+        foreach ($slots as $slot){
+            $h = intval(date_format($slot->getHoraire(), 'H'));
+            $m = intval(date_format($slot->getHoraire(), 'i'));
+            if($h == $hours && $m == $minutes){
+                return new JsonResponse(['code' => 0, 'message' => 'Cet horaire existe déjà.']);
+            }
+        }
+        $minutes = $minutes == 0 ? '00' : $minutes;
+        $horaire = $hours . ':' . $minutes;
+
+        $new = (new TicketCreneau())
+            ->setHoraire(date_create_from_format('H:i', $horaire))
+            ->setMax($max)
+            ->setRemaining($max)
+            ->setTicketDay($ticketDay)
+        ;
+
+        $ticketDay->setMax($ticketDay->getMax() + $max);
+        $ticketDay->setRemaining($ticketDay->getRemaining() + $max);
+
+        $em->persist($new); $em->persist($ticketDay);
+        $em->flush();
+
+        $slots = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $ticketDay), array('horaire' => 'ASC'));
+        $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'horaireString', 'max', 'remaining']]);
+
+        return new JsonResponse(['code' => 1, 'slots' => $slots]);
     }
 
     /**

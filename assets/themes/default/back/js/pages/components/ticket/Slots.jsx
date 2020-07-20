@@ -21,7 +21,8 @@ export class Slots extends Component {
             openEdit: '',
             error: '',
             addHours: {value: '', error: ''},
-            addMinutes: {value: '', error: ''}
+            addMinutes: {value: '0', error: ''},
+            addMax: {value: '20', error: ''}
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -34,7 +35,7 @@ export class Slots extends Component {
     }
 
     handleChange (e) {
-        this.setState({ [e.target.name]: {value: e.target.value} });
+        this.setState({ [e.target.name]: {value: e.target.value}, error: '' });
     }
 
     handleEdit (e) {
@@ -49,7 +50,7 @@ export class Slots extends Component {
     }
 
     handleClose (e) {
-        this.setState({openEdit: '', openAdd: '', editId: '', editHoraire: '', editMax: {value: '', error: ''}, editRemaining: '', addHours: {value: '', error: ''}, addMinutes: {value: '', error: ''}})
+        this.setState({openEdit: '', openAdd: '', editId: '', editHoraire: '', editMax: {value: '', error: ''}, editRemaining: '', addHours: {value: '', error: ''}, addMinutes: {value: '', error: ''}, addMax: {value: '', error: ''}})
     }
 
     handleSubmit (e) {
@@ -129,10 +130,36 @@ export class Slots extends Component {
 
     handleSubmitAdd (e) {
         e.preventDefault();
+
+        const {dayId, addHours, addMinutes, addMax, slots} = this.state;
+
+        let validate = Validateur.validateur([
+            {type: "text", id: 'addHours', value: addHours.value},
+            {type: "text", id: 'addMax', value: addMax.value},
+        ]);
+
+        if(!validate.code){
+            this.setState(validate.errors);
+        }else{
+            AjaxSend.loader(true);
+            let self = this;
+            axios({ 
+                method: 'post', 
+                url: Routing.generate('admin_ticket_slot_add', { 'ticketDay' : dayId }), 
+                data: {hours: addHours.value, minutes: addMinutes.value, max: addMax.value} 
+            }).then(function (response) {
+                let data = response.data; let code = data.code; AjaxSend.loader(false);
+                if(code === 1){
+                    self.setState({slots: JSON.parse(data.slots)});
+                }else{
+                    self.setState({error: data.message})
+                }                
+            });
+        }
     }
 
     render () {
-        const {slots, editMax, editHoraire, editMinim, openEdit, error, openAdd, addHours, addMinutes} = this.state;
+        const {slots, editMax, editHoraire, editMinim, openEdit, error, openAdd, addHours, addMinutes, addMax} = this.state;
 
         let items = slots.map((elem, index) => {
             return <div className="slot-card" key={elem.id}>
@@ -156,9 +183,9 @@ export class Slots extends Component {
 
         const itemsMinutes = [
             {'value': 0, 'libelle': "00"},
-            {'value': 1, 'libelle': "15"},
-            {'value': 2, 'libelle': "30"},
-            {'value': 3, 'libelle': "45"}
+            {'value': 15, 'libelle': "15"},
+            {'value': 30, 'libelle': "30"},
+            {'value': 45, 'libelle': "45"}
         ]
 
         return <>
@@ -209,6 +236,7 @@ export class Slots extends Component {
                                     </div>
                                     <Select value={addMinutes.value} identifiant="addMinutes" onChange={this.handleChange} error={addMinutes.error} items={itemsMinutes}>Minutes</Select>
                                 </div>
+                                <Input type="number" identifiant="addMax" value={addMax.value} onChange={this.handleChange} error={addMax.error}>Max</Input>
                                 <div className="from-group">
                                     <button className="btn btn-primary" type="submit">Ajouter</button>
                                 </div>

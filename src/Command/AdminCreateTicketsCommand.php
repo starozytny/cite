@@ -82,7 +82,6 @@ class AdminCreateTicketsCommand extends Command
                 ;
 
                 $totalPlace += 20;
-
                 
                 $this->em->persist($s);
             }
