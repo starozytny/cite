@@ -66,7 +66,7 @@ class AppController extends AbstractController
                 'Demande RGPD',
                 'Deamnde RGPD via le site Logilink',
                 'root/app/email/legales/rgpd.html.twig',
-                ['demande' => $demande],
+                ['rgpd' => $demande],
                 'chanbora@logilink.fr'
             ) != true){
                 return new JsonResponse([

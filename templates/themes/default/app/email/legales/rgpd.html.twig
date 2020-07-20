@@ -1,5 +1,20 @@
-<h1>RGPD {{ demande.firstname }}!</h1>
+{% extends "themes/default/app/email/template.html.twig" %}
 
-<p>
-    {{ demande.subjectToString }}
-</p>
+{% block main_content %}
+    <div>
+        <div>
+            <h2>{{ rgpd.firstname | capitalize }}</h2>
+        </div>
+        <br>
+        <hr>
+        <br>
+        <h3>Informations de contact</h3>
+        <div>{{ rgpd.email }}</div>
+        <br>
+
+        <h3>Message</h3>
+        <div><b>{{ rgpd.subjectToString }}</b></div>
+        <div>{{ rgpd.message | raw | nl2br }}</div>
+
+    </div>
+{% endblock %}
