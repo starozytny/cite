@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import axios from 'axios/dist/axios';
 import Routing from '../../../../../../../../public/bundles/fosjsrouting/js/router.min.js';
 import AjaxSend from '../../../components/functions/ajax_classique';
+import {Input} from '../../../components/composants/Fields';
+import Validateur from '../../../components/functions/validate_input';
 import Swal from 'sweetalert2';
 
 export class Details extends Component {
@@ -9,11 +11,41 @@ export class Details extends Component {
         super(props)
         
         this.state = {
-            prospects: JSON.parse(JSON.parse(this.props.prospects))
+            prospects: JSON.parse(JSON.parse(this.props.prospects)),
+            saveProspects: JSON.parse(JSON.parse(this.props.prospects)),
+            searched: {value: '', error: ''}
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange (e) {
+        const {prospects, saveProspects} = this.state;
+
+        let value = e.target.value;
+
+        
+
+        if(value != ""){
+           
+            let arr = prospects.filter(function(elem){
+                let val = value.toLowerCase();
+                let firstname = elem.firstname.toLowerCase();
+                let lastname = elem.lastname.toLowerCase();
+                let numAdh = elem.numAdh ? elem.numAdh.toLowerCase() : "";
+                if(firstname.indexOf(val) > -1 || lastname.indexOf(val) > -1 || numAdh.indexOf(val) > -1){
+                    return elem;
+                }                
+            });
+            this.setState({ [e.target.name]: {value: value}, error: '', prospects: arr});
+        }else{
+            this.setState({ [e.target.name]: {value: value}, error: '', prospects: saveProspects});
+        }
+        
+
+        
     }
 
     handleChangeStatus (e) {
@@ -78,7 +110,8 @@ export class Details extends Component {
     }
 
     render () {
-        const {prospects} = this.state;
+        const {dayId} = this.props;
+        const {prospects, searched} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
@@ -110,21 +143,40 @@ export class Details extends Component {
             </div>
         })
 
-        console.log()
-
-        return <div className="prospects">
-            {items.length <= 0 ? <div>Aucun enregistrement.</div> : <div className="prospects-header">
-                <div className="col-1">Identifiant</div>
-                <div className="col-2">Contact</div>
-                <div className="col-3">Adresse</div>
-                <div className="col-4">Horaire</div>
-                <div className="col-5">Status</div>
-                <div className="col-6"></div>
-            </div>}
-            <div className="prospects-body">
-                {items}
+        return <>
+            <div className="toolbar">
+                <div className="toolbar-left">
+                    <div className="item">
+                        <a href={Routing.generate('admin_ticket_index')} className="btn">Retour à la liste</a>
+                    </div>
+                    <div className="item">
+                        <a href={Routing.generate('admin_ticket_history', {'ticketDay': dayId})} className="btn">Historique</a>
+                    </div>
+                </div>
+                <div className="toolbar-right">
+                    <div className="item">
+                        <Input type="text" identifiant="searched" value={searched.value} onChange={this.handleChange} error={searched.error} placeholder="Recherche"></Input>
+                    </div>
+                    <div className="item">
+                        <a href={Routing.generate('admin_ticket_export', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-primary">Exporter pour Weezevent</a>
+                    </div>
+                </div>
             </div>
-        </div>
+            
+            <div className="prospects">
+                {items.length <= 0 ? <div>Aucun enregistrement.</div> : <div className="prospects-header">
+                    <div className="col-1">Identifiant</div>
+                    <div className="col-2">Contact</div>
+                    <div className="col-3">Adresse</div>
+                    <div className="col-4">Horaire</div>
+                    <div className="col-5">Status</div>
+                    <div className="col-6"></div>
+                </div>}
+                <div className="prospects-body">
+                    {items}
+                </div>
+            </div>
+        </>
     }
 }
 

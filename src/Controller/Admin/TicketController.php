@@ -59,7 +59,7 @@ class TicketController extends AbstractController
     }
 
     /**
-    * @Route("/jour/{ticketDay}/historique", name="history")
+    * @Route("/jour/{ticketDay}/historique", options={"expose"=true}, name="history")
     */
     public function history(TicketDay $ticketDay)
     {
@@ -187,7 +187,7 @@ class TicketController extends AbstractController
     }
 
     /**
-    * @Route("/jour/{ticketDay}/export", name="export")
+    * @Route("/jour/{ticketDay}/export", options={"expose"=true}, name="export")
     */
     public function export(TicketDay $ticketDay, Export $export)
     {

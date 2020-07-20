@@ -7,7 +7,7 @@ import {Slots} from './components/ticket/Slots.jsx';
 let details = document.getElementById("details");
 if(details){
     ReactDOM.render(
-        <Details prospects={details.dataset.prospects}/>,
+        <Details prospects={details.dataset.prospects} dayId={details.dataset.dayId} />,
         details
     )
 }
