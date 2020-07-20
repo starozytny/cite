@@ -35,7 +35,8 @@ export class Booking extends Component {
             finalMessage: '',
             ticket: null,
             barcode: null,
-            print: '#'
+            print: '#',
+            historyId: null
         }
 
         this.interval = null;
@@ -61,7 +62,7 @@ export class Booking extends Component {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             if(code === 1){
                 self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
-                               creneauId: data.creneauId, responsableId: data.responsableId,
+                               creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
                                timer: setInterval(() => self.tick(), 1000), min: 4, second: 60})
             }            
         });
@@ -93,7 +94,7 @@ export class Booking extends Component {
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_duplicate', { 'id' : this.props.dayId }), 
-            data: { prospects: dataNoDoublon } 
+            data: { prospects: dataNoDoublon, historyId: this.state.historyId } 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             
@@ -129,7 +130,7 @@ export class Booking extends Component {
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_add', { 'id' : this.props.dayId }), 
-            data: {creneauId: creneauId} 
+            data: {creneauId: creneauId, historyId: this.state.historyId, responsable: data} 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             if(code === 1){
@@ -185,7 +186,7 @@ export class Booking extends Component {
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_confirmed_book_add', { 'id' : this.props.dayId }), 
-            data: { prospects: prospects, responsable: responsable, responsableId: responsableId, creneauId: creneauId } 
+            data: { prospects: prospects, responsable: responsable, responsableId: responsableId, creneauId: creneauId, historyId: this.state.historyId } 
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
 

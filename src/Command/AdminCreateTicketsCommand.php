@@ -41,6 +41,7 @@ class AdminCreateTicketsCommand extends Command
         $this->resetTable($io,'ticket_creneau');
         $this->resetTable($io,'ticket_responsable');
         $this->resetTable($io,'ticket_prospect');        
+        $this->resetTable($io,'ticket_history');        
 
         $days = array(
             [

@@ -50,10 +50,16 @@ class TicketCreneau
      */
     private $responsables;
 
+    /**
+     * @ORM\OneToMany(targetEntity=TicketHistory::class, mappedBy="creneau", orphanRemoval=true)
+     */
+    private $histories;
+
     public function __construct()
     {
         $this->prospects = new ArrayCollection();
         $this->responsables = new ArrayCollection();
+        $this->histories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -169,6 +175,37 @@ class TicketCreneau
             // set the owning side to null (unless already changed)
             if ($responsable->getCreneau() === $this) {
                 $responsable->setCreneau(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TicketHistory[]
+     */
+    public function getHistories(): Collection
+    {
+        return $this->histories;
+    }
+
+    public function addHistory(TicketHistory $history): self
+    {
+        if (!$this->histories->contains($history)) {
+            $this->histories[] = $history;
+            $history->setCreneau($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHistory(TicketHistory $history): self
+    {
+        if ($this->histories->contains($history)) {
+            $this->histories->removeElement($history);
+            // set the owning side to null (unless already changed)
+            if ($history->getCreneau() === $this) {
+                $history->setCreneau(null);
             }
         }
 

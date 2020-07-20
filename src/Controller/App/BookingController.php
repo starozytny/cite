@@ -4,8 +4,10 @@ namespace App\Controller\App;
 
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
+use App\Entity\TicketHistory;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
+use App\Service\History;
 use App\Service\Mailer;
 use App\Service\OpenDay;
 use App\Service\Remaining;
@@ -26,11 +28,13 @@ class BookingController extends AbstractController
 {
     private $remaining;
     private $responsableService;
+    private $history;
 
-    public function __construct(Remaining $remaining, ResponsableService $responsableService)
+    public function __construct(Remaining $remaining, ResponsableService $responsableService, History $history)
     {
         $this->remaining = $remaining;
         $this->responsableService = $responsableService;
+        $this->history = $history;
     }
 
     /**
@@ -75,11 +79,12 @@ class BookingController extends AbstractController
                 if($remaining > 0){ // reste de la place dans ce creneau
 
                     $responsable = $this->responsableService->createTmpResponsable($creneau, $day);
+                    $history = $this->history->createHistory($creneau, $day);
                     $this->remaining->decreaseRemaining($day, $creneau);
 
-                    $em->persist($responsable); $em->flush();
+                    $em->persist($responsable); $em->persist($history); $em->flush();
 
-                    return new JsonResponse(['code' => 1, 'creneauId' => $creneau->getId(), 'responsableId' => $responsable->getId()]);    
+                    return new JsonResponse(['code' => 1, 'creneauId' => $creneau->getId(), 'responsableId' => $responsable->getId(), 'historyId' => $history->getId()]);    
 
                 }else{
                     if($i == $len - 1) {
@@ -119,6 +124,7 @@ class BookingController extends AbstractController
         if(count($alreadyRegistered) != 0){
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered]);
         }
+        $this->history->updateFamille($data->historyId, count($prospects));
 
         return new JsonResponse(['code' => 1]);
     }
@@ -133,6 +139,7 @@ class BookingController extends AbstractController
         $data = json_decode($request->getContent());
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $horaire = date_format($creneau->getHoraire(), 'H\hi');
+        $this->history->updateResp($data->historyId, $data->responsable);
         return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage : <b>' . $horaire . '</b>' ]);
     }
 
@@ -180,6 +187,7 @@ class BookingController extends AbstractController
                 return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
             }
     
+            $this->history->updateTicket($data->historyId);
             $em->persist($responsable); $em->flush();
             return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print,
             'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse du responsable : ' . $responsable->getEmail()]);
