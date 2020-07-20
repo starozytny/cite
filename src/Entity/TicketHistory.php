@@ -210,4 +210,14 @@ class TicketHistory
 
         return $this;
     }
+    public function getStatusString(){
+        switch($this->getStatus()){
+            case self::STATE_TMP:
+                return "Attente";
+                break;
+            case self::STATE_CONFIRMED:
+                return "Confirmé";
+                break;
+        }
+    }
 }

@@ -2,6 +2,7 @@
 
 @import './split/ticket/prospect.scss';
 @import './split/ticket/edit_slot.scss';
+@import './split/ticket/history.scss';
 
 .days-cards, .slots-cards{
     @include flex(row, stretch, flex-start);

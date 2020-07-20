@@ -1,0 +1,55 @@
+{% extends 'themes/default/admin/pages/ticket/template.html.twig' %}
+
+{% block title %}Historique de la journée du {{ day.day | date('d-m-Y') }}{% endblock %}
+
+{% block main_content %}
+
+    <section class="title">
+        <h1>Historique de la journée des {{ day.typeString }} du {{ day.day | date('d') }}</h1>
+    </section>
+
+    <section class="content">
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="item">
+                    <a href="{{ path('admin_ticket_show', {'ticketDay': day.id}) }}" class="btn">Retour</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="history">
+            <div class="history">
+                <div class="history-header">
+                    <div class="col-1">Etape</div>
+                    <div class="col-2">Identifiant</div>
+                    <div class="col-3">Horaire</div>
+                    <div class="col-4">Status</div>
+                    <div class="col-5">Date</div>
+                </div>
+                <div class="history-body">
+                    {% for hist in histories %}
+                        <div class="item">
+                            <div class="col-1">
+                                <div class="history-step">{{ hist.step }}</div>
+                            </div>
+                            <div class="col-2">
+                                <div class="name">{{ hist.civility }} {{ hist.firstname | capitalize }} {{ hist.lastname | upper }}</div>
+                                <div class="email">{{ hist.email }}</div>
+                                <div class="famille">{{ hist.famille }} personne{{ hist.famille | length > 1 ? 's' : null}}</div>
+                            </div>
+                            <div class="col-3">
+                                {{ hist.creneau.horaireString }}
+                            </div>
+                            <div class="col-4">
+                                <div class="status status-{{ hist.status }}">{{ hist.statusString }}</div>
+                            </div>
+                            <div class="col-5">
+                                <div class="createAt">{{ hist.createAt | date('d-m-Y H\\hi') }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

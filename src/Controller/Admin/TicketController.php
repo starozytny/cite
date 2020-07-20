@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
+use App\Entity\TicketHistory;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
 use App\Form\TicketDayType;
@@ -55,6 +56,20 @@ class TicketController extends AbstractController
             'day' => $ticketDay,
             'slots' => $slots,
             'prospects' => $prospects
+        ]);
+    }
+
+    /**
+    * @Route("/jour/{ticketDay}/historique", name="history")
+    */
+    public function hitstory(TicketDay $ticketDay)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $histories = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay), array('createAt' => 'ASC'));
+
+        return $this->render('root/admin/pages/ticket/history.html.twig', [
+            'day' => $ticketDay,
+            'histories' => $histories
         ]);
     }
 

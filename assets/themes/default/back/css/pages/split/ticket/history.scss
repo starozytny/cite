@@ -1,16 +1,25 @@
 @import "../../../vars/vars.scss";
 
-.prospects-header{
+.history-header{
     display: none;
 }
 
-.prospects-body{
+.history-body{
     & > .item{
         position: relative;
         @include boxsh();
         background-color: $alpha;
         padding: 15px 10px;
         border-radius: 5px;
+
+        .history-step{
+            background-color: $color7;
+            border-radius: 3px;
+            display: inline-block;
+            padding: 3px 10px;
+            margin-bottom: 5px;
+            color: $alpha;
+        }
 
         .name{
             @include fontSemibold();
@@ -19,8 +28,10 @@
                 text-transform: uppercase;
             }
         }
-        .birthday, .adresse{
-            display: none;
+        .famille{
+            font-size: 14px;
+            color: $color7;
+            margin-bottom: 15px;
         }
 
         .email{
@@ -32,46 +43,23 @@
         }
         .status{
             display: inline-block;
-            background-color: $color7;
-            color: $alpha;
-            padding: 5px 15px;
-            border-radius: 8px;
+            color: $color7;
             float: right;
-            margin-top: -25px;
-
-            &:hover{
-                opacity: 0.8;
-            }
+            margin-top: -22px;
 
             &.status-1{
-                background-color: $color0;
-                cursor: pointer;
-                transition: all 0.2s ease-in-out;
-            }
-            &.status-2{
-                background-color: $color1;
-                cursor: pointer;
-                transition: all 0.2s ease-in-out;
+                color: $color0;
             }
         }
         .horaire{
             margin-top: 20px;
             font-size: 14px;
         }
-        .btn-delete{
-            width: 100%;
-            margin-top: 30px;
-            border: none;
-            background-color: transparent;
-            padding: 5px 15px;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-
-            &:hover{
-                background-color: $errorBg;
-                border-radius: 8px;
-                color: $color5;
-            }
+        .createAt{
+            color: $color7;
+            font-size: 14px;
+            margin-top: 15px;
+            text-align: right;
         }
     }
 }
@@ -83,24 +71,25 @@
 //                     | |   /_/  \___/ \___/   | |
 //                     |__|                    |__|
 @media (min-width:768px) {
-    .prospects{
+    .history{
         .col-1{
-            width: 40%;
+            width: 10%;
         }
         .col-2{
-            width: 30%;
+            width: 40%;
+        }
+        .col-3{
+            width: 10%;
         }
         .col-4{
-            display: none;
+            display: block;
+            width: 15%;
         }
         .col-5{
-            width: 15%;
-        }
-        .col-6{
-            width: 15%;
+            width: 20%;
         }
     }
-    .prospects-header{
+    .history-header{
         @include flex(row, center, flex-start);
         padding: 0 10px 15px 10px;
 
@@ -111,12 +100,8 @@
         & > *:not(:last-child){
             margin-right: 10px;
         }
-
-        .col-3{
-            display: none;
-        }
     }
-    .prospects-body{
+    .history-body{
         & > .item{
             @include flex(row, flex-start, flex-start);
             margin-bottom: 10px;
@@ -125,11 +110,6 @@
                 margin-right: 10px;
             }
 
-            .birthday{
-                display: block;
-                font-size: 14px;
-                color: $color7;
-            }
             .email{
                 margin-bottom: 0;
             }
@@ -140,8 +120,9 @@
                 float: none;
                 margin-top: 0;
             }
-            .btn-delete{
-                margin-top: 2px;
+            .createAt{
+                margin-top: 0;
+                text-align: left;
             }
         }
     }
@@ -154,33 +135,12 @@
 //                     | |  |_|\___/_____|  |_|    | |
 //                     |__|                       |__|
 @media (min-width: 1024px) {
-    .prospects{
-        .col-1{
-            width: 22%;
-        }
-        .col-2{
-            width: 22%;
-        }
-        .col-3{
-            width: 16%;
-        }
-        .col-4{
-            display: block;
-            width: 10%;
-        }
-        .col-5{
-            width: 12%;
-        }
-        .col-6{
-            width: 12%;
-        }
-    }
-    .prospects-header{
+    .history-header{
         .col-3{
             display: block;
         }
     }
-    .prospects-body{
+    .history-body{
         & > .item{
             .adresse{
                 display: block;
@@ -188,5 +148,15 @@
             }
         }
     }
+
+}
+
+//                      __   _ ____  ___   ___    __
+//                     | _| / |___ \( _ ) / _ \  |_ |
+//    _____ _____ _____| |  | | __) / _ \| | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | |/ __/ (_) | |_| |  | |_____|_____|_____|
+//                     | |  |_|_____\___/ \___/   | |
+//                     |__|                      |__|
+@media (min-width:1280px) {
 
 }
