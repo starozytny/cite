@@ -20,7 +20,7 @@ export function TextArea({identifiant, value, onChange, error, children}) {
     );
 }
 
-export function Select({name, id, value, onChange, error, children, items}) {
+export function Select({identifiant, value, onChange, error, children, items}) {
     let choices = items.map((item) => 
         <option key={item.value} value={item.value}>{item.libelle}</option>
     )
@@ -28,7 +28,7 @@ export function Select({name, id, value, onChange, error, children, items}) {
         <div className={'form-group' + (error ? " form-group-error" : "")}>
             <label>
                 {children}
-                <select value={value} id={id} name={name} onChange={onChange}>
+                <select value={value} id={identifiant} name={identifiant} onChange={onChange}>
                     {choices}
                 </select>
             </label>

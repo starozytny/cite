@@ -1,0 +1,90 @@
+@import "../../../vars/vars.scss";
+
+.slots-add-overlay{
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: transparentize($color: $color3, $amount: 0.5);
+    opacity: 0;
+    z-index: -1;
+
+    &.active{
+        opacity: 1;
+        z-index: 5;
+        cursor: pointer;
+    }
+}
+
+.slots-add{
+    background: $alpha;
+    padding: 15px;
+    position: fixed;
+    width: calc(100% - 80px);height: 100%;
+    top: 0;
+    right: -200%;
+    opacity: 0;
+    z-index: -1;
+    @include boxsh();
+    transition: all 0.2s ease-in-out;
+
+    .title{
+        @include fontSemibold();
+        font-size: 24px;
+        margin-bottom: 25px;
+        @include flex(row, flex-start, space-between);
+
+        [class^='icon-']{
+            cursor: pointer;
+        }
+    }
+    .minimum{
+        margin-bottom: 10px;
+    }
+
+    .inputSlot{
+        @include flex(column, stretch, flex-start);
+
+        .separator-minutes{
+            @include flex(column, center, center);
+            margin: 0 10px;
+
+            span{
+                transform: translateY(-8px);
+            }
+        }
+    }
+
+    &.active{
+        right: 0;
+        opacity: 1;
+        z-index: 10;
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .slots-add{
+        width: 40%;
+
+        .inputSlot{
+            flex-direction: row;
+        }
+    }
+}
+
+//                      __   _ ____  ___   ___    __
+//                     | _| / |___ \( _ ) / _ \  |_ |
+//    _____ _____ _____| |  | | __) / _ \| | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | |/ __/ (_) | |_| |  | |_____|_____|_____|
+//                     | |  |_|_____\___/ \___/   | |
+//                     |__|                      |__|
+@media (min-width:1280px) {
+    .slots-add{
+        width: 30%;
+    }
+}

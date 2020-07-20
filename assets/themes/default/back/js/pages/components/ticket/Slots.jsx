@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios/dist/axios';
 import Routing from '../../../../../../../../public/bundles/fosjsrouting/js/router.min.js';
 import AjaxSend from '../../../components/functions/ajax_classique';
-import {Input} from '../../../components/composants/Fields';
+import {Input, Select} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
 import Swal from 'sweetalert2';
 
@@ -19,7 +19,9 @@ export class Slots extends Component {
             editRemaining: '',
             editMinim: '',
             openEdit: '',
-            error: ''
+            error: '',
+            addHours: {value: '', error: ''},
+            addMinutes: {value: '', error: ''}
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -27,6 +29,8 @@ export class Slots extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleAdd = this.handleAdd.bind(this);
+        this.handleSubmitAdd = this.handleSubmitAdd.bind(this);
     }
 
     handleChange (e) {
@@ -40,8 +44,12 @@ export class Slots extends Component {
         editMax: {value: el.dataset.max}, editRemaining: el.dataset.remaining, editMinim: min})
     }
 
+    handleAdd (e) {
+        this.setState({openAdd: 'active', error: ''});
+    }
+
     handleClose (e) {
-        this.setState({openEdit: '', editId: '', editHoraire: '', editMax: {value: '', error: ''}, editRemaining: ''})
+        this.setState({openEdit: '', openAdd: '', editId: '', editHoraire: '', editMax: {value: '', error: ''}, editRemaining: '', addHours: {value: '', error: ''}, addMinutes: {value: '', error: ''}})
     }
 
     handleSubmit (e) {
@@ -117,11 +125,14 @@ export class Slots extends Component {
                 });
             }
         })
+    }
 
+    handleSubmitAdd (e) {
+        e.preventDefault();
     }
 
     render () {
-        const {slots, editMax, editHoraire, editMinim, openEdit, error} = this.state;
+        const {slots, editMax, editHoraire, editMinim, openEdit, error, openAdd, addHours, addMinutes} = this.state;
 
         let items = slots.map((elem, index) => {
             return <div className="slot-card" key={elem.id}>
@@ -143,11 +154,18 @@ export class Slots extends Component {
             </div>
         })
 
+        const itemsMinutes = [
+            {'value': 0, 'libelle': "00"},
+            {'value': 1, 'libelle': "15"},
+            {'value': 2, 'libelle': "30"},
+            {'value': 3, 'libelle': "45"}
+        ]
+
         return <>
-            <div class="toolbar">
+            <div className="toolbar">
                 <div className="toolbar-left">
                     <div className="item">
-                        <button className="btn btn-primary">Ajouter un créneau</button>
+                        <button className="btn btn-primary" onClick={this.handleAdd}>Ajouter un créneau</button>
                     </div>
                 </div>
             </div>
@@ -155,22 +173,48 @@ export class Slots extends Component {
                 <div className="slots-cards">
                     {items}
                 </div>
-                <div className={"slots-edit-overlay " + openEdit} onClick={this.handleClose}></div>
-                <div className={"slots-edit " + openEdit}>
-                    <div className="title">
-                        <div>Editer {editHoraire}</div>
-                        <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
-                    </div>
-                    {error != "" ? <div className="alert alert-danger">{error}</div> : null}
-                    <div className='minimum'>
-                        Valeur min acceptée : {parseInt(editMinim)}
-                    </div>
-                    <form onSubmit={this.handleSubmit}>
-                        <Input type="number" identifiant="editMax" value={editMax.value} onChange={this.handleChange} error={editMax.error}>Max</Input>
-                        <div className="from-group">
-                            <button className="btn btn-primary" type="submit">Mettre à jour</button>
+                <div className="slots-aside">
+                    <div className="slots-aside-edit">
+                        <div className={"slots-edit-overlay " + openEdit} onClick={this.handleClose}></div>
+                        <div className={"slots-edit " + openEdit}>
+                            <div className="title">
+                                <div>Editer {editHoraire}</div>
+                                <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
+                            </div>
+                            {error != "" ? <div className="alert alert-danger">{error}</div> : null}
+                            <div className='minimum'>
+                                Valeur min acceptée : {parseInt(editMinim)}
+                            </div>
+                            <form onSubmit={this.handleSubmit}>
+                                <Input type="number" identifiant="editMax" value={editMax.value} onChange={this.handleChange} error={editMax.error}>Max</Input>
+                                <div className="from-group">
+                                    <button className="btn btn-primary" type="submit">Mettre à jour</button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
+                    <div className="slots-aside-add">
+                        <div className={"slots-add-overlay " + openAdd} onClick={this.handleClose}></div>
+                        <div className={"slots-add " + openAdd}>
+                            <div className="title">
+                                <div>Ajouter un créneau</div>
+                                <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
+                            </div>
+                            {error != "" ? <div className="alert alert-danger">{error}</div> : null}
+                            <form onSubmit={this.handleSubmitAdd}>
+                                <div className="inputSlot">
+                                    <Input type="number" identifiant="addHours" value={addHours.value} onChange={this.handleChange} error={addHours.error}>Heure</Input>
+                                    <div className="separator-minutes">
+                                        <span> : </span>
+                                    </div>
+                                    <Select value={addMinutes.value} identifiant="addMinutes" onChange={this.handleChange} error={addMinutes.error} items={itemsMinutes}>Minutes</Select>
+                                </div>
+                                <div className="from-group">
+                                    <button className="btn btn-primary" type="submit">Ajouter</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
