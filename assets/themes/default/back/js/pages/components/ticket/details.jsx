@@ -117,7 +117,8 @@ export class Details extends Component {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Oui, je supprime'
+            confirmButtonText: 'Oui, je supprime',
+            cancelButtonText: "Non",
           }).then((result) => {
             if (result.value) {
                 AjaxSend.loader(true);
@@ -197,7 +198,7 @@ export class Details extends Component {
 
             <div className="toolbar">
                     <div className="toolbar-left">
-                        <div className="item">
+                        <div className="item item-select">
                             <Select value={selectHoraire.value} identifiant="selectHoraire" onChange={this.handleChange} error={selectHoraire.error} items={saveCreneaux}></Select>
                         </div>
                     </div>

@@ -70,9 +70,6 @@ export class Booking extends Component {
         });
     }
 
-    /**
-     * Fonction go back step
-     */
     backToProspects (e) {
         this.setState({classDot: 'active-1', classStep1: 'active', classStep2: '', min: 4, second: 60});
     }
@@ -80,9 +77,6 @@ export class Booking extends Component {
         this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', min: 4, second: 60});
     }
 
-    /**
-     * Fonction go to step Responsable
-     */
     toResponsableStep (data) {
         let dataNoDoublon = data.filter((thing, index, self) =>
             index === self.findIndex((t) => (
@@ -90,7 +84,7 @@ export class Booking extends Component {
                 t.birthday === thing.birthday && t.numAdh === thing.numAdh
             ))
         )
-
+        this.setState({prospects: dataNoDoublon});
         AjaxSend.loader(true);
         let self = this;
         axios({ 
@@ -100,28 +94,26 @@ export class Booking extends Component {
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             
-            if(code === 1){
-                self.setState({prospects: dataNoDoublon, classDot: 'active-2', classStep1: 'full', classStep2: 'active'});                
+            if(code === 1){       
+                self.setState({classDot: 'active-2', classStep1: 'full', classStep2: 'active'});                
             }else{
                 let newProspects = [];
                 dataNoDoublon.forEach(element => {
                     let newProspect = element;
                     data.duplicated.forEach(duplicate => {
                         if(JSON.stringify(element) === JSON.stringify(duplicate)){
-                            duplicate.registered = true
+                            duplicate.registered = true;
                             newProspect = duplicate;
                         }
                     });
                     newProspects.push(newProspect);
                 });
+                
                 self.setState({ code: 2, prospects: newProspects });
             }
         });
     }    
 
-    /**
-     * Get horaire and pre register prospects + responsable if not place = message + waiting list
-     */
     toReviewStep (data) {
         this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active', min: 4, second: 60});
 
@@ -213,7 +205,8 @@ export class Booking extends Component {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Oui'
+            confirmButtonText: 'Oui',
+            cancelButtonText: "Non",
             }).then((result) => {
             if (result.value) {
                 AjaxSend.loader(true)
@@ -312,7 +305,6 @@ function Infos({day, dayTypeString}) {
 function Starter({onClick, days, dayRemaining}) {
 
     let items = JSON.parse(days).map((elem, index) => {
-        console.log(elem)
         return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
             <span> {elem.fullDateString}</span>

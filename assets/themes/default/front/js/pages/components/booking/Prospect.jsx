@@ -177,7 +177,8 @@ class Prospect extends Component {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Oui, je supprime'
+            confirmButtonText: 'Oui, je supprime',
+            cancelButtonText: "Non",
             }).then((result) => {
             if (result.value) {
                 self.setState({renderCompo: false, deleted: true})

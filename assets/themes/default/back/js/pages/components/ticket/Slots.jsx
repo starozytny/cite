@@ -104,7 +104,8 @@ export class Slots extends Component {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Oui, je supprime'
+            confirmButtonText: 'Oui, je supprime',
+            cancelButtonText: "NoN",
             }).then((result) => {
             if (result.value) {
                 AjaxSend.loader(true);
