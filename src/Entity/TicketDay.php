@@ -146,6 +146,38 @@ class TicketDay
         return $this;
     }
 
+    public function getDayFr(){
+        $d = date_format($this->getDay(), 'l');
+        switch ($d){
+            case 'Monday':
+                return 'Lundi';
+            case 'Tuesday':
+                return 'Mardi';
+            case 'Wednesday':
+                return 'Mercredi';
+            case 'Thursday':
+                return 'Jeudi';
+            case 'Friday':
+                return 'Vendredi';
+            case 'Saturday':
+                return 'Samedi';
+            case 'Sunday':
+                return 'Dimanche';
+        }
+    }
+
+    public function getMonthFr(){
+        $m = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        $d = date_format($this->getDay(), 'm');
+
+        return $m[intval($d)];
+    }
+
+    public function getFullDateString()
+    {
+        return $this->getDayFr() . ' ' . date_format($this->getDay(), 'd') . ' ' . $this->getMonthFr() . ' ' . date_format($this->getDay(), 'Y');
+    }
+
     /**
      * @return Collection|TicketCreneau[]
      */

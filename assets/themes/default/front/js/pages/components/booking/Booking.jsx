@@ -311,9 +311,10 @@ function Infos({day}) {
 function Starter({onClick, days, dayRemaining}) {
 
     let items = JSON.parse(days).map((elem, index) => {
+        console.log(elem)
         return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
-            <span>{(new Date(Date.parse(elem.day))).toLocaleDateString('fr-FR')}</span>
+            <span> {elem.fullDateString}</span>
             <span className="txt-discret">
                  - Journée des {elem.typeString} 
                  <span>{elem.isOpen ? (elem.remaining > 0 ? ' | ouverte aux tickets' : ' | ouverte en liste d\'attente') : null}</span>
