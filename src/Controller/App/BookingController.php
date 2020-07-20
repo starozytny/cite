@@ -219,16 +219,18 @@ class BookingController extends AbstractController
         if($dayType == TicketDay::TYPE_NOUVEAU){
 
             foreach($prospects as $item){
+
+                $numAdh = $item->numAdh == "" ? null : $item->numAdh;
                 if($em->getRepository(TicketProspect::class)->findOneBy(array(
                     'civility' => $item->civility,
                     'firstname' => $item->firstname,
                     'lastname' => $item->lastname,
                     'email' => $item->email,
                     'birthday' => new DateTime($item->birthday),
-                    'numAdh' => $item->numAdh
+                    'numAdh' => $numAdh
                 ))){
                     array_push($alreadyRegistered, $item);
-                } 
+                }
             }
         }else{
 
@@ -239,6 +241,8 @@ class BookingController extends AbstractController
             }
 
         }
+
+        
 
         return $alreadyRegistered;
     }
