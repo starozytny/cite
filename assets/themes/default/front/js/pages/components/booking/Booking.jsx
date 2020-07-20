@@ -222,11 +222,13 @@ export class Booking extends Component {
                     url: Routing.generate('app_booking_tmp_book_cancel', { 'id' : self.props.dayId }), 
                     data: { responsableId: responsableId } 
                 }).then(function (response) {
-                    let data = response.data; let code = data.code; AjaxSend.loader(false);
-
-                    self.setState({classDot: '', classStart: '', classStep1: '', 
-                                    creneauId: null, responsableId: null, historyId: null,
-                                    timer: clearInterval(self.state.timer), min: 99, second: 99})
+                    let data = response.data;
+                    if(data.url !== undefined){
+                        window.history.replaceState(null, null, data.url);
+                        setTimeout(function () {
+                            location.reload()
+                        }, 500);
+                    }
                 });
                 
             }
