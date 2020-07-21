@@ -58,7 +58,7 @@ class AdminCreateUsersCommand extends Command
             [
                 'username' => 'admin',
                 'email' => 'starozytny@hotmail.fr',
-                'roles' => ['ROLE_USER']
+                'roles' => ['ROLE_USER', 'ROLE_ADMIN']
             ]
         );
 
