@@ -298,6 +298,7 @@ input{
 
         .step-2.active{
             display: flex;
+            flex-wrap: wrap;
 
             .step-card:nth-child(odd){
                 margin-right: 0;
