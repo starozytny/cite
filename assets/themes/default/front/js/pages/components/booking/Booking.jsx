@@ -290,8 +290,8 @@ function Infos({day, dayTypeString}) {
                 <br />
                 Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email.
                 <br /><br /><br />
-                <b className="txt-danger">Important :</b> Pour des raisons sanitaires, nous vous invitons à limitier le nombre d'accompagnants
-                 et tout particulièrement les petis enfants. Le port du masque est obligatoire
+                <b className="txt-danger">Important :</b> Pour des raisons sanitaires, nous vous invitons à limtier le nombre d'accompagnants
+                 et tout particulièrement les petits enfants. Le port du masque est obligatoire
             </p>
             <p className="informations-complementaire">
                 Pour toute information concernant le déroulement de cette journée : 
@@ -329,7 +329,7 @@ function Starter({onClick, days, dayRemaining}) {
                             <li>Photocopie de votre avis d'imposition 2019 sur revenus 2018</li>
                             <li>Un masque</li>
                             <li>Photocopie de la carte étudiante pour les étudiants de moins de 26 ans</li>
-                            <li>Moyen de paiement: chèque ou espèce (CB non acceptée)</li>
+                            <li>Moyen de paiement: chèque ou espèces (CB non acceptée)</li>
                         </ul>
                     </div>
                     {dayRemaining ? null : <div className="alert"> Il n'y a plus de place. </div>}

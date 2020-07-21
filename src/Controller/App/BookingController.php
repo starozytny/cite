@@ -263,8 +263,6 @@ class BookingController extends AbstractController
 
         }
 
-        
-
         return $alreadyRegistered;
     }
    
@@ -275,14 +273,18 @@ class BookingController extends AbstractController
     private function createProspect($item, $day, $creneau, $responsable, $waiting=false)
     {
         $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
+
+        $phoneMobile = $item->phoneMobile != "" ? $this->setToNullIfEmpty($item->phoneMobile) : $responsable->getPhoneMobile();
+        $email = $item->email != "" ? $item->email : $responsable->getEmail();
+
         $pro = (new TicketProspect())
             ->setFirstname($item->firstname)
             ->setLastname($item->lastname)
             ->setCivility($item->civility)
-            ->setEmail($item->email)
+            ->setEmail($email)
             ->setBirthday(new DateTime($birthday))
             ->setPhoneDomicile(null)
-            ->setPhoneMobile($this->setToNullIfEmpty($item->phoneMobile))
+            ->setPhoneMobile($phoneMobile)
             ->setAdr($responsable->getAdr())
             ->setCp($responsable->getCp())
             ->setCity($responsable->getCity())
