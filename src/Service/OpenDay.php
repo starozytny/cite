@@ -50,7 +50,7 @@ class OpenDay
             if($now >= $openAncien 
                 && $day->getType() == TicketDay::TYPE_NOUVEAU
                 && $now < $day->getDay()
-                ){
+                ){ //now est supérieur ou égale à la date/heure d'ouverture, il a le type demandé et le jour d'inscription parcouru est inférieur a la date de now
 
                 if($day->getRemaining() > 0){
 

@@ -59,6 +59,14 @@ class AdminCreateTicketsCommand extends Command
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
                 'day' => new DateTime('2020-07-25'),
+            ],
+            [
+                'type' => TicketDay::TYPE_NOUVEAU,
+                'day' => new DateTime('2020-07-26'),
+            ],
+            [
+                'type' => TicketDay::TYPE_NOUVEAU,
+                'day' => new DateTime('2020-07-27'),
             ]
         );
 

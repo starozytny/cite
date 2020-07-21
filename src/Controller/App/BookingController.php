@@ -207,7 +207,8 @@ class BookingController extends AbstractController
 
         $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
         $this->responsableService->deleteResponsable($responsable);
-
+        $em->flush();
+        
         $url = $this->generateUrl('app_booking_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
         return new JsonResponse(['code' => 1, 'url' => $url]);
     }

@@ -74,7 +74,7 @@ class TicketResponsable
     private $city;
 
     /**
-     * @ORM\OneToMany(targetEntity=TicketProspect::class, mappedBy="responsable", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=TicketProspect::class, mappedBy="responsable", fetch="EAGER", orphanRemoval=true)
      */
     private $prospects;
 

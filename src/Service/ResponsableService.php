@@ -33,7 +33,8 @@ class ResponsableService
             if($this->checkTime->moreFiveMinutes($responsable->getCreateAt())){
                 $this->deleteResponsable($responsable);
             }
-        }      
+        }
+        $this->em->flush();
     }
 
     public function deleteResponsable($responsable)
@@ -46,9 +47,7 @@ class ResponsableService
         $creneau = $responsable->getCreneau();
         $day = $creneau->getTicketDay();
         $this->remaining->increaseRemaining($day, $creneau);
-        $this->em->remove($responsable);
-        
-        $this->em->flush();
+        $this->em->remove($responsable); 
     }
 
      /**
