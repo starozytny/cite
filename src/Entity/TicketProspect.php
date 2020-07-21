@@ -104,6 +104,8 @@ class TicketProspect
      */
     private $day;
 
+    private $age;
+
     public function __construct()
     {
         $this->setCreateAt(new DateTime());
@@ -331,6 +333,8 @@ class TicketProspect
         $age = intval($nowyear) - intval($birthday);
 
         $age = $age > 1 ? $age . ' ans' : $age . ' an';
+
+        $this->age = $age;
 
         return $age;
     }

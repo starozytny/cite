@@ -158,20 +158,15 @@ class BookingController extends AbstractController
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau, $id);
         if($responsable != false){
+            $prospects = $em->getRepository(TicketProspect::class)->findBy(array('responsable' => $responsableId));
             do{
-                $ticket = $ticketGenerator->generate($responsable);
+                $ticket = $ticketGenerator->generate($responsable, $prospects);
                 $existe = $em->getRepository(TicketResponsable::class)->findOneBy(array('ticket' => $ticket));
             }while($existe);
     
             $responsable->setTicket($ticket);
             $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
             $horaireString = $responsable->getCreneau()->getHoraireString();
-    
-            $prospects = $responsable->getProspects();
-            foreach ($prospects as $prospect) {
-                $prospect->setStatus(TicketProspect::ST_CONFIRMED);
-                $em->persist($prospect);
-            }
 
             $title = 'Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
             $html = 'root/app/email/booking/index.html.twig';
@@ -295,6 +290,7 @@ class BookingController extends AbstractController
             ->setResponsable($responsable)
             ->setCreneau($creneau)
             ->setDay($day)
+            ->setStatus(TicketProspect::ST_CONFIRMED)
         ;
         if($waiting){
             $pro->setStatus(TicketProspect::ST_WAITING);
