@@ -29,7 +29,7 @@ export class StepTicket extends Component {
                         <li>Photocopie de votre avis d'imposition 2019 sur revenus 2018</li>
                         <li>Un masque</li>
                         <li>Photocopie de la carte étudiante pour les étudiants de moins de 26 ans</li>
-                        <li>Moyen de paiement: chèque ou espèce (CB non acceptée)</li>
+                        <li>Moyen de paiement: chèque ou espèces (CB non acceptée)</li>
                     </ul>
                 </div>
             </div>

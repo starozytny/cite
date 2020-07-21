@@ -162,12 +162,12 @@ export class StepResponsable extends Component {
                             <Input type="text" auto="none" identifiant={"confirmeEmail"} value={confirmeEmail.value} onChange={this.handleChange} error={confirmeEmail.error}>Confirmer e-mail</Input>
                         </div>
                         <div className="line line-2">
-                            <Input type="text" auto="none" identifiant={"phoneDomicile"} value={phoneDomicile.value} onChange={this.handleChange} error={phoneDomicile.error}>Téléphone domicile</Input>
-                            <Input type="text" auto="none" identifiant={"phoneMobile"} value={phoneMobile.value} onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
+                            <Input type="text" auto="none" identifiant={"phoneDomicile"} value={phoneDomicile.value} placeholder="Au moins un de renseigné" onChange={this.handleChange} error={phoneDomicile.error}>Téléphone domicile</Input>
+                            <Input type="text" auto="none" identifiant={"phoneMobile"} value={phoneMobile.value} placeholder="Au moins un de renseigné" onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
                         </div>
                         <div className="line line-2">
                             <Input type="text" auto="none" identifiant={"adr"} value={adr.value} onChange={this.handleChange} error={adr.error}>Adresse postale</Input>
-                            <Input type="text" auto="none" identifiant={"complement"} value={complement.value} onChange={this.handleChange} error={complement.error}>Complément d'adresse</Input>
+                            <Input type="text" auto="none" identifiant={"complement"} value={complement.value} placeholder="facultatif" onChange={this.handleChange} error={complement.error}>Complément d'adresse</Input>
                         </div>
                         <div className="line line-2">
                             <Input type="number" auto="none" identifiant={"cp"} value={cp.value} onChange={this.handleChange} error={cp.error}>Code postale</Input>

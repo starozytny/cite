@@ -221,8 +221,6 @@ class Prospect extends Component {
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
-            {type: "email", id: 'email', value: email.value},
-            {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
         ]);
 
         // phone facultatif
@@ -298,20 +296,23 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
         </div>
         <div className="line line-2">
             {/* <Input type="number" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input> */}
-            <Input type="text" identifiant={"email-" + id} value={email.value} onChange={onChange} error={email.error}>Adresse e-mail</Input>
-            <Input type="number" identifiant={"phoneMobile-" + id} value={phoneMobile.value} onChange={onChange} error={phoneMobile.error}>Téléphone mobile</Input>
+            <Input type="text" identifiant={"email-" + id} value={email.value} onChange={onChange} placeholder="facultatif" error={email.error}>Adresse e-mail</Input>
+            <Input type="number" identifiant={"phoneMobile-" + id} value={phoneMobile.value} onChange={onChange} placeholder="facultatif" error={phoneMobile.error}>Téléphone mobile</Input>
         </div>
         <div className="line line-2">
-            <DatePicker
-                locale="fr"
-                selected={birthday.inputVal}
-                onChange={onChangeDate}
-                dateFormat="dd/MM/yyyy"
-                peekNextMonth
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-                />
+            <div className="form-group">
+                <label>Date anniversaire</label>
+                <DatePicker
+                    locale="fr"
+                    selected={birthday.inputVal}
+                    onChange={onChangeDate}
+                    dateFormat="dd/MM/yyyy"
+                    peekNextMonth
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    />
+            </div>
         </div> 
         
         {/* <Input type="text" identifiant={"adr-" + id} value={adr.value} onChange={onChange} error={adr.error}>Adresse postal</Input>
