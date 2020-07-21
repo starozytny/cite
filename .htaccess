@@ -3,8 +3,8 @@
     deny from all
 </files>
 
-RewriteCond %{HTTP_HOST} ^www.inscription.citemusique-marseille.com$
-RewriteRule ^(.*) http://inscription.citemusique-marseille.com/$1 [QSA,L,R=301]
+RewriteCond %{HTTP_HOST} ^www.inscriptions.citemusique-marseille.com$
+RewriteRule ^(.*) http://inscriptions.citemusique-marseille.com/$1 [QSA,L,R=301]
 
 RewriteCond %{HTTPS} off
 RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
