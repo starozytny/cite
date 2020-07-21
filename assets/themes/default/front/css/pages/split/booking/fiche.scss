@@ -11,7 +11,7 @@
     }
 
     .actions{
-        @include flex(row, center, flex-end);
+        @include flex(row, center, flex-start);
         margin-top: 30px;
 
         button{

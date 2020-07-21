@@ -309,8 +309,7 @@ function Starter({onClick, days, dayRemaining}) {
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
             <span> {elem.fullDateString}</span>
             <span className="txt-discret">
-                 - Journée des {elem.typeString} 
-                 <span>{elem.isOpen ? (elem.remaining > 0 ? ' | ouverte aux tickets' : ' | ouverte en liste d\'attente') : null}</span>
+                 - Journée des {elem.typeString}
             </span>
         </div>
     });
