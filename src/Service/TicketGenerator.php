@@ -26,7 +26,7 @@ class TicketGenerator
         $this->twig = $twig;
     }
 
-    public function generate(TicketResponsable $responsable)
+    public function generate(TicketResponsable $responsable, $prospects)
     {
         $uniq = time();
         $ticket = $responsable->getId() . $uniq;
@@ -44,7 +44,7 @@ class TicketGenerator
 
         $creneau = $responsable->getCreneau();
         $day = $creneau->getTicketDay();
-        $mpdf = $this->createFileTicket($fileImage, $responsable, $day, $creneau, $responsable->getprospects());
+        $mpdf = $this->createFileTicket($fileImage, $responsable, $day, $creneau, $prospects);
 
         $mpdf->Output($pdfDirectory . '/' . $ticket . '-ticket.pdf', Destination::FILE);
 
