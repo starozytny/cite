@@ -290,7 +290,7 @@ function Infos({day, dayTypeString}) {
                 <br />
                 Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email.
                 <br /><br /><br />
-                <b className="txt-danger">Important :</b> Pour des raisons sanitaires, nous vous invitons à limtier le nombre d'accompagnants
+                <b className="txt-danger">Important :</b> Pour des raisons sanitaires, nous vous invitons à limiter le nombre d'accompagnants
                  et tout particulièrement les petits enfants. Le port du masque est obligatoire
             </p>
             <p className="informations-complementaire">
