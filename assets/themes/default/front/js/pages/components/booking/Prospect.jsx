@@ -3,7 +3,11 @@ import {Step} from './Step';
 import {Input} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
 import Swal from 'sweetalert2';
-
+import DatePicker from "react-datepicker";
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import fr from 'date-fns/locale/fr';
+registerLocale('fr', fr)
+import "react-datepicker/dist/react-datepicker.css";
 /**
     Step  : Récupérer les informations de chaque personnes à inscrire
  */
@@ -151,7 +155,6 @@ class Prospect extends Component {
             firstname: {value: '', error: ''},
             lastname: {value: '', error: ''},
             civility: {value: 'Mr', error: ''},
-            birthday: {value: '1995-01-01', error: ''},
             phoneDomicile: {value: '', error: ''},
             phoneMobile: {value: '', error: ''},
             email: {value: '', error: ''},
@@ -159,10 +162,12 @@ class Prospect extends Component {
             cp: {value: '', error: ''},
             city: {value: '', error: ''},
             isAdh: {value: this.props.dayType == 0 ? true : false, error: ''},
-            numAdh: {value: '', error: ''}
+            numAdh: {value: '', error: ''},
+            birthday: {value: '27/01/1995', error: '', inputVal: new Date('January 27, 1995')}
         }
 
         this.handleChange = this.handleChange.bind(this);
+        this.handleDate = this.handleDate.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleClickEdit = this.handleClickEdit.bind(this);
@@ -186,6 +191,10 @@ class Prospect extends Component {
             }
         })
         
+    }
+
+    handleDate (e) {
+        this.setState({ birthday: {inputVal: e, value: new Date(e).toLocaleDateString()} });
     }
 
     handleChange (e) {
@@ -213,7 +222,6 @@ class Prospect extends Component {
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
             {type: "email", id: 'email', value: email.value},
-            {type: "date", id: 'birthday', value: birthday.value},
             {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
         ]);
 
@@ -264,23 +272,20 @@ class Prospect extends Component {
     }
 
     render () {
-        const {firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email,
-            adr, cp, city, isAdh, numAdh, 
-            renderCompo, valide} = this.state;
+        const {firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh, renderCompo, valide} = this.state;
         const {id, registered, dayType} = this.props;
 
         return <>
             {renderCompo ? <ProspectCard id={id} dayType={dayType} registered={registered} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
-                            birthday={birthday} phoneDomicile={phoneDomicile} phoneMobile={phoneMobile} email={email}
-                            adr={adr} cp={cp} city={city} isAdh={isAdh} numAdh={numAdh}
-                            onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit}/> 
+                            birthday={birthday} phoneMobile={phoneMobile} email={email} isAdh={isAdh} numAdh={numAdh}
+                            onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit} onChangeDate={this.handleDate}/> 
                         : null}
         </>
     }
 } 
 
-function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneDomicile, phoneMobile, email, adr, cp, city, isAdh, numAdh,
-                        onChange, onDelete, onClickEdit}) 
+function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh,
+                        onChange, onDelete, onClickEdit, onChangeDate}) 
     {
     return <div className={"step-card step-prospect " + registered}>
 
@@ -297,8 +302,18 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
             <Input type="number" identifiant={"phoneMobile-" + id} value={phoneMobile.value} onChange={onChange} error={phoneMobile.error}>Téléphone mobile</Input>
         </div>
         <div className="line line-2">
-            <Input type="date" identifiant={"birthday-" + id} value={birthday.value} onChange={onChange} placeholder="JJ/MM/AAAA" error={birthday.error}>Date de naissance</Input>
+            <DatePicker
+                locale="fr"
+                selected={birthday.inputVal}
+                onChange={onChangeDate}
+                dateFormat="dd/MM/yyyy"
+                peekNextMonth
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                />
         </div> 
+        
         {/* <Input type="text" identifiant={"adr-" + id} value={adr.value} onChange={onChange} error={adr.error}>Adresse postal</Input>
         <div className="line line-2">
             <Input type="number" identifiant={"cp-" + id} value={cp.value} onChange={onChange} error={cp.error}>Code postal</Input>
@@ -314,7 +329,7 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
                 <div className="registered">Déjà inscrit</div>
                 <div>{civility.value}. {lastname.value} {firstname.value}</div>
                 <div>{email.value}</div>
-                <div>{(new Date(birthday.value)).toLocaleDateString('fr-FR')}</div>
+                <div>{birthday.value}</div>
             </div>
             <div className="actions">
                 <button className="delete" onClick={onDelete}>Supprimer</button>

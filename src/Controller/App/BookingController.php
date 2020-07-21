@@ -243,6 +243,7 @@ class BookingController extends AbstractController
         if($dayType == TicketDay::TYPE_NOUVEAU){
 
             foreach($prospects as $item){
+                $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
 
                 $numAdh = $item->numAdh == "" ? null : $item->numAdh;
                 if($em->getRepository(TicketProspect::class)->findOneBy(array(
@@ -250,7 +251,7 @@ class BookingController extends AbstractController
                     'firstname' => $item->firstname,
                     'lastname' => $item->lastname,
                     'email' => $item->email,
-                    'birthday' => new DateTime($item->birthday),
+                    'birthday' => new DateTime($birthday),
                     'numAdh' => $numAdh
                 ))){
                     array_push($alreadyRegistered, $item);
@@ -277,12 +278,13 @@ class BookingController extends AbstractController
      */
     private function createProspect($item, $day, $creneau, $responsable, $waiting=false)
     {
+        $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
         $pro = (new TicketProspect())
             ->setFirstname($item->firstname)
             ->setLastname($item->lastname)
             ->setCivility($item->civility)
             ->setEmail($item->email)
-            ->setBirthday(new DateTime($item->birthday))
+            ->setBirthday(new DateTime($birthday))
             ->setPhoneDomicile(null)
             ->setPhoneMobile($this->setToNullIfEmpty($item->phoneMobile))
             ->setAdr($responsable->getAdr())

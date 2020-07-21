@@ -68,6 +68,12 @@ header{
     }
 }
 
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    header{
+        padding-top: 140px;
+    }
+}
+
 
 .deroulement-section{
     background-color: $alpha;
@@ -271,6 +277,12 @@ header{
 
     header{
         margin-top: -118px;
+    }
+
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        header{
+            padding-top: 250px;
+        }
     }
 
     h2{

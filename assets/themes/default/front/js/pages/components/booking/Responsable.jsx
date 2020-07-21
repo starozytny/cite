@@ -83,8 +83,6 @@ export class StepResponsable extends Component {
     handleClickNext (e) {
         const {civility, firstname, lastname, email, confirmeEmail, adr, complement, cp, city, phoneDomicile, phoneMobile} = this.state;
 
-        console.log(confirmeEmail)
-
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
