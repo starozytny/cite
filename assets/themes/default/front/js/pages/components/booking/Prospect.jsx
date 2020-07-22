@@ -84,14 +84,20 @@ export class StepProspects extends Component {
         }
 
         if(go){
-            this.props.onStep3(data);
+            let prospectsNoDoublon = data.filter((thing, index, self) =>
+                index === self.findIndex((t) => (
+                    t.civility === thing.civility && t.firstname === thing.firstname && t.lastname === thing.lastname &&
+                    t.birthday === thing.birthday && t.numAdh === thing.numAdh
+                ))
+            )
+            this.props.onStep3(prospectsNoDoublon);
         }else{
-            Swal.fire({
-                title: 'Erreur !',
-                html: 'Veuillez compléter les informations des élèves à inscrire avant de continuer.',
-                icon: 'error',
-                confirmButtonText: 'Confirmer'
-            })
+            // Swal.fire({
+            //     title: 'Erreur !',
+            //     html: 'Veuillez compléter les informations des élèves à inscrire avant de continuer.',
+            //     icon: 'error',
+            //     confirmButtonText: 'Confirmer'
+            // })
         }
     }
 
@@ -286,7 +292,8 @@ class Prospect extends Component {
 function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh,
                         onChange, onDelete, onClickEdit, onChangeDate}) 
     {
-    return <div className={"step-card step-prospect " + registered}>
+
+    return <div className={"step-card step-prospect " +  registered}>
         <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
         <div className="line line-2">

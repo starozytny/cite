@@ -100,7 +100,8 @@ export class Booking extends Component {
             if(code === 1){
                 self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
                                creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
-                               timer: setInterval(() => self.tick(), 1000), min: 4, second: 60})
+                               timer: setInterval(() => self.tick(), 1000), min: 4, second: 60});
+                window.scrollTo(0, 0);
             }            
         });
     }
@@ -142,20 +143,14 @@ export class Booking extends Component {
 
     handleToStep2 (data) {
         this.setState({responsable: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active', min: 4, second: 60});
+        window.scrollTo(0, 0);
     }
 
     handleBackStep1 (e) {
         this.setState({classDot: 'active-1', classStep1: 'active', classStep2: '', min: 4, second: 60});
     }
 
-    handleToStep3 (data) {
-        let prospectsNoDoublon = data.filter((thing, index, self) =>
-            index === self.findIndex((t) => (
-                t.civility === thing.civility && t.firstname === thing.firstname && t.lastname === thing.lastname &&
-                t.birthday === thing.birthday && t.numAdh === thing.numAdh
-            ))
-        )
-
+    handleToStep3 (prospectsNoDoublon) {
         this.setState({prospects: prospectsNoDoublon});
 
         const {creneauId, historyId, responsable} = this.state;
@@ -295,7 +290,7 @@ function Starter({onClick, days, dayRemaining}) {
     let items = JSON.parse(days).map((elem, index) => {
         return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
-            <span> {elem.fullDateString}</span>
+            <span> {elem.fullDateString} </span>
             <span className="txt-discret">
                  - Journée des {elem.typeString}
             </span>

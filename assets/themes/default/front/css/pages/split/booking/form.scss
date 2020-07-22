@@ -51,6 +51,7 @@ input:checked{
     & + label{
         border: 1px solid $color3;
         color: $color3;
+        transition: all 0.2s ease-in-out;
 
         &:hover{
             border-color: $color3;
@@ -64,6 +65,10 @@ input:checked{
     label{
         margin-bottom: 0;
         margin-right: 10px;
+        cursor: pointer;
+    }
+    input{
+        cursor: pointer;
     }
 }
 

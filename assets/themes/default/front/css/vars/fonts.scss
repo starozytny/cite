@@ -27,6 +27,12 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
+  .icon-right-arrow:before {
+    content: "\e903";
+  }
+  .icon-left-arrow:before {
+    content: "\e904";
+  }
   .icon-add:before {
     content: "\e901";
   }

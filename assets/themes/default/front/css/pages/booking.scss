@@ -102,6 +102,13 @@
 
     .annulation{
         margin-top: 15px;
+
+        .btn{
+            &:hover{
+                transform: translateY(-2px);
+                opacity: 0.9;
+            }
+        }
     }
 
     .step-title{

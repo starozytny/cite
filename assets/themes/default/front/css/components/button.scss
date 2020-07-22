@@ -12,13 +12,18 @@
     @include boxshadow($color3);
     @include fontSemibold();
     cursor: pointer;
-    transition: all 0.4s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .btn-primary{
     background-color: $color0;
     border-color: $color0;
     color: $color5;
+
+    &:hover{
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
 }
 
 .btn-danger{

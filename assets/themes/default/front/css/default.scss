@@ -15,6 +15,7 @@ body {
     background-color: $color5;
     @include fontRegular();
     line-height: 1.37;
+    scroll-behavior: smooth;
 }
 
 h1, h2, h3, h4, p{
@@ -61,14 +62,15 @@ main{
 }
 
 .link{
-    display: block;
+    display: inline-block;
     position: relative;
     color: $color3;
     cursor: pointer;
-    padding-left: 10px;
     margin: 25px 0 0 0;
     border: none;
     background-color: transparent;
+    transition: all 0.2s ease-in-out;
+    padding: 5px 10px;
 
     &:before{
         content: '';
@@ -78,11 +80,19 @@ main{
         height: 100%;
         background-color: $color7;
         display: block;
+        z-index: -1;
+        transition: all 0.2s ease-in-out;
     }
 
     &.link-primary{
         &:before{
             background-color: $color0;
+        }
+    }
+
+    &:hover{
+        &:before{
+            width: 101%;
         }
     }
 }

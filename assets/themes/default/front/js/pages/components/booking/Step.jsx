@@ -19,8 +19,8 @@ export function Step({id, classStep, title, body, specialFull=null, onClickNext,
                 {body}
             </div>
             {final ? null : <div className={"step-actions-static " + specialFull}>
-                <button className="btn btn-back" onClick={onClickPrev}>Retour</button>
-                <button className={classBtn} disabled={disabled} onClick={onClickNext}>{nextText}</button>
+                <button className="btn btn-back" onClick={onClickPrev}> <span className="icon-left-arrow"></span> <span className="txt-btn">Retour</span> </button>
+                <button className={"btn-next " + classBtn} disabled={disabled} onClick={onClickNext}><span className="icon-right-arrow"></span> <span className="txt-btn">{nextText}</span></button>
             </div>}
             {final ? null : <div className={"step-actions " + specialFull}>
                 <button className="btn btn-back" onClick={onClickPrev}>Retour</button>

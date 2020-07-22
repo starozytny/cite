@@ -30,11 +30,21 @@ export class StepResponsable extends Component {
         let name = e.target.name;
         let value = e.target.value;
         this.setState({ [name]: {value: value} });
+
+        const {phoneDomicile, phoneMobile} = this.state;
+
         if(name === "phoneMobile"){
-            this.setState({ phoneDomicile: {value: phoneDomicile.value,error: ''} });
+            this.setState({ phoneDomicile: {value: phoneDomicile.value, error: ''} });
         }
         if(name === "phoneDomicile"){
-            this.setState({ phoneMobile: {value: phoneMobile.value,error: ''} });
+            this.setState({ phoneMobile: {value: phoneMobile.value, error: ''} });
+        }
+
+        if(name === "cp"){
+            let mars = ['13000', '13001', '13002', '13003', '13004', '13005', '13006', '13007', '13008', '13009', '13010', '13011', '13012', '13013', '13014', '13015', '13016']
+            if(mars.includes(value)){
+                this.setState({ city: {value: 'Marseille', error: ''} });
+            }
         }
     }
 
@@ -129,7 +139,7 @@ export class StepResponsable extends Component {
                             <Input type="text" auto="none" identifiant={"complement"} value={complement.value} placeholder="(facultatif)" onChange={this.handleChange} error={complement.error}>Complément d'adresse</Input>
                         </div>
                         <div className="line line-2">
-                            <Input type="number" auto="none" identifiant={"cp"} value={cp.value} onChange={this.handleChange} error={cp.error}>Code postale</Input>
+                            <Input type="number" auto="none" identifiant={"cp"} value={cp.value} onChange={this.handleChange} error={cp.error}>Code postal</Input>
                             <Input type="text" auto="none" identifiant={"city"} value={city.value} onChange={this.handleChange} error={city.error}>Ville</Input>
                         </div>
                     </div>
