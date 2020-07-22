@@ -58,6 +58,21 @@ input:checked{
     }
 }
 
+.form-group-checkbox{
+    @include flex(row, flex-start, flex-start);
+
+    label{
+        margin-bottom: 0;
+        margin-right: 10px;
+    }
+}
+
+.form-group-date{
+    input{
+        width: calc(100% - 12px);
+    }
+}
+
 //                      __   _____ __    ___    __
 //                     | _| |___  / /_  ( _ )  |_ |
 //    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
@@ -88,4 +103,13 @@ input:checked{
     }
 
     input[type="radio"] + label{    margin-bottom: 0;}
+
+    .form-group-date{
+        input{
+            width: calc(100% - 25px);
+        }
+        .error{
+            width: calc(100% - 23px);
+        }
+    }
 }

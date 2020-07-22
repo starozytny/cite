@@ -8,6 +8,7 @@ import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import fr from 'date-fns/locale/fr';
 registerLocale('fr', fr)
 import "react-datepicker/dist/react-datepicker.css";
+
 /**
     Step  : Récupérer les informations de chaque personnes à inscrire
  */
@@ -16,7 +17,7 @@ export class StepProspects extends Component {
         super(props)
         
         this.state = {
-            added: 0,
+            added: 1,
             deleted: 0,
             classAdd: '',
         }
@@ -31,9 +32,7 @@ export class StepProspects extends Component {
         Gestion d'ajout et suppression d'inscrits
      */
     handleClickDelete (e) {
-        let self = this;
         this.setState({deleted: parseInt(this.state.deleted) + 1, classAdd: ''})
-        Swal.fire( 'Supprimé !',data.message,'success' );
     }
     handleClickAdd (e) {
         let value = parseInt(this.state.added) + 1;
@@ -85,11 +84,11 @@ export class StepProspects extends Component {
         }
 
         if(go){
-            this.props.toResponsableStep(data);
+            this.props.onStep3(data);
         }else{
             Swal.fire({
                 title: 'Erreur !',
-                html: 'Veuillez compléter les informations des personnes à inscrire avant de continuer.',
+                html: 'Veuillez compléter les informations des élèves à inscrire avant de continuer.',
                 icon: 'error',
                 confirmButtonText: 'Confirmer'
             })
@@ -97,7 +96,7 @@ export class StepProspects extends Component {
     }
 
     render () {
-        const {classStep, prospects, dayType, onAnnulation} = this.props;
+        const {classStep, prospects, dayType, onAnnulation, onClickPrev} = this.props;
         const {added, classAdd} = this.state;
         let arr = [];
         for (let i=0 ; i<added ; i++) {
@@ -115,27 +114,28 @@ export class StepProspects extends Component {
         
         let body = <>
             <div className={"step-prospects-add-static " + classAdd}>
-                <button onClick={this.handleClickAdd}>
-                    <span className="icon-add"></span>
-                    <span>Ajouter une personne</span>
-                </button>
-            </div>
+                    <button onClick={this.handleClickAdd}>
+                        <span className="icon-add"></span>
+                        <span>Ajouter un éléve</span>
+                    </button>
+                </div>
             <div className="step-prospects">
                 {arr}
-            </div>
-            <div className={"step-prospects-add " + classAdd}>
-                <button onClick={this.handleClickAdd}>
-                    <span className="icon-add"></span>
-                    <span>Ajouter </span>
-                    <span className="text"> une personne</span>
-                </button>
+                <div className={"step-prospects-add " + classAdd}>
+                    <button onClick={this.handleClickAdd}>
+                        <span className="icon-add"></span>
+                        <span>Ajouter un élève</span>
+                    </button>
+                </div>
             </div>
         </>
 
-        return <Step id="1" classStep={classStep} title="Famille à inscrire" specialFull={classAdd} onClickNext={this.handleClickNext} body={body}>
-            Les informations recueillies à partir de ce formulaire sont transmises au service de la Cité de la musique dans le but 
-            de pré-remplir les inscriptions. Plus d'informations sur le traitement de vos données dans notre 
-            politique de confidentialité.
+        return <Step id="2" classStep={classStep} title="Elève(s) à inscrire" specialFull={classAdd} onClickPrev={onClickPrev} onClickNext={this.handleClickNext} body={body}>
+            <div className="form-infos">
+                Les informations recueillies à partir de ce formulaire sont transmises au service de la Cité de la musique dans le but 
+                de pré-remplir les inscriptions. Plus d'informations sur le traitement de vos données dans notre 
+                politique de confidentialité.
+            </div>
             <div className="annulation">
                 <button className="btn" onClick={onAnnulation}>Annuler la réservation</button>
             </div>
@@ -163,7 +163,7 @@ class Prospect extends Component {
             city: {value: '', error: ''},
             isAdh: {value: this.props.dayType == 0 ? true : false, error: ''},
             numAdh: {value: '', error: ''},
-            birthday: {value: '27/01/1995', error: '', inputVal: new Date('January 27, 1995')}
+            birthday: {value: '', error: '', inputVal: null}
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -221,6 +221,7 @@ class Prospect extends Component {
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
+            {type: "text", id: 'birthday', value: birthday.value},
         ]);
 
         // phone facultatif
@@ -286,8 +287,6 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
                         onChange, onDelete, onClickEdit, onChangeDate}) 
     {
     return <div className={"step-card step-prospect " + registered}>
-
-        <span className="title"><span className="icon-infos"></span></span>
         <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
         <div className="line line-2">
@@ -295,12 +294,7 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
             <Input type="text" identifiant={"lastname-" + id} value={lastname.value} onChange={onChange} error={lastname.error}>Nom</Input>
         </div>
         <div className="line line-2">
-            {/* <Input type="number" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input> */}
-            <Input type="text" identifiant={"email-" + id} value={email.value} onChange={onChange} placeholder="facultatif" error={email.error}>Adresse e-mail</Input>
-            <Input type="number" identifiant={"phoneMobile-" + id} value={phoneMobile.value} onChange={onChange} placeholder="facultatif" error={phoneMobile.error}>Téléphone mobile</Input>
-        </div>
-        <div className="line line-2">
-            <div className="form-group">
+            <div className={'form-group-date form-group' + (birthday.error ? " form-group-error" : "")}>
                 <label>Date anniversaire</label>
                 <DatePicker
                     locale="fr"
@@ -311,9 +305,16 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
+                    placeholderText="DD/MM/YYYY"
                     />
+                <div className='error'>{birthday.error ? birthday.error : null}</div>
             </div>
         </div> 
+        <div className="line line-2">
+            {/* <Input type="number" identifiant={"phoneDomicile-" + id} value={phoneDomicile.value} onChange={onChange} error={phoneDomicile.error}>Téléphone domicile</Input> */}
+            <Input type="text" identifiant={"email-" + id} value={email.value} onChange={onChange} placeholder="(facultatif)" error={email.error}>Adresse e-mail</Input>
+            <Input type="number" identifiant={"phoneMobile-" + id} value={phoneMobile.value} onChange={onChange} placeholder="(facultatif)" error={phoneMobile.error}>Téléphone mobile</Input>
+        </div>
         
         {/* <Input type="text" identifiant={"adr-" + id} value={adr.value} onChange={onChange} error={adr.error}>Adresse postal</Input>
         <div className="line line-2">
@@ -359,7 +360,7 @@ function IsAdh({id, isAdh, dayType, numAdh, onChange}) {
     let dis = dayType == 0 ? "disabled" : "";
     return (
         <div className="line line-2">
-            <div className={"form-group " + dis}>
+            <div className={"form-group-checkbox form-group " + dis}>
                 <label htmlFor={"isAdh-" + id}>Déjà adhérent ?</label>
                 <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} disabled={dis} onChange={onChange} />
             </div>

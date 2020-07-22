@@ -93,6 +93,12 @@ function validateEmail($value){
 }
 
 function validateConfirmeEmail($value, $value2){
+    if($value === ""){
+        return {
+            'code': false,
+            'message': 'Les adresses e-mail ne correspondent pas.'
+        };
+    }
     if($value != $value2){
         return {
             'code': false,

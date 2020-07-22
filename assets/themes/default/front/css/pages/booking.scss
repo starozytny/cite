@@ -192,7 +192,7 @@
 
     .steps{
         .step-prospects{
-            @include flex(row, flex-start, flex-start);
+            @include flex(row, stretch, space-between);
             flex-wrap: wrap;
         }
 
@@ -258,23 +258,28 @@
             width: 536px;
             max-width: 536px;
         }
-        .step-actions, .step-prospects-add, .step-prospects-add button{
-            height: 80px;
-        }
-
-        .step-prospects-add{
-            button{
-                .text{
-                    display: inline;
-                    margin-left: 4px;
-                }
-            }
-        }
 
         .step-1.active{
             .step-content{
                 margin-left: 0;
                 width: 50%;
+            }
+        }
+    }
+}
+
+//                      __   _ _____  __    __     __
+//                     | _| / |___ / / /_  / /_   |_ |
+//    _____ _____ _____| |  | | |_ \| '_ \| '_ \   | |_____ _____ _____
+//   |_____|_____|_____| |  | |___) | (_) | (_) |  | |_____|_____|_____|
+//                     | |  |_|____/ \___/ \___/   | |
+//                     |__|                       |__|
+@media (min-width: 1366px){
+    .steps{
+        .step-2{
+            .step-card{
+                width: 577px;
+                max-width: 577px;
             }
         }
     }
@@ -289,5 +294,14 @@
 @media (min-width: 1600px){
     .section-infos, .section-steps{
         @include maxscreen();
+    }
+
+    .steps{
+        .step-2{
+            .step-card{
+                width: 615px;
+                max-width: 615px;
+            }
+        }
     }
 }
