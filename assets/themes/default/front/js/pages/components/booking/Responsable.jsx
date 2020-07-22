@@ -30,6 +30,12 @@ export class StepResponsable extends Component {
         let name = e.target.name;
         let value = e.target.value;
         this.setState({ [name]: {value: value} });
+        if(name === "phoneMobile"){
+            this.setState({ phoneDomicile: {value: phoneDomicile.value,error: ''} });
+        }
+        if(name === "phoneDomicile"){
+            this.setState({ phoneMobile: {value: phoneMobile.value,error: ''} });
+        }
     }
 
     handleClickNext (e) {
@@ -41,8 +47,8 @@ export class StepResponsable extends Component {
             {type: "email", id: 'email', value: email.value},
             {type: "confirmeEmail", id: 'confirmeEmail', value: confirmeEmail.value, value2: email.value},
             {type: "text", id: 'adr', value: adr.value},
-            {type: "text", id: 'cp', value: cp.value},
-            {type: "text", id: 'city', value: city.value}
+            {type: "cp", id: 'cp', value: cp.value},
+            {type: "textAlpha", id: 'city', value: city.value}
         ]);
 
         // phone facultatif
@@ -109,9 +115,14 @@ export class StepResponsable extends Component {
                             <Input type="text" auto="none" identifiant={"email"} value={email.value} onChange={this.handleChange} error={email.error}>Adresse e-mail</Input>
                             <Input type="text" auto="none" identifiant={"confirmeEmail"} value={confirmeEmail.value} onChange={this.handleChange} error={confirmeEmail.error}>Confirmer e-mail</Input>
                         </div>
+                        <div className="line">
+                            <p className="txt-discret">
+                               Veuillez renseigner au moins 1 téléphone.
+                            </p>
+                        </div>
                         <div className="line line-2">
-                            <Input type="number" auto="none" identifiant={"phoneMobile"} value={phoneMobile.value} onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
-                            <Input type="number" auto="none" identifiant={"phoneDomicile"} value={phoneDomicile.value} onChange={this.handleChange} error={phoneDomicile.error}>Téléphone domicile</Input>
+                            <Input type="text" auto="none" identifiant={"phoneMobile"} value={phoneMobile.value} onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
+                            <Input type="text" auto="none" identifiant={"phoneDomicile"} value={phoneDomicile.value} onChange={this.handleChange} error={phoneDomicile.error}>Téléphone domicile</Input>
                         </div>
                         <div className="line line-2">
                             <Input type="text" auto="none" identifiant={"adr"} value={adr.value} onChange={this.handleChange} error={adr.error}>Adresse postale</Input>
