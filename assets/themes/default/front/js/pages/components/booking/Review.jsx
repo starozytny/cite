@@ -50,7 +50,7 @@ export class StepReview extends Component {
                 </div>
 
                 <div className="review-responsable">
-                    <div className="title">Responsable des personnes citées ci-dessus : </div>
+                    <div className="title">Responsable : </div>
                     <div className="review-cards">
                         <div className="review-card">
                             <div>{responsable.civility}. {responsable.lastname} {responsable.firstname}</div>
@@ -63,9 +63,9 @@ export class StepReview extends Component {
             </div>
         </>
 
-        let nextText = "Valider";
+        let nextText = "Obtenir mon ticket";
         if(code == 1){
-            nextText = (timeExpired ? "Expirée" : "Valider");
+            nextText = (timeExpired ? "Expirée" : nextText);
         }else if(code == 2){
             nextText = "Indisponible"
         }

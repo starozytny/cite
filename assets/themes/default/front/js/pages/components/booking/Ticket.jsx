@@ -12,15 +12,15 @@ export class StepTicket extends Component {
 
         let body = <>
             <div className="final-content">
-                <div className="txt-success">{finalMessage}</div>
-                <div className="alert alert-info ticket">
+                <div className="alert alert-ticket">
                     <div>TICKET : <b>{ticket}</b></div>
                     <div className="ticket-barcode">
                         <img src={ "data:image/png;base64," + barcode } />
                     </div>
                     <div>Pour le {day} à {horaire}.</div>
+                    <div className="ticket-email">Votre ticket a été envoyé à <b>{finalMessage}</b> en <b>pièce jointe</b>. <br/> Veuillez vérifiez vos spams/courriers indésirables.</div>
                     <div className="ticket-download">
-                        <a href={print} target="_blank" download>Télécharger le billet</a>
+                        <a href={print} target="_blank">Imprimer mon billet</a>
                     </div>
                 </div>
                 <div className="alert">
@@ -38,7 +38,7 @@ export class StepTicket extends Component {
 
         let textRegular = <>
             <div>Inscription pour la journée du : <b>{day}</b></div>
-            <div>Horaire de passage : <b>{horaire}</b></div>
+            <div>Horaire de rendez-vous : <b>{horaire}</b></div>
             <div>Nombre de personnes à inscrire : <b>{prospects.length}</b></div>
         </>
 
@@ -52,9 +52,6 @@ export class StepTicket extends Component {
                         Ce mail contiendra votre numéro de ticket et votre horaire de passage. <br/> <br/>
                         <b>Attention !</b> Vous êtes en file d'attente que pour la journée du <b>{day}</b>. Pour les prochaines journées, il faudra 
                         réitérer la demande. */}
-                    </div>
-                    <div className="alert">
-                        <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
                     </div>
                 </div>
             </>

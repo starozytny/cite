@@ -174,8 +174,7 @@ class BookingController extends AbstractController
     
             $this->history->updateTicket($data->historyId);
             $em->persist($responsable); $em->flush();
-            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print,
-            'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse du responsable : ' . $responsable->getEmail()]);
+            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print, 'message' => $responsable->getEmail()]);
         }else{
             return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
         }
