@@ -24,6 +24,7 @@
         & > div:first-child{
             @include fontSemibold();
             margin-bottom: 4px;
+            word-break: break-word;
         }
 
         .review-card-email{

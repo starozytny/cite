@@ -63,6 +63,7 @@
 
         .infos{
             @include flex(column, center, center);
+            text-align: center;
 
             .registered{
                 border: 2px solid $info;

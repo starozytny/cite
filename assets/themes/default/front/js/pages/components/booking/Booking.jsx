@@ -273,7 +273,7 @@ function Infos({day, dayTypeString}) {
             <h1>Réservation d'un ticket</h1>
             <p className="subtitle">Journée d'inscription des {dayTypeString} du {day} </p>
             <p>
-                La demande de ticket permet d'obtenir 1 ticket par famille (1 ticket suffit pour l’inscription de plusieurs personnes d’une même famille).
+                La réservation d'un ticket permet d'obtenir 1 ticket par famille (1 ticket suffit pour l’inscription de plusieurs personnes d’une même famille).
                 <br />
                 Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email.
                 <br /><br /><br />
@@ -281,7 +281,7 @@ function Infos({day, dayTypeString}) {
                  et tout particulièrement les petits enfants. Le port du masque est obligatoire
             </p>
             <p className="informations-complementaire">
-                Pour toute information concernant le déroulement de cette journée : 
+                Pour toutes informations concernant le déroulement de cette journée : 
                 <br />
                 04 91 39 28 28
             </p>
