@@ -3,9 +3,9 @@
 @import 'split/booking/dot.scss';
 @import 'split/booking/fiche.scss';
 @import 'split/booking/actions.scss';
-@import 'split/booking/responsable.scss';
 @import 'split/booking/review.scss';
 @import 'split/booking/ticket.scss';
+@import 'split/booking/form.scss';
 
 .section-infos{
     padding: 0 10px;
@@ -139,87 +139,12 @@
         margin-bottom: 30px;
         max-width: 410px;
     }
-
-    .step-actions{
-        text-align: right;
-        &.btn{
-            margin-left: 15px;
-        }
+}
+.ext-responsable{
+    .title{
+        @include fontSemibold();
+        margin-bottom: 10px;
     }
-
-    .step-1{
-        .btn-back{
-            display: none;
-        }
-        .step-actions{
-            width: 50%;
-
-            &.full, .btn{
-                width: 100%;
-            }
-        }
-    }
-}
-
-.step-error{
-    margin-bottom: 10px;
-}
-
-.form-group{
-    margin-bottom: 15px;
-}
-
-.form-group.disabled{
-    opacity: 0 !important;
-    z-index: -20; 
-    position: absolute;
-}
-
-.error{font-size: 12px;}
-
-.form-group-radio{
-    @include flex(row, center, center);
-
-    & > * {
-        width: 50%;
-    }
-    & > *:not(:last-child){
-        margin-right: 10px;
-    }
-}
-input[type="radio"]{
-    opacity: 0;
-    & + label{
-        padding: 3px 10px;
-        width: 70px;
-        border-radius: 5px;
-        display: block;
-        margin-top: -25px;
-        text-align: center;
-        cursor: pointer;
-        border: 1px dashed $color7;
-        @include fontRegular();
-        font-size: 16px;
-        transition: all 0.2s ease-in-out;
-        
-        &:hover{
-            border-style: solid;
-        }
-    }
-}
-input:checked{
-    & + label{
-        border: 1px solid $color3;
-        color: $color3;
-
-        &:hover{
-            border-color: $color3;
-        }
-    }
-}
-
-input{
-    max-width: 240px;
 }
 
 //                      __   _____ __    ___    __
@@ -239,30 +164,9 @@ input{
         }
     }
 
-    .line{
-        @include flex(row, flex-start, space-between);
-        margin-bottom: 15px;
-
-        & > *:not(:last-child){
-            margin-right: 30px;
-        }
+    .steps .step-1 .step-card{
+        max-width: 100%;
     }
-    .line-2{
-        & > *{
-            width: 50%;
-        }
-    }
-    .line-3{
-        & > *{
-            width: 33%;
-        }
-    }
-
-    .form-group-radio{
-        width: 210px;
-    }
-
-    input[type="radio"] + label{    margin-bottom: 0;}
 }
 
 //                      __   _  ___ ____  _  _     __
@@ -296,16 +200,22 @@ input{
            margin-right: 30px;
         }
 
-        .step-2.active{
+        .step-1.active{
             display: flex;
             flex-wrap: wrap;
 
             .step-card:nth-child(odd){
                 margin-right: 0;
+                width: calc(100% - 50px);
             }
 
             .step-title{
                 width: 50%;
+
+                h2 + div{
+                    @include flex(column, flex-start, space-between);
+                    height: calc(100% - 65px);
+                }
             }
 
             .step-content{
@@ -361,7 +271,7 @@ input{
             }
         }
 
-        .step-2.active{
+        .step-1.active{
             .step-content{
                 margin-left: 0;
                 width: 50%;

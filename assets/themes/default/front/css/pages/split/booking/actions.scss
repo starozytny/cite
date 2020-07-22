@@ -1,21 +1,16 @@
 @import '../../../vars/vars.scss';
 
-.step-actions-static{
-    display: block;
-    width: 100%;
-    text-align: right;
-
-    & > *:not(:last-child){
-        margin-right: 10px;
-    }
-}
-
 .step-actions, .step-prospects-add{
     position: fixed;
     bottom: 0;left: 0;
     width: 50%;
     height: 55px;
     z-index: 20;
+    text-align: right;
+
+    &.btn{
+        margin-left: 15px;
+    }
 }
 
 .step-actions{
@@ -34,6 +29,22 @@
             background-color: $color7;
             border-color: $color7
         }
+    }
+}
+
+.step-actions-static{
+    display: none;
+    width: 100%;
+    text-align: right;
+
+    .btn-back{
+        border: 1px solid $color6;
+    }
+
+    .btn {
+        width: 50%;
+        border-radius: 0;
+        padding: 20px;
     }
 }
 
@@ -71,4 +82,19 @@
 
 .step-prospects-add-static{
     margin-bottom: 25px;
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .step-actions-static{
+        @include flex(row, center, center);
+    }
+    .step-actions{
+        display: none;
+    }
 }

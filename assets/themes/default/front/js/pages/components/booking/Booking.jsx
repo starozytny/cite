@@ -39,8 +39,10 @@ export class Booking extends Component {
             historyId: null
         }
 
-        this.interval = null;
         this.handleClickStart = this.handleClickStart.bind(this);
+        this.handleAnnulation = this.handleAnnulation.bind(this);
+
+        this.handleToStep2 = this.handleToStep2.bind(this);
 
         this.toResponsableStep = this.toResponsableStep.bind(this);
         this.backToProspects = this.backToProspects.bind(this);
@@ -48,7 +50,7 @@ export class Booking extends Component {
         this.backToResponsable = this.backToResponsable.bind(this);
         this.toTicketStep = this.toTicketStep.bind(this);
 
-        this.handleAnnulation = this.handleAnnulation.bind(this);
+        
     }
 
     /**
@@ -68,6 +70,45 @@ export class Booking extends Component {
                                timer: setInterval(() => self.tick(), 1000), min: 4, second: 60})
             }            
         });
+    }
+
+    handleAnnulation (e) {
+        e.preventDefault();
+
+        const {responsableId} = this.state;
+
+        let self = this;
+        Swal.fire({
+            title: 'Etes-vous sur d\'annuler la réservation?',
+            text: "L'action est irréversible.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui',
+            cancelButtonText: "Non",
+            }).then((result) => {
+            if (result.value) {
+                AjaxSend.loader(true)
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('app_booking_tmp_book_cancel', { 'id' : self.props.dayId }), 
+                    data: { responsableId: responsableId } 
+                }).then(function (response) {
+                    let data = response.data;
+                    if(data.url !== undefined){
+                        window.history.replaceState(null, null, data.url);
+                        setTimeout(function () {
+                            location.reload()
+                        }, 500);
+                    }
+                });
+            }
+        })
+    }
+
+    handleToStep2 (data) {
+        this.setState({responsable: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active', min: 4, second: 60});
     }
 
     backToProspects (e) {
@@ -192,42 +233,6 @@ export class Booking extends Component {
         });
     } 
 
-    handleAnnulation (e) {
-        e.preventDefault();
-
-        const {responsableId} = this.state;
-
-        let self = this;
-        Swal.fire({
-            title: 'Etes-vous sur d\'annuler la réservation?',
-            text: "L'action est irréversible.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Oui',
-            cancelButtonText: "Non",
-            }).then((result) => {
-            if (result.value) {
-                AjaxSend.loader(true)
-                axios({ 
-                    method: 'post', 
-                    url: Routing.generate('app_booking_tmp_book_cancel', { 'id' : self.props.dayId }), 
-                    data: { responsableId: responsableId } 
-                }).then(function (response) {
-                    let data = response.data;
-                    if(data.url !== undefined){
-                        window.history.replaceState(null, null, data.url);
-                        setTimeout(function () {
-                            location.reload()
-                        }, 500);
-                    }
-                });
-                
-            }
-        })
-    }
-
     render () {
         const {day, days, dayType, dayRemaining, dayTypeString} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
@@ -241,8 +246,8 @@ export class Booking extends Component {
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
                 <div className="steps">
-                    <StepProspects classStep={classStep1} dayType={dayType} prospects={prospects} toResponsableStep={this.toResponsableStep} onAnnulation={this.handleAnnulation}/>
-                    <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} onAnnulation={this.handleAnnulation}/>
+                    <StepResponsable classStep={classStep1} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
+                    <StepProspects classStep={classStep2} dayType={dayType} prospects={prospects} toResponsableStep={this.toResponsableStep} onAnnulation={this.handleAnnulation}/>
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
                                 timeExpired={timeExpired} code={code} toTicketStep={this.toTicketStep} onAnnulation={this.handleAnnulation}/>
                     <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire} code={code} finalMessage={finalMessage} ticket={ticket} barcode={barcode} print={print}/>
@@ -254,8 +259,8 @@ export class Booking extends Component {
 
 function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
     let items = [
-        { active: classStep1, text: 'Famille à inscrire'},
-        { active: classStep2, text: 'Responsable'},
+        { active: classStep1, text: 'Responsable'},
+        { active: classStep2, text: 'Elève(s) à inscrire'},
         { active: classStep3, text: 'Récapitulatif'},
         { active: classStep4, text: 'Ticket'}
     ];
@@ -286,7 +291,7 @@ function Infos({day, dayTypeString}) {
             <h1>Réservation d'un ticket</h1>
             <p className="subtitle">Journée d'inscription des {dayTypeString} du {day} </p>
             <p>
-                La demande de ticket permet de faire une réservation pour une famille.
+                La demande de ticket permet d'obtenir 1 ticket par famille (1 ticket suffit pour l’inscription de plusieurs personnes d’une même famille).
                 <br />
                 Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email.
                 <br /><br /><br />
