@@ -273,9 +273,10 @@ function Infos({day, dayTypeString}) {
             <h1>Réservation d'un ticket</h1>
             <p className="subtitle">Journée d'inscription des {dayTypeString} du {day} </p>
             <p>
-                La réservation d'un ticket permet d'obtenir 1 ticket par famille (1 ticket suffit pour l’inscription de plusieurs personnes d’une même famille).
+                La réservation d'un ticket permet d'obtenir 1 ticket par famille. <br/>
                 <br />
-                Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email.
+                Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email. <br/>
+                Veuillez à vérifier vos spams/courriers indésirables.
                 <br /><br /><br />
                 <b className="txt-danger">Important :</b> Pour des raisons sanitaires, nous vous invitons à limiter le nombre d'accompagnants
                  et tout particulièrement les petits enfants. Le port du masque est obligatoire
@@ -310,7 +311,7 @@ function Starter({onClick, days, dayRemaining}) {
                     <div className="starter-dates">{items} </div>
 
                     <div className="alert alert-info">
-                        <b>A apporter</b> : à la journée d'inscription, vérifiez que vous avez : 
+                        <b>A apporter</b> à la journée d'inscriptions : 
                         <ul>
                             <li>Photocopie de votre avis d'imposition 2019 sur revenus 2018</li>
                             <li>Un masque</li>
@@ -321,7 +322,7 @@ function Starter({onClick, days, dayRemaining}) {
                     {dayRemaining ? null : <div className="alert"> Il n'y a plus de place. </div>}
                 </div>
                 <div className="starter-btn">
-                    <button className="btn btn-primary" onClick={onClick}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
+                    <button className="btn btn-primary" onClick={dayRemaining > 0 ? onClick : null}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
                 </div>
             </div>
         </div>

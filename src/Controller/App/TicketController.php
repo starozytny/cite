@@ -41,7 +41,7 @@ class TicketController extends AbstractController
         }
 
         if($responsable->getTicket() == $ticket){
-            $mpdf = $ticketGenerator->createFileTicket($file, $responsable, $day, $creneau, $prospects);
+            $mpdf = $ticketGenerator->createFileTicket($file, $responsable, $day, $creneau, $prospects, $responsable->getTicket());
             $r = $mpdf->Output('ticket-'.$responsable->getId().'.pdf', Destination::INLINE);
 
             return new Response(1);
