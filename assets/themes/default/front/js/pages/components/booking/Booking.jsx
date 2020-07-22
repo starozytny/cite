@@ -47,12 +47,8 @@ export class Booking extends Component {
         this.handleBackStep1 = this.handleBackStep1.bind(this);
         this.handleToStep3 = this.handleToStep3.bind(this);
 
-
-        this.toReviewStep = this.toReviewStep.bind(this);
-        this.backToResponsable = this.backToResponsable.bind(this);
-        this.toTicketStep = this.toTicketStep.bind(this);
-
-        
+        this.handleBackStep2 = this.handleBackStep2.bind(this);
+        this.handleToStep4 = this.handleToStep4.bind(this);        
     }
 
     tick(){
@@ -162,18 +158,21 @@ export class Booking extends Component {
 
         this.setState({prospects: prospectsNoDoublon});
 
+        const {creneauId, historyId, responsable} = this.state;
+
         AjaxSend.loader(true);
         let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_duplicate', { 'id' : this.props.dayId }), 
-            data: { prospects: prospectsNoDoublon, historyId: this.state.historyId } 
+            data: { prospects: prospectsNoDoublon, historyId: historyId, creneauId: creneauId, responsable: responsable} 
         }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            let data = response.data; let code = data.code;  AjaxSend.loader(false);
             
             if(code === 1){       
-                self.setState({classDot: 'active-3', classStep2: 'full', classStep3: 'active'});                
+                self.setState({code: 1, classDot: 'active-3', classStep2: 'full', classStep3: 'active', messageInfo: data.message, horaire: data.horaire,  min: 4, second: 60});                
             }else{
+                
                 let newProspects = [];
                 prospectsNoDoublon.forEach(element => {
                     let newProspect = element;
@@ -185,37 +184,16 @@ export class Booking extends Component {
                     });
                     newProspects.push(newProspect);
                 });
-                self.setState({ code: 2, prospects: newProspects });
+                self.setState({ code: 2, prospects: newProspects, min: 4, second: 60});
             }
         });
     }
 
-    backToResponsable (e) {
+    handleBackStep2 (e) {
         this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', min: 4, second: 60});
-    } 
-
-    toReviewStep (data) {
-        this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active', min: 4, second: 60});
-
-        const {creneauId} = this.state;
-
-        AjaxSend.loader(true);
-        let self = this;
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('app_booking_tmp_book_add', { 'id' : this.props.dayId }), 
-            data: {creneauId: creneauId, historyId: this.state.historyId, responsable: data} 
-        }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
-            if(code === 1){
-                self.setState({ code: 1, messageInfo: data.message, horaire: data.horaire, timer: setInterval(() => self.tick(), 1000)});
-            }else{
-                self.setState({ code: 0, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
-            }
-        });
     }
 
-    toTicketStep () {
+    handleToStep4 () {
         this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer), min: 99, second: 99});
 
         const {prospects, responsable, responsableId, creneauId} = this.state;
@@ -252,8 +230,8 @@ export class Booking extends Component {
                 <div className="steps">
                     <StepResponsable classStep={classStep1} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
                     <StepProspects classStep={classStep2} dayType={dayType} prospects={prospects} onClickPrev={this.handleBackStep1} onStep3={this.handleToStep3} onAnnulation={this.handleAnnulation}/>
-                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
-                                timeExpired={timeExpired} code={code} toTicketStep={this.toTicketStep} onAnnulation={this.handleAnnulation}/>
+                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.handleBackStep2} 
+                                timeExpired={timeExpired} code={code} onToStep4={this.handleToStep4} onAnnulation={this.handleAnnulation}/>
                     <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire} code={code} finalMessage={finalMessage} ticket={ticket} barcode={barcode} print={print}/>
                 </div>
             </section> 

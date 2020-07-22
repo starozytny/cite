@@ -116,6 +116,8 @@ class BookingController extends AbstractController
      */
     public function duplicateProspect(TicketDay $id, Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+
         $day = $id;
         $data = json_decode($request->getContent());
         $prospects = $data->prospects;
@@ -126,17 +128,6 @@ class BookingController extends AbstractController
         }
         $this->history->updateFamille($data->historyId, count($prospects));
 
-        return new JsonResponse(['code' => 1]);
-    }
-
-    /**
-     * @Route("/tmp/book/{id}/add", options={"expose"=true}, name="tmp_book_add")
-     */
-    public function tmpBook(TicketDay $id, Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $data = json_decode($request->getContent());
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $horaire = date_format($creneau->getHoraire(), 'H\hi');
         $this->history->updateResp($data->historyId, $data->responsable);

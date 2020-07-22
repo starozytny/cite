@@ -23,7 +23,7 @@ export class StepReview extends Component {
     }    
 
     render () {
-        const {classStep, onClickPrev, toTicketStep, prospects, responsable, day, messageInfo, timeExpired, code, onAnnulation} = this.props;
+        const {classStep, onClickPrev, onToStep4, prospects, responsable, day, messageInfo, timeExpired, code, onAnnulation} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
 
@@ -70,7 +70,7 @@ export class StepReview extends Component {
             nextText = "Indisponible"
         }
 
-        return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} onClickNext={toTicketStep} body={body} 
+        return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} onClickNext={onToStep4} body={body} 
         nextText={nextText} expired={timeExpired} code={code}>
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>
