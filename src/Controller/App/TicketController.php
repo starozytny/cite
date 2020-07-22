@@ -35,7 +35,7 @@ class TicketController extends AbstractController
         $prospect = $prospects[0];
         $creneau = $prospect->getCreneau();
 
-        $file = $this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.png';
+        $file = $this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg';
         if(!file_exists($file)){
             return new Response(0);
         }
