@@ -125,6 +125,33 @@
             .text{ display: block;}
         }
     }
+
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        .steps-dot{
+            &:before{
+                width: 70%;
+                transform: translateX(60px);
+            }
+            &::after{
+                transform: translateX(60px);
+            }
+            &.active-2{
+                &:after{
+                    width: 27%;
+                }
+            }
+            &.active-3{
+                &:after{
+                    width: 52%;
+                }
+            }
+            &.active-4{
+                &:after{
+                    width: 70%;
+                }
+            }
+        }
+    }
 }
 
 //                      __   _  ___ ____  _  _     __

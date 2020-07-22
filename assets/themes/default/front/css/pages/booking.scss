@@ -121,6 +121,10 @@
             display: block;
             opacity: 1;
             margin-bottom: 10px;
+            width: 100%;
+        }
+        h2 + div .form-infos{
+            width: 100%;
         }
         h2 + div .alert{
             margin-top: 15px;
