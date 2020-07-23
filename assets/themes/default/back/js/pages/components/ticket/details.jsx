@@ -48,14 +48,16 @@ export class Details extends Component {
         let value = e.target.value;
         let name = e.target.name;
         if(name === 'searched'){
-            this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value)});
+            document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
+            this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value), selection: [] });
         }else if(name === 'check-prospect'){
             let tmp = [{ id: value, check: e.target.checked }]
             let arr = selection;
             if(selection.length > 0){ arr = arr.filter(function(elem) { return elem.id != value }) }
             this.setState({selection: [...arr, ...tmp]})
         }else{
-            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: this.handleSelectHoraire(value)});
+            document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
+            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: this.handleSelectHoraire(value), selection: [] });
         }
     }
 
