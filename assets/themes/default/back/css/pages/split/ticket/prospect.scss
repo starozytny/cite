@@ -15,6 +15,12 @@
 
         .name{
             @include fontSemibold();
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+
+            &:hover{
+                color: $color0;
+            }
 
             & > span{
                 text-transform: uppercase;

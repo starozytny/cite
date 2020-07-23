@@ -19,6 +19,20 @@ function getSelectionChecked(selection){
     return oneChecked ? arr : false;
 }
 
+function formattedPhone(elem){
+    if(elem != "" && elem != undefined){
+        let a = elem.substr(0,2);
+        let b = elem.substr(2,2);
+        let c = elem.substr(4,2);
+        let d = elem.substr(6,2);
+        let e = elem.substr(8,2);
+
+        elem = a + " " + b + " " + c + " " + d + " " + e;
+    }
+
+    return elem;
+}
+
 export class Details extends Component {
     constructor(props){
         super(props)
@@ -43,7 +57,8 @@ export class Details extends Component {
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
             selectHoraire: {value: '999', error: ''},
-            selection: []
+            selection: [],
+            openEdit: ''
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
@@ -54,6 +69,10 @@ export class Details extends Component {
 
         this.handleSearch = this.handleSearch.bind(this);
         this.handleSelectHoraire = this.handleSelectHoraire.bind(this);
+
+        this.handleOpenEdit = this.handleOpenEdit.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange (e) {
@@ -240,9 +259,21 @@ export class Details extends Component {
         }
     }
 
+    handleOpenEdit (e) {
+        this.setState({openEdit: 'active'})
+    }
+
+    handleClose (e) {
+        this.setState({openEdit: ''})
+    }
+
+    handleSubmit (e) {
+
+    }
+
     render () {
         const {dayId} = this.props;
-        const {prospects, searched, selectHoraire, saveCreneaux} = this.state;
+        const {prospects, searched, selectHoraire, saveCreneaux, openEdit} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
@@ -251,7 +282,7 @@ export class Details extends Component {
                 </div>
                 <div className="col-1">
                     {elem.numAdh != null ? <div>#{elem.numAdh}</div> : null}
-                    <div className="name">{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
+                    <div className="name" onClick={this.handleOpenEdit}>{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
                     <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
                 </div>
                 <div className="col-2">
@@ -334,20 +365,26 @@ export class Details extends Component {
                     </div>
                 </div>
             </div>
+            
+            <div className="prospects-aside">
+                <div className="prospects-aside-edit">
+                    <div className={"prospects-edit-overlay " + openEdit} onClick={this.handleClose}></div>
+                    <div className={"prospects-edit " + openEdit}>
+                        <div className="title">
+                            <div>Editer </div>
+                            <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
+                        </div>
+                        
+                        <form onSubmit={this.handleSubmit}>
+                            
+                            <div className="from-group">
+                                <button className="btn btn-primary" type="submit">Mettre à jour</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </>
     }
 }
 
-function formattedPhone(elem){
-    if(elem != "" && elem != undefined){
-        let a = elem.substr(0,2);
-        let b = elem.substr(2,2);
-        let c = elem.substr(4,2);
-        let d = elem.substr(6,2);
-        let e = elem.substr(8,2);
-
-        elem = a + " " + b + " " + c + " " + d + " " + e;
-    }
-
-    return elem;
-}
