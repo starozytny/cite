@@ -187,9 +187,9 @@ class TicketController extends AbstractController
     }
 
     /**
-    * @Route("/jour/{ticketDay}/export", options={"expose"=true}, name="export")
+    * @Route("/jour/{ticketDay}/export/weezevent", options={"expose"=true}, name="export_weezevent")
     */
-    public function export(TicketDay $ticketDay, Export $export)
+    public function exportWeezevent(TicketDay $ticketDay, Export $export)
     {
         $em = $this->getDoctrine()->getManager();
         $responsables = $em->getRepository(TicketResponsable::class)->findBy(array('day' => $ticketDay));
@@ -227,10 +227,47 @@ class TicketController extends AbstractController
         $fileName = 'liste-' . $ticketDay->getId() . '.csv';
 
         $header = array(array('CODE-BARRE', 'NOM DU TARIF', 'PRIX', 'NOM', 'PRENOM', 'E-MAIL', 'SOCIETE', 'COMMENTAIRE'));
-        $json = $export->createFile('csv', 'Liste des utilisateurs du ' . $ticketDay->getId(), $fileName , $header, $data, 8, null);
+        $json = $export->createFile('csv', 'Liste des responsables du ' . $ticketDay->getId(), $fileName , $header, $data, 8, null, 'weezevent/');
         
         header('Content-Type: application/csv');
         header('Content-Disposition: attachment; filename="liste-' . $ticketDay->getId() .'.csv"');
-        return new BinaryFileResponse($this->getParameter('export_directory'). '/' . $fileName);
+        return new BinaryFileResponse($this->getParameter('export_weezevent_directory'). '/' . $fileName);
+    }
+
+    /**
+    * @Route("/jour/{ticketDay}/export/eleves", options={"expose"=true}, name="export_eleves")
+    */
+    public function exportEleves(TicketDay $ticketDay, Export $export)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $responsables = $em->getRepository(TicketResponsable::class)->findBy(array('day' => $ticketDay));
+        $data = array();
+
+        foreach ($responsables as $responsable) {
+            $prospects = $responsable->getProspects();
+            if(count($prospects) > 0 && $responsable->getStatus() != TicketResponsable::ST_TMP){
+                foreach ($prospects as $prospect){
+                    $tmp = array(
+                        $prospect->getCreneau()->getHoraireString(),
+                        $prospect->getLastname(),
+                        $prospect->getFirstname(),
+                        $prospect->getNumAdh(),
+                        $prospect->getBirthdayString(),
+                        $prospect->getEmail(),
+                        $prospect->getPhoneMobile(),
+                    );
+                    if(!in_array($tmp, $data)){
+                        array_push($data, $tmp);
+                    }
+                }
+            }   
+        }
+
+        $fileName = 'eleves-' . $ticketDay->getId() . '.xlsx';
+
+        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'NUMERO ADHERENT', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
+        $json = $export->createFile('excel', 'Liste des élèves du ' . $ticketDay->getId(), $fileName , $header, $data, 7, null, 'eleves/');
+        
+        return new BinaryFileResponse($this->getParameter('export_eleves_directory'). '/' . $fileName);
     }
 }

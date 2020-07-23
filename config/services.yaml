@@ -7,6 +7,8 @@ parameters:
     barcode_directory: '%kernel.project_dir%/barcode'
     public_directory: '%kernel.project_dir%'
     export_directory: '%kernel.project_dir%/export'
+    export_weezevent_directory: '%kernel.project_dir%/export/weezevent'
+    export_eleves_directory: '%kernel.project_dir%/export/eleves'
 
 services:
     # default configuration for services in *this* file

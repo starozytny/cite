@@ -289,7 +289,7 @@ export class Details extends Component {
                 </div>
                 <div className="toolbar-right">
                     <div className="item">
-                        <a href={Routing.generate('admin_ticket_export', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-primary">Exporter pour Weezevent</a>
+                        <a href={Routing.generate('admin_ticket_export_weezevent', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-primary">Exporter pour Weezevent</a>
                     </div>
                 </div>
             </div>
@@ -329,7 +329,7 @@ export class Details extends Component {
                     </div>
                     <div className="prospects-footer-right">
                         <div className="item">
-                            <button className="btn">Exporter EXCEL</button>
+                        <a href={Routing.generate('admin_ticket_export_eleves', {'ticketDay': dayId})} download={"eleves-" + dayId + ".xlsx"} className="btn">Exporter EXCEL</a>
                         </div>
                     </div>
                 </div>
