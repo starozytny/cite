@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
+use App\Entity\TicketOuverture;
 use App\Entity\User;
 use DateTime;
 use Doctrine\DBAL\DBALException;
@@ -37,27 +38,20 @@ class AdminCreateTicketsCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $io->title('Reset des tables');
+        $this->resetTable($io,'ticket_ouverture');
         $this->resetTable($io,'ticket_day');
         $this->resetTable($io,'ticket_creneau');
         $this->resetTable($io,'ticket_responsable');
         $this->resetTable($io,'ticket_prospect');        
-        $this->resetTable($io,'ticket_history');        
+        $this->resetTable($io,'ticket_history');
 
         $days = array(
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-07-22'),
-            ],
-            [
-                'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-07-23'),
-            ],
-            [
-                'type' => TicketDay::TYPE_NOUVEAU,
                 'day' => new DateTime('2020-07-24'),
             ],
             [
-                'type' => TicketDay::TYPE_NOUVEAU,
+                'type' => TicketDay::TYPE_ANCIEN,
                 'day' => new DateTime('2020-07-25'),
             ],
             [
@@ -67,6 +61,14 @@ class AdminCreateTicketsCommand extends Command
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
                 'day' => new DateTime('2020-07-27'),
+            ],
+            [
+                'type' => TicketDay::TYPE_NOUVEAU,
+                'day' => new DateTime('2020-07-28'),
+            ],
+            [
+                'type' => TicketDay::TYPE_NOUVEAU,
+                'day' => new DateTime('2020-07-29'),
             ]
         );
 
@@ -99,6 +101,18 @@ class AdminCreateTicketsCommand extends Command
             $this->em->persist($new);
             $io->text('Journée : ' . date_format($day['day'], 'd-m-Y') . ' créée' );
         }
+        $io->title('Création des dates d\'ouvertures des journées');
+
+        $ouvertureAncien = (new TicketOuverture())
+            ->setType(TicketOuverture::TYPE_ANCIEN)
+            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('23 July 2020 10:00:00'))))
+        ;
+
+        $ouvertureNouveau = (new TicketOuverture())
+            ->setType(TicketOuverture::TYPE_NOUVEAU)
+            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('25 July 2020 16:00:00'))))
+        ;
+        $this->em->persist($ouvertureAncien);$this->em->persist($ouvertureNouveau);
         $this->em->flush();
 
         $io->comment('--- [FIN DE LA COMMANDE] ---');
