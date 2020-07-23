@@ -5,10 +5,12 @@ namespace App\Controller\Admin;
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketHistory;
+use App\Entity\TicketOuverture;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
 use App\Service\Export;
 use App\Service\OpenDay;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,13 +28,18 @@ class TicketController extends AbstractController
      */
     public function index(OpenDay $openDay)
     {
+        date_default_timezone_set('Europe/Paris');
         $em = $this->getDoctrine()->getManager();
         $days = $em->getRepository(TicketDay::class)->findBy(array(), array('day' => 'ASC'));
+        $ouvertureAncien = $em->getRepository(TicketOuverture::class)->findOneBy(array('type' => TicketOuverture::TYPE_ANCIEN));
+        $ouvertureNouveau = $em->getRepository(TicketOuverture::class)->findOneBy(array('type' => TicketOuverture::TYPE_NOUVEAU));
 
         $openDay->open();
 
         return $this->render('root/admin/pages/ticket/index.html.twig', [
-            'days' => $days
+            'days' => $days,
+            'ouvertureAncien' => $ouvertureAncien,
+            'ouvertureNouveau' => $ouvertureNouveau,
         ]);
     }
 
@@ -184,6 +191,26 @@ class TicketController extends AbstractController
         $em->flush();
 
         return new JsonResponse(['code' => 1, 'message' => 'Le créneau ' . $horaire . ' a été définitivement supprimé.']);
+    }
+
+    /**
+    * @Route("/ouverture/editer/update", options={"expose"=true}, name="ouverture_update")
+    */
+    public function updateOuverture(Request $request)
+    {
+        date_default_timezone_set('Europe/Paris');
+        $em = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent());
+        $id = $data->id;
+        $dateOpen = $data->dateOpen;
+
+        $ouverture = $em->getRepository(TicketOuverture::class)->find($id);
+        $ouverture->setOpen(new DateTime(date('d-m-Y\\TH:i:s', strtotime($dateOpen))));
+
+        $em->persist($ouverture);
+        $em->flush();
+
+        return new JsonResponse(['code' => 1]);
     }
 
     /**

@@ -9,32 +9,28 @@
     </section>
 
     <section class="content">
-        <div class="toolbar">
-            <!-- <div class="toolbar-left">
-                <div class="item">
-                    <a class="btn btn-primary">Ajouter une journée</a>
-                </div>
-            </div> -->
-        </div>
+        
+        <div class="days days-ancien">
+            <div id="toolbar-ancien" data-id="{{ ouvertureAncien.id }}" data-type="0" data-date-open="{{ ouvertureAncien.open | date('F d\\, Y H\\:i\\:s') }}"></div>
 
-        <div class="days">
             <div class="days-cards">
                 {% for day in days %}
-                    <div class="day-card">
-                        <div class="day-card-date">
-                            <div class="day-card-isOpen day-card-isOpen-{{ day.isOpen }}"></div>
-                            <div>{{ day.day | date('d-m-Y') }} {{ day.isOpen ? '<span class="txt-discret"> | ouvert</span>' : null}} </div>
-                        </div>
-                        <div class="day-card-type">Journée des {{ day.typeString }}</div>
-                        <div class="day-card-numbers">
-                            <div class="day-card-max">Tickets max : {{ day.max }}</div>
-                            <div class="day-card-remaining">reste : {{ day.remaining }}</div>
-                        </div>
-                        <div class="day-card-actions">
-                            <a href="{{ path('admin_ticket_edit', {'ticketDay': day.id}) }}" class="btn-edit">Editer</a>
-                            <a href="{{ path('admin_ticket_show', {'ticketDay': day.id}) }}" class="btn-details">Détails</a>
-                        </div>
-                    </div>
+                    {% if day.type == 0 %}
+                        {% include "themes/default/admin/pages/ticket/components/day.html.twig" %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        
+        <div class="days days-nouveau">
+            <div id="toolbar-nouveau" data-id="{{ ouvertureNouveau.id }}" data-type="1" data-date-open="{{ ouvertureNouveau.open | date('F d\\, Y H\\:i\\:s') }}"></div>
+
+            <div class="days-cards">
+                {% for day in days %}
+                    {% if day.type == 1 %}
+                        {% include "themes/default/admin/pages/ticket/components/day.html.twig" %}
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

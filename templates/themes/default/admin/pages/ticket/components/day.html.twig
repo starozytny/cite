@@ -1,0 +1,15 @@
+<div class="day-card">
+    <div class="day-card-date">
+        <div class="day-card-isOpen day-card-isOpen-{{ day.isOpen }}"></div>
+        <div>{{ day.day | date('d-m-Y') }} {{ day.isOpen ? '<span class="txt-discret"> | ouvert</span>' : null}} </div>
+    </div>
+    <div class="day-card-type">Journée des {{ day.typeString }}</div>
+    <div class="day-card-numbers">
+        <div class="day-card-max">Tickets max : {{ day.max }}</div>
+        <div class="day-card-remaining">reste : {{ day.remaining }}</div>
+    </div>
+    <div class="day-card-actions">
+        <a href="{{ path('admin_ticket_edit', {'ticketDay': day.id}) }}" class="btn-edit">Editer</a>
+        <a href="{{ path('admin_ticket_show', {'ticketDay': day.id}) }}" class="btn-details">Détails</a>
+    </div>
+</div>

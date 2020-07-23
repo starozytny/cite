@@ -5,6 +5,25 @@
 @import './split/ticket/history.scss';
 @import './split/ticket/add_slot.scss';
 
+.days{
+    h2{
+        margin-bottom: 10px;
+        padding-left: 15px;
+    }
+    .toolbar{
+        padding-left: 15px;
+        
+        .icon-edit{
+            cursor: pointer;
+            color: $success;
+        }
+    }
+}
+
+.days-nouveau{
+    margin-top: 70px;
+}
+
 .days-cards, .slots-cards{
     @include flex(row, stretch, flex-start);
     flex-wrap: wrap;

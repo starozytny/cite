@@ -35,6 +35,7 @@ class AdminCreateTicketsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        date_default_timezone_set('Europe/Paris');
         $io = new SymfonyStyle($input, $output);
 
         $io->title('Reset des tables');
