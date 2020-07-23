@@ -29,10 +29,12 @@ export class Details extends Component {
             saveProspects: JSON.parse(JSON.parse(this.props.prospects)),
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
-            selectHoraire: {value: '999', error: ''}
+            selectHoraire: {value: '999', error: ''},
+            selection: []
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
+        this.handleChangeStatusSelection = this.handleChangeStatusSelection.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleChange = this.handleChange.bind(this);
 
@@ -41,12 +43,17 @@ export class Details extends Component {
     }
 
     handleChange (e) {
-        const {prospects, saveProspects} = this.state;
+        const {selection} = this.state;
 
         let value = e.target.value;
         let name = e.target.name;
         if(name === 'searched'){
             this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value)});
+        }else if(name === 'check-prospect'){
+            let tmp = [{ id: value, check: e.target.checked }]
+            let arr = selection;
+            if(selection.length > 0){ arr = arr.filter(function(elem) { return elem.id != value }) }
+            this.setState({selection: [...arr, ...tmp]})
         }else{
             this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: this.handleSelectHoraire(value)});
         }
@@ -145,12 +152,54 @@ export class Details extends Component {
           })
     }
 
+    handleChangeStatusSelection (e) {
+        const {selection} = this.state;
+
+        if(selection.length > 0){
+            let oneChecked = false;
+            let arr = [];
+            selection.forEach(element => { 
+                if(element.check){
+                    arr.push(element.id);
+                    return oneChecked = true;
+                } 
+            });
+
+            if(oneChecked){
+                AjaxSend.loader(true);
+                let self = this;
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('admin_prospect_update_status_selection'),
+                    data: { selection: arr }
+                }).then(function (response) {
+                    let data = response.data; let code = data.code; AjaxSend.loader(false);
+
+                    let arr = [];
+                    self.state.prospects.forEach((elem) => {
+                        data.prospects.forEach((element) => {
+                            if(parseInt(elem.id) === parseInt(element.id)){
+                                elem.status = element.status;
+                                elem.statusString = element.statusString;
+                            }
+                        })
+                        arr.push(elem);
+                    })
+                    self.setState({prospects: arr});
+                });
+            }
+        }
+    }
+
     render () {
         const {dayId} = this.props;
         const {prospects, searched, selectHoraire, saveCreneaux} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
+                <div className="col-0">
+                    <input type="checkbox" name="check-prospect" value={elem.id} onChange={this.handleChange} />
+                </div>
                 <div className="col-1">
                     {elem.numAdh != null ? <div>#{elem.numAdh}</div> : null}
                     <div className="name">{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
@@ -211,6 +260,7 @@ export class Details extends Component {
             
             <div className="prospects">
                 {items.length <= 0 ? <div>Aucun enregistrement.</div> : <div className="prospects-header">
+                    <div className="col-0"></div>
                     <div className="col-1">Identifiant</div>
                     <div className="col-2">Contact</div>
                     <div className="col-3">Adresse</div>
@@ -220,6 +270,19 @@ export class Details extends Component {
                 </div>}
                 <div className="prospects-body">
                     {items}
+                </div>
+                <div className="prospects-footer">
+                    <div className="prospects-footer-left">
+                        <div className="item item-action">
+                            <button className="action" onClick={this.handleChangeStatusSelection}><span>Changer status</span></button>
+                            <button className="action"><span>Supprimer</span></button>
+                        </div>
+                    </div>
+                    <div className="prospects-footer-right">
+                        <div className="item">
+                            <button className="btn">Exporter EXCEL</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

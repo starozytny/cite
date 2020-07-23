@@ -7,6 +7,7 @@ use App\Service\Remaining;
 use App\Service\ResponsableService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProspectController extends AbstractController
 {
     /**
-     * @Route("/{id}/update/status", options={"expose"=true}, name="update_status")
+     * @Route("/eleve/{id}/update/status", options={"expose"=true}, name="update_status")
      */
     public function changeStatus(TicketProspect $id)
     {
@@ -43,7 +44,35 @@ class ProspectController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/delete", options={"expose"=true}, name="delete")
+     * @Route("/selection/update/status", options={"expose"=true}, name="update_status_selection")
+     */
+    public function changeStatusSelection(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent());
+        $selection = $data->selection;
+
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('id' => $selection));
+        $arr = [];
+        foreach($prospects as $prospect){
+            $st = $prospect->getStatus() == TicketProspect::ST_CONFIRMED ? TicketProspect::ST_REGISTERED : TicketProspect::ST_CONFIRMED;
+            $stString = $st == TicketProspect::ST_CONFIRMED ? "Confirmé" : "Inscrit";
+            $prospect->setStatus($st);
+            array_push($arr, [
+                'id' => $prospect->getId(),
+                'status' => $st,
+                'statusString' => $stString
+            ]);
+
+            $em->persist($prospect);
+        }
+        $em->flush();
+
+        return new JsonResponse(['code' => 1, 'prospects' => $arr]);
+    }
+
+    /**
+     * @Route("/eleve/{id}/delete", options={"expose"=true}, name="delete")
      */
     public function deleteProspect(TicketProspect $id, Remaining $remaining, ResponsableService $responsableService)
     {

@@ -11,6 +11,7 @@
         background-color: $alpha;
         padding: 15px 10px;
         border-radius: 5px;
+        margin-bottom: 10px;
 
         .name{
             @include fontSemibold();
@@ -75,6 +76,11 @@
         }
     }
 }
+.prospects-footer{
+    .prospects-footer-left{
+        display: none;
+    }
+}
 
 //                      __   _____ __    ___    __
 //                     | _| |___  / /_  ( _ )  |_ |
@@ -84,8 +90,12 @@
 //                     |__|                    |__|
 @media (min-width:768px) {
     .prospects{
+        .col-0{
+            width: 3%;
+            align-self: center;
+        }
         .col-1{
-            width: 40%;
+            width: 37%;
         }
         .col-2{
             width: 30%;
@@ -119,7 +129,7 @@
     .prospects-body{
         & > .item{
             @include flex(row, flex-start, flex-start);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
 
             & > *:not(:last-child){
                 margin-right: 10px;
@@ -142,6 +152,67 @@
             }
             .btn-delete{
                 margin-top: 2px;
+            }
+        }
+    }
+    .prospects-footer{
+        @include flex(row, flex-start, space-between);
+
+        & > div{
+            padding-top: 25px;
+        }
+
+        .prospects-footer-left{
+            position: relative;
+            @include flex(column, flex-start, flex-start);
+            padding-left: 15px;
+
+            &:before{
+                content: '';
+                position: absolute;
+                top: 0; left: 15px;
+                display: block;
+                width: 1px; height: 100%;
+                background-color: $color7;
+                z-index: 1;
+            }
+
+            .item-action{
+                @include flex(column, flex-start, flex-start);
+                padding-top: 15px;
+                transform: translateY(10px);
+
+                .action{
+                    border: none;
+                    background-color: transparent;
+                    cursor: pointer;
+                    padding-left: 0;
+
+                    &:hover{
+                        span{
+                            @include boxsh();
+                        }
+                    }
+
+                    &:before{
+                        content: '';
+                        display: inline-block;
+                        width: 25px; height: 1px;
+                        background-color: $color7;
+                        margin-right: 8px;
+                        transform: translateY(-5px);
+                    }
+
+                    span{
+                        background-color: $alpha;
+                        padding: 2px 10px;
+                        transition: all 0.2s ease-in-out;
+                    }
+                }
+
+                .action:not(:last-child){
+                    margin-bottom: 20px;
+                }
             }
         }
     }

@@ -108,6 +108,15 @@
         display: none;
     }
 }
+.steps .step-3 .step-actions-static{
+    .btn-next{
+        &:hover{
+            [class^="icon-"]{
+                transform: translateX(100px);
+            }
+        }
+    }
+}
 
 //                      __   _____ __    ___    __
 //                     | _| |___  / /_  ( _ )  |_ |

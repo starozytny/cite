@@ -13,17 +13,17 @@
     @include fontSemibold();
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+
+    &:hover{
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
 }
 
 .btn-primary{
     background-color: $color0;
     border-color: $color0;
     color: $color5;
-
-    &:hover{
-        transform: translateY(-2px);
-        opacity: 0.9;
-    }
 }
 
 .btn-danger{
