@@ -6,6 +6,19 @@ import {Input, Select} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
 import Swal from 'sweetalert2';
 
+function getSelectionChecked(selection){
+    let oneChecked = false;
+    let arr = [];
+    selection.forEach(element => { 
+        if(element.check){
+            arr.push(element.id);
+            return oneChecked = true;
+        } 
+    });
+    
+    return oneChecked ? arr : false;
+}
+
 export class Details extends Component {
     constructor(props){
         super(props)
@@ -36,6 +49,7 @@ export class Details extends Component {
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
         this.handleChangeStatusSelection = this.handleChangeStatusSelection.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleDeleteSelection = this.handleDeleteSelection.bind(this);
         this.handleChange = this.handleChange.bind(this);
 
         this.handleSearch = this.handleSearch.bind(this);
@@ -143,12 +157,6 @@ export class Details extends Component {
                     })
 
                     self.setState({prospects: arr});
-
-                    Swal.fire(
-                        'Supprimé !',
-                        'Cet élément a été supprimé.',
-                        'success'
-                    );
                 });
             }
           })
@@ -158,16 +166,9 @@ export class Details extends Component {
         const {selection} = this.state;
 
         if(selection.length > 0){
-            let oneChecked = false;
-            let arr = [];
-            selection.forEach(element => { 
-                if(element.check){
-                    arr.push(element.id);
-                    return oneChecked = true;
-                } 
-            });
+            let arr = getSelectionChecked(selection);
 
-            if(oneChecked){
+            if(arr != false){
                 AjaxSend.loader(true);
                 let self = this;
                 axios({ 
@@ -189,6 +190,52 @@ export class Details extends Component {
                     })
                     self.setState({prospects: arr});
                 });
+            }
+        }
+    }
+
+    handleDeleteSelection (e) {
+        const {selection} = this.state;
+
+        if(selection.length > 0){
+            let arr = getSelectionChecked(selection);
+
+            if(arr != false){
+
+
+                Swal.fire({
+                    title: 'Etes-vous sur ?',
+                    text: "La suppression des élèves sélectionnés est irréversible.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, je supprime',
+                    cancelButtonText: "Non",
+                  }).then((result) => {
+                    if (result.value) {
+
+                        AjaxSend.loader(true);
+                        let self = this;
+                        axios({ 
+                            method: 'post', 
+                            url: Routing.generate('admin_prospect_delete_selection'),
+                            data: { selection: arr }
+                        }).then(function (response) {
+                            let data = response.data; let code = data.code; AjaxSend.loader(false);
+                            let newArr = self.state.prospects;
+                            arr.forEach((element) => {
+                                newArr.forEach((elem, index) => {
+                                    if(elem.id == parseInt(element)){
+                                        newArr.splice(index,1)
+                                    }
+                                })
+                            })
+        
+                            self.setState({prospects: newArr});
+                        });
+                    }
+                  })
             }
         }
     }
@@ -277,7 +324,7 @@ export class Details extends Component {
                     <div className="prospects-footer-left">
                         <div className="item item-action">
                             <button className="action" onClick={this.handleChangeStatusSelection}><span>Changer status</span></button>
-                            <button className="action"><span>Supprimer</span></button>
+                            <button className="action" onClick={this.handleDeleteSelection}><span>Supprimer</span></button>
                         </div>
                     </div>
                     <div className="prospects-footer-right">

@@ -53,6 +53,9 @@ class ProspectController extends AbstractController
         $selection = $data->selection;
 
         $prospects = $em->getRepository(TicketProspect::class)->findBy(array('id' => $selection));
+        if(!$prospects){
+            return new JsonResponse(['code' => 0]);
+        }
         $arr = [];
         foreach($prospects as $prospect){
             $st = $prospect->getStatus() == TicketProspect::ST_CONFIRMED ? TicketProspect::ST_REGISTERED : TicketProspect::ST_CONFIRMED;
@@ -82,6 +85,36 @@ class ProspectController extends AbstractController
         if(!$prospect){
             return new JsonResponse(['code' => 0]);
         }
+        $this->deleteP($prospect, $responsableService);
+
+        $em->flush();
+        return new JsonResponse(['code' => 1]);
+    }
+
+    /**
+     * @Route("/selection/delete", options={"expose"=true}, name="delete_selection")
+     */
+    public function deleteSelection(Request $request, ResponsableService $responsableService)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent());
+        $selection = $data->selection;
+
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('id' => $selection));
+        if(!$prospects){
+            return new JsonResponse(['code' => 0]);
+        }
+
+        foreach($prospects as $prospect){
+            $this->deleteP($prospect, $responsableService);
+        }
+        $em->flush();
+
+        return new JsonResponse(['code' => 1]);
+    }
+
+    private function deleteP($prospect, ResponsableService $responsableService){
+        $em = $this->getDoctrine()->getManager();
         $responsable = $prospect->getResponsable();
         $prospects = $responsable->getProspects();
         $nbProspects = count($prospects);
@@ -91,8 +124,5 @@ class ProspectController extends AbstractController
         }else{
             $em->remove($prospect);
         }
-
-        $em->flush();
-        return new JsonResponse(['code' => 1]);
     }
 }
