@@ -48,8 +48,16 @@ class OpenDay
         $openNouveau = $nouveau->getOpen();
         
         $now = new DateTime();
-        $ouverture = $openAncien < $openNouveau ? $openAncien : $openNouveau;
-        $typeOuverture = $openAncien < $openNouveau ? TicketOuverture::TYPE_ANCIEN : TicketOuverture::TYPE_NOUVEAU;
+        // ancien est la date la plus petit d'ouverture
+        if($openAncien < $openNouveau){ 
+            // mais si la date des nouveaux est inférieur à aujourdhui (donc entre ancien et aujourd'hui),
+            // nouveau = ouverture
+            $ouverture = ($openNouveau < $now) ? $openNouveau : $openAncien; 
+            $typeOuverture = ($openNouveau < $now) ? TicketOuverture::TYPE_NOUVEAU : TicketOuverture::TYPE_ANCIEN;
+        }else{
+            $ouverture = ($openAncien < $now) ? $openAncien : $openNouveau; 
+            $typeOuverture = ($openAncien < $now) ? TicketOuverture::TYPE_ANCIEN : TicketOuverture::TYPE_NOUVEAU;
+        }
 
         $findOne = false;
         foreach($days as $day){

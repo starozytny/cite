@@ -24,3 +24,5 @@ yarn-error.log
 
 /barcode/
 /export/
+/import/
+/public/js/
