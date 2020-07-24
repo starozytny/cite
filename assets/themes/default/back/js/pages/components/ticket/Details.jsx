@@ -425,7 +425,7 @@ export class Details extends Component {
                 </div>
                 <div className="toolbar-right">
                     <div className="item">
-                        <a href={Routing.generate('admin_ticket_export_weezevent', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-primary">Exporter pour Weezevent</a>
+                        <a href={Routing.generate('admin_ticket_export_weezevent', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-secondary">Weezevent</a>
                     </div>
                 </div>
             </div>
