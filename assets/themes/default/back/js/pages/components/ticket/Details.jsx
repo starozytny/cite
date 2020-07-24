@@ -63,7 +63,7 @@ export class Details extends Component {
 
         let oriProspects = JSON.parse(JSON.parse(this.props.prospects));
         let horaireProspects = oriProspects.filter(function(elem){
-            if(elem.creneau.id == '1'){ return elem; }                
+            if(elem.creneau.id == creneaux[0].value){ return elem; }                
         });     
         
         this.state = {
@@ -72,7 +72,7 @@ export class Details extends Component {
             horaireProspects: horaireProspects,
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
-            selectHoraire: {value: '1', error: ''},
+            selectHoraire: {value: creneaux[0].value, error: ''},
             selection: [],
             openEdit: '',
             prospectEdit: null,
@@ -213,8 +213,6 @@ export class Details extends Component {
 
     handleChangeStatusSelection (e) {
         const {selection} = this.state;
-
-        console.log(selection)
 
         if(selection.length > 0){
             let arr = getSelectionChecked(selection);
