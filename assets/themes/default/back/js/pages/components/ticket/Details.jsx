@@ -42,10 +42,7 @@ export class Details extends Component {
     constructor(props){
         super(props)
 
-        let creneaux = [{
-            'value': 999,
-            'libelle': 'Tous'
-        }];
+        let creneaux = [];
         JSON.parse(JSON.parse(this.props.prospects)).forEach((elem, index) => {
             creneaux.push({
                 'value': elem.creneau.id,
@@ -55,13 +52,19 @@ export class Details extends Component {
         creneaux = creneaux.filter((thing, index, self) =>
             index === self.findIndex((t) => ( t.value === thing.value  ))
         )
+
+        let oriProspects = JSON.parse(JSON.parse(this.props.prospects));
+        let horaireProspects = oriProspects.filter(function(elem){
+            if(elem.creneau.id == '1'){ return elem; }                
+        });     
         
         this.state = {
-            prospects: JSON.parse(JSON.parse(this.props.prospects)),
-            saveProspects: JSON.parse(JSON.parse(this.props.prospects)),
+            prospects: horaireProspects,
+            saveProspects: oriProspects,
+            horaireProspects: horaireProspects,
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
-            selectHoraire: {value: '999', error: ''},
+            selectHoraire: {value: '1', error: ''},
             selection: [],
             openEdit: '',
             prospectEdit: null,
@@ -87,7 +90,7 @@ export class Details extends Component {
     }
 
     handleChange (e) {
-        const {selection} = this.state;
+        const {prospects, selection} = this.state;
 
         let value = e.target.value;
         let name = e.target.name;
@@ -101,14 +104,15 @@ export class Details extends Component {
             this.setState({selection: [...arr, ...tmp]})
         }else{
             document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
-            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: this.handleSelectHoraire(value), selection: [] });
+            let newP = this.handleSelectHoraire(value);
+            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: newP, horaireProspects: newP, selection: [] });
         }
     }
 
     handleSearch (value) {
-        const {prospects, saveProspects, selectHoraire} = this.state;
+        const {horaireProspects} = this.state;
         if(value != ""){
-            return prospects.filter(function(elem){
+            return horaireProspects.filter(function(elem){
                 let val = value.toLowerCase();
                 let firstname = elem.firstname.toLowerCase();
                 let lastname = elem.lastname.toLowerCase();
@@ -116,24 +120,15 @@ export class Details extends Component {
                 if(firstname.indexOf(val) > -1 || lastname.indexOf(val) > -1 || numAdh.indexOf(val) > -1){ return elem; }                
             });
         }else{
-            if(selectHoraire.value === "999"){
-                return saveProspects;
-            }else{
-                return this.handleSelectHoraire(selectHoraire.value);
-            }
+            return this.handleSelectHoraire(selectHoraire.value);
         }        
     }
 
     handleSelectHoraire (value) {
         const {saveProspects} = this.state;
-        if(value != "999"){
-            return saveProspects.filter(function(elem){
-                if(elem.creneau.id == value){ return elem; }                
-            });
-        }else{
-            return saveProspects;       
-        }
-        
+        return saveProspects.filter(function(elem){
+            if(elem.creneau.id == value){ return elem; }                
+        });        
     }
 
     handleChangeStatus (e) {
