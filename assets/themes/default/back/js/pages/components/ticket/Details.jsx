@@ -38,6 +38,14 @@ function formattedPhone(elem){
     return elem;
 }
 
+function addSelection(selection, value, checked){
+    let tmp = [{ id: value, check: checked }]
+    let arr = selection;
+    if(selection.length > 0){ arr = arr.filter(function(elem) { return elem.id != value }) }
+
+    return tmp;
+}
+
 export class Details extends Component {
     constructor(props){
         super(props)
@@ -90,20 +98,36 @@ export class Details extends Component {
     }
 
     handleChange (e) {
-        const {prospects, selection} = this.state;
+        const {selection} = this.state;
 
         let value = e.target.value;
         let name = e.target.name;
-        if(name === 'searched'){
-            document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
+        let allCheck = document.querySelectorAll("input[name='check-prospect']");
+        let arr = selection;
+
+        if(name === 'searched') {
+            allCheck.forEach((el => el.checked = false))
             this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value), selection: [] });
-        }else if(name === 'check-prospect'){
+        }else if(name === 'check-prospect') {
             let tmp = [{ id: value, check: e.target.checked }]
             let arr = selection;
             if(selection.length > 0){ arr = arr.filter(function(elem) { return elem.id != value }) }
             this.setState({selection: [...arr, ...tmp]})
+        }else if(name === 'check-prospect-all') {
+            if(e.target.checked){
+                let fill = [];
+                allCheck.forEach(function(el) {
+                    el.checked = true;
+                    fill.push({ id: el.value, check: true })
+                })
+                this.setState({selection: fill})
+            }else{
+                allCheck.forEach(function(el) { el.checked = false })
+                this.setState({selection: []})
+            }
+            
         }else{
-            document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
+            allCheck.forEach((el => el.checked = false))
             let newP = this.handleSelectHoraire(value);
             this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: newP, horaireProspects: newP, selection: [] });
         }
@@ -189,6 +213,8 @@ export class Details extends Component {
 
     handleChangeStatusSelection (e) {
         const {selection} = this.state;
+
+        console.log(selection)
 
         if(selection.length > 0){
             let arr = getSelectionChecked(selection);
@@ -421,7 +447,7 @@ export class Details extends Component {
             
             <div className="prospects">
                 {items.length <= 0 ? <div>Aucun enregistrement.</div> : <div className="prospects-header">
-                    <div className="col-0"></div>
+                    <div className="col-0"><input type="checkbox" name="check-prospect-all" onChange={this.handleChange} /></div>
                     <div className="col-1">Identifiant</div>
                     <div className="col-2">Contact</div>
                     <div className="col-3">Adresse</div>
