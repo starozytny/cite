@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/admin/prospect", name="admin_prospect_")
@@ -124,5 +125,22 @@ class ProspectController extends AbstractController
         }else{
             $em->remove($prospect);
         }
+    }
+
+     /**
+     * @Route("/eleve/{id}/get/infos", options={"expose"=true}, name="get_infos")
+     */
+    public function getProspect(Request $request, TicketProspect $id, SerializerInterface $serializer)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $prospect = $serializer->serialize($id, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 
+            'responsable' => ['id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket'], 
+            'creneau' => ['id', 'horaireString']
+        ]]);
+
+        return new JsonResponse(['code' => 1, 'prospect' => $prospect]);
     }
 }

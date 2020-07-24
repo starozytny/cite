@@ -58,7 +58,8 @@ export class Details extends Component {
             searched: {value: '', error: ''},
             selectHoraire: {value: '999', error: ''},
             selection: [],
-            openEdit: ''
+            openEdit: '',
+            prospectEdit: null
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
@@ -72,7 +73,6 @@ export class Details extends Component {
 
         this.handleOpenEdit = this.handleOpenEdit.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange (e) {
@@ -260,20 +260,27 @@ export class Details extends Component {
     }
 
     handleOpenEdit (e) {
-        this.setState({openEdit: 'active'})
+        let id = parseInt(e.currentTarget.dataset.id);
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('admin_prospect_get_infos', { 'id' : id })
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            self.setState({openEdit: 'active', prospectEdit: JSON.parse(data.prospect)})
+        });
+
     }
 
     handleClose (e) {
         this.setState({openEdit: ''})
     }
 
-    handleSubmit (e) {
-
-    }
-
     render () {
         const {dayId} = this.props;
-        const {prospects, searched, selectHoraire, saveCreneaux, openEdit} = this.state;
+        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
@@ -282,7 +289,7 @@ export class Details extends Component {
                 </div>
                 <div className="col-1">
                     {elem.numAdh != null ? <div>#{elem.numAdh}</div> : null}
-                    <div className="name" onClick={this.handleOpenEdit}>{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
+                    <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
                     <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
                 </div>
                 <div className="col-2">
@@ -366,25 +373,67 @@ export class Details extends Component {
                 </div>
             </div>
             
-            <div className="prospects-aside">
-                <div className="prospects-aside-edit">
-                    <div className={"prospects-edit-overlay " + openEdit} onClick={this.handleClose}></div>
-                    <div className={"prospects-edit " + openEdit}>
-                        <div className="title">
-                            <div>Editer </div>
-                            <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
-                        </div>
-                        
-                        <form onSubmit={this.handleSubmit}>
-                            
-                            <div className="from-group">
-                                <button className="btn btn-primary" type="submit">Mettre à jour</button>
-                            </div>
-                        </form>
+            {openEdit == 'active' ? <AsideProspect openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} /> : null}
+            
+        </>
+    }
+}
+
+export class AsideProspect extends Component {
+    constructor (props){
+        super(props);
+
+        this.state = {
+            firstname: {value: props.prospect.firstname, error: ''},
+            lastname: {value: props.prospect.lastname, error: ''},
+        }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleSubmit (e) {
+        e.preventDefault();
+    }
+
+
+    render () {
+        const {openEdit, onClose, prospect} = this.props;
+        const {firstname, lastname} = this.state;
+
+        console.log(prospect)
+
+        return <div className="prospect-aside">
+        <div className="prospect-aside-edit">
+            <div className={"prospect-edit-overlay " + openEdit} onClick={onClose}></div>
+            <div className={"prospect-edit " + openEdit}>
+                <div className="title">
+                    <div>{prospect.civility}. {prospect.firstname} {prospect.lastname}</div>
+                    <div><span className="icon-close-circle" onClick={onClose}></span></div>
+                </div>
+
+                <div className="informations">
+                    <div>Ticket : <b>{prospect.responsable.ticket}</b></div>
+                    <div>Créé le : {prospect.responsable.createAtString}</div>
+                    <br/>
+                    <div>Responsable : 
+                        <ul>
+                            <li>{prospect.responsable.civility}. {prospect.responsable.firstname} {prospect.responsable.lastname}</li>
+                            <li>{prospect.responsable.email}</li>
+                            <li>{formattedPhone(prospect.responsable.phoneMobile)} {formattedPhone(prospect.responsable.phoneDomicile)}</li>
+                            <li>{prospect.responsable.adresseString}</li>
+                        </ul>
                     </div>
                 </div>
+                
+                <form onSubmit={this.handleSubmit}>
+                    
+                    <div className="from-group">
+                        <button className="btn btn-primary" type="submit">Mettre à jour</button>
+                    </div>
+                </form>
             </div>
-        </>
+        </div>
+    </div>
     }
 }
 
