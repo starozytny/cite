@@ -27,3 +27,6 @@ yarn-error.log
 /import/
 /public/js/
 /data/
+
+/bin/traiter/
+/bin/original/
