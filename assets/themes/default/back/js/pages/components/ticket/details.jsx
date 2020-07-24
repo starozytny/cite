@@ -82,6 +82,8 @@ export class Details extends Component {
         this.handleOpenEdit = this.handleOpenEdit.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleEditProspect = this.handleEditProspect.bind(this);
+
+        this.handleSendTicket = this.handleSendTicket.bind(this);
     }
 
     handleChange (e) {
@@ -278,7 +280,6 @@ export class Details extends Component {
             url: Routing.generate('admin_prospect_get_infos', { 'id' : id })
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-            console.log(data.prospect)
             self.setState({openEdit: 'active', prospectEdit: JSON.parse(data.prospect), idEdit: id, responsableIdEdit: JSON.parse(data.prospect).responsable.id})
         });
 
@@ -304,7 +305,7 @@ export class Details extends Component {
             if (code === 1){
                 Swal.fire({
                     title: 'Souhaitez-vous renvoyer le ticket ?',
-                    text: "Le ticket sera envoyé à l\'adresse du responsable.",
+                    text: "Le ticket sera envoyé à l\'adresse email du responsable.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -315,9 +316,8 @@ export class Details extends Component {
                     AjaxSend.loader(true);
 
                     if (result.value) {
-                        axios({ 
-                            method: 'post', 
-                            url: Routing.generate('admin_ticket_send', {'id': responsableIdEdit}),
+                        axios({  
+                            method: 'post',  url: Routing.generate('admin_ticket_send', {'id': responsableIdEdit}) 
                         }).then(function (response) {
                             location.reload();
                         });
@@ -329,6 +329,32 @@ export class Details extends Component {
                 self.setState({ errorEdit: data.message });
             }
         });
+    }
+
+    handleSendTicket (e) {
+        const {responsableIdEdit} = this.state;
+
+        Swal.fire({
+            title: 'Souhaitez-vous renvoyer le ticket ?',
+            text: "Le ticket sera envoyé à l\'adresse email du responsable.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirmer',
+            cancelButtonText: "Non",
+          }).then((result) => {
+            if (result.value) {
+                AjaxSend.loader(true);
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('admin_ticket_send', {'id': responsableIdEdit}),
+                }).then(function (response) {
+                    AjaxSend.loader(false);
+                    Swal.fire('Ticket envoyé!', '', 'success' )
+                });
+            }
+          })
     }
 
     render () {
@@ -426,7 +452,7 @@ export class Details extends Component {
                 </div>
             </div>
             
-            {openEdit == 'active' ? <AsideProspect error={errorEdit} openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} onEdit={this.handleEditProspect} /> : null}
+            {openEdit == 'active' ? <AsideProspect error={errorEdit} openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} onEdit={this.handleEditProspect} onSend={this.handleSendTicket} /> : null}
             
         </>
     }
@@ -493,7 +519,7 @@ export class AsideProspect extends Component {
 
 
     render () {
-        const {openEdit, onClose, prospect, error} = this.props;
+        const {openEdit, onClose, prospect, error, onSend} = this.props;
         const {civility, firstname, lastname, birthday, numAdh, email, phoneMobile} = this.state;
 
         return <div className="prospect-aside">
@@ -518,7 +544,7 @@ export class AsideProspect extends Component {
                         </ul>
                     </div>
                     <div>
-                        <button className="btn btn-secondary">Renvoyer le ticket</button>
+                        <button className="btn btn-secondary" onClick={onSend}>Renvoyer le ticket</button>
                     </div>
                 </div>
 
