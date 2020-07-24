@@ -35,13 +35,13 @@ class TicketController extends AbstractController
         $prospect = $prospects[0];
         $creneau = $prospect->getCreneau();
 
-        $file = $this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.png';
+        $file = $this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg';
         if(!file_exists($file)){
             return new Response(0);
         }
 
         if($responsable->getTicket() == $ticket){
-            $mpdf = $ticketGenerator->createFileTicket($file, $responsable, $day, $creneau, $prospects);
+            $mpdf = $ticketGenerator->createFileTicket($file, $responsable, $day, $creneau, $prospects, $responsable->getTicket());
             $r = $mpdf->Output('ticket-'.$responsable->getId().'.pdf', Destination::INLINE);
 
             return new Response(1);

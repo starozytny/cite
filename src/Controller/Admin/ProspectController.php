@@ -7,7 +7,9 @@ use App\Service\Remaining;
 use App\Service\ResponsableService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/admin/prospect", name="admin_prospect_")
@@ -15,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProspectController extends AbstractController
 {
     /**
-     * @Route("/{id}/update/status", options={"expose"=true}, name="update_status")
+     * @Route("/eleve/{id}/update/status", options={"expose"=true}, name="update_status")
      */
     public function changeStatus(TicketProspect $id)
     {
@@ -43,7 +45,38 @@ class ProspectController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/delete", options={"expose"=true}, name="delete")
+     * @Route("/selection/update/status", options={"expose"=true}, name="update_status_selection")
+     */
+    public function changeStatusSelection(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent());
+        $selection = $data->selection;
+
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('id' => $selection));
+        if(!$prospects){
+            return new JsonResponse(['code' => 0]);
+        }
+        $arr = [];
+        foreach($prospects as $prospect){
+            $st = $prospect->getStatus() == TicketProspect::ST_CONFIRMED ? TicketProspect::ST_REGISTERED : TicketProspect::ST_CONFIRMED;
+            $stString = $st == TicketProspect::ST_CONFIRMED ? "Confirmé" : "Inscrit";
+            $prospect->setStatus($st);
+            array_push($arr, [
+                'id' => $prospect->getId(),
+                'status' => $st,
+                'statusString' => $stString
+            ]);
+
+            $em->persist($prospect);
+        }
+        $em->flush();
+
+        return new JsonResponse(['code' => 1, 'prospects' => $arr]);
+    }
+
+    /**
+     * @Route("/eleve/{id}/delete", options={"expose"=true}, name="delete")
      */
     public function deleteProspect(TicketProspect $id, Remaining $remaining, ResponsableService $responsableService)
     {
@@ -53,6 +86,36 @@ class ProspectController extends AbstractController
         if(!$prospect){
             return new JsonResponse(['code' => 0]);
         }
+        $this->deleteP($prospect, $responsableService);
+
+        $em->flush();
+        return new JsonResponse(['code' => 1]);
+    }
+
+    /**
+     * @Route("/selection/delete", options={"expose"=true}, name="delete_selection")
+     */
+    public function deleteSelection(Request $request, ResponsableService $responsableService)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent());
+        $selection = $data->selection;
+
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('id' => $selection));
+        if(!$prospects){
+            return new JsonResponse(['code' => 0]);
+        }
+
+        foreach($prospects as $prospect){
+            $this->deleteP($prospect, $responsableService);
+        }
+        $em->flush();
+
+        return new JsonResponse(['code' => 1]);
+    }
+
+    private function deleteP($prospect, ResponsableService $responsableService){
+        $em = $this->getDoctrine()->getManager();
         $responsable = $prospect->getResponsable();
         $prospects = $responsable->getProspects();
         $nbProspects = count($prospects);
@@ -62,8 +125,22 @@ class ProspectController extends AbstractController
         }else{
             $em->remove($prospect);
         }
+    }
 
-        $em->flush();
-        return new JsonResponse(['code' => 1]);
+     /**
+     * @Route("/eleve/{id}/get/infos", options={"expose"=true}, name="get_infos")
+     */
+    public function getProspect(Request $request, TicketProspect $id, SerializerInterface $serializer)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $prospect = $serializer->serialize($id, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 
+            'responsable' => ['id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket'], 
+            'creneau' => ['id', 'horaireString']
+        ]]);
+
+        return new JsonResponse(['code' => 1, 'prospect' => $prospect]);
     }
 }

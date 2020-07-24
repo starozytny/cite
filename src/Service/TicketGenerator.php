@@ -30,11 +30,11 @@ class TicketGenerator
     {
         $uniq = time();
         $ticket = $responsable->getId() . $uniq;
-        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+        $generator = new \Picqer\Barcode\BarcodeGeneratorJPG();
         if(!is_dir($this->getBarcodeDirectory())){
             mkdir($this->getBarcodeDirectory());
         }
-        $fileImage = $this->getBarcodeDirectory() . '/' .$responsable->getId() . '-barcode.png';
+        $fileImage = $this->getBarcodeDirectory() . '/' .$responsable->getId() . '-barcode.jpg';
         $generatorr = file_put_contents($fileImage, $generator->getBarcode($ticket, $generator::TYPE_CODE_128));
 
         $pdfDirectory = $this->getBarcodeDirectory() . '/pdf';
@@ -44,18 +44,20 @@ class TicketGenerator
 
         $creneau = $responsable->getCreneau();
         $day = $creneau->getTicketDay();
-        $mpdf = $this->createFileTicket($fileImage, $responsable, $day, $creneau, $prospects);
+        $mpdf = $this->createFileTicket($fileImage, $responsable, $day, $creneau, $prospects, $ticket);
 
         $mpdf->Output($pdfDirectory . '/' . $ticket . '-ticket.pdf', Destination::FILE);
 
         return $ticket;
     }
 
-    public function createFileTicket($fileImage, TicketResponsable $responsable, TicketDay $day, TicketCreneau $creneau, $prospects){
+    public function createFileTicket($fileImage, TicketResponsable $responsable, TicketDay $day, TicketCreneau $creneau, $prospects, $ticket){
         $mpdf = new Mpdf();
 
         $img = file_get_contents($fileImage);
         $data = base64_encode($img);
+
+        dump($data);
 
         $mpdf->SetTitle('Ticket cité de la musique - ' . $responsable->getFirstname() . ' ' . $responsable->getLastname());
         $stylesheet = file_get_contents($this->getPublicDirectory() . '/public/pdf/css/bootstrap.min.css');
@@ -67,7 +69,7 @@ class TicketGenerator
         ),'', 'Pf3zGgig5hy5');
 
         $mpdf->WriteHTML(
-            $this->twig->render('root/app/pdf/ticket.html.twig', ['day' => $day, 'creneau' => $creneau, 'responsable' => $responsable, 'prospects' => $prospects, 'image' => $data]),
+            $this->twig->render('root/app/pdf/ticket.html.twig', ['day' => $day, 'creneau' => $creneau, 'responsable' => $responsable, 'prospects' => $prospects, 'image' => $data, 'ticket' => $ticket]),
             HTMLParserMode::HTML_BODY
         );
 

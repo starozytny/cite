@@ -1,26 +1,11 @@
 @import '../../../vars/vars.scss';
 
-.step-actions-static{
-    display: block;
-    width: 100%;
-    text-align: right;
-
-    & > *:not(:last-child){
-        margin-right: 10px;
-    }
-}
-
-.step-actions, .step-prospects-add{
+.step-actions{
     position: fixed;
-    bottom: 0;left: 0;
-    width: 50%;
+    bottom: 0;right: 0;
     height: 55px;
     z-index: 20;
-}
-
-.step-actions{
-    left: auto;
-    right: 0;
+    text-align: right;    
     width: 100%;
     display: flex;
 
@@ -28,16 +13,64 @@
         width: 50%;
         border-radius: 0;
         height: 100%;
+        margin-left: 15px;
         
         &.inactive{
             cursor: not-allowed;
             background-color: $color7;
             border-color: $color7
         }
+        &:hover{
+            transform: translateY(0);
+        }
+    }
+}
+
+.step-actions-static{
+    display: none;
+    width: 100%;
+    text-align: right;
+
+    .btn-back{
+        border: 1px solid $color6;
+    }
+
+    .btn-back, .btn-next{
+        [class^="icon-"]{
+            display: inline-block;
+            opacity: 0;
+            transform: translateX(-25px);
+        }
+
+        &:hover{
+            [class^="icon-"]{
+                opacity: 1;
+                transform: translateX(50px);
+                transition: opacity 0.2s ease-in-out 0.2s, transform 0.4s ease-in-out;
+            }
+            .txt-btn{
+                display: inline-block;
+                opacity: 0;
+                transform: translateX(25px);
+                transition: opacity 0.2s ease-in-out 0.2s, transform 0.4s ease-in-out;
+            }
+        }
+    }
+
+    .btn {
+        width: 50%;
+        border-radius: 0;
+        padding: 20px;
+
+        &:hover{
+            transform: translateY(0);
+        }
     }
 }
 
 .step-prospects-add, .step-prospects-add-static{
+    margin-bottom: 25px;
+
     button{
         cursor: pointer;
         padding: 25px;
@@ -46,13 +79,15 @@
         border: 1px solid $color7;
         color: $color6;
         @include flex(row, center, center);
-        transition: all 0.4s ease-in-out;
+        transition: all 0.2s ease-in-out;
         height: 55px;
         text-transform: uppercase;
+        height: 100%;
 
         [class^="icon-"]{
             font-size: 24px;
             margin-right: 10px;
+            transition: all 0.4s ease-in-out;
         }
 
         .text{display: none;}
@@ -61,6 +96,11 @@
             background-color: $alpha;
             border-color: $color3;
             color: $color3;
+
+            [class^="icon-"]{
+                display: inline-block;
+                transform: rotate(360deg);
+            }
         }
     }
 
@@ -68,7 +108,61 @@
         display: none;
     }
 }
+.steps .step-3 .step-actions-static{
+    .btn-next{
+        &:hover{
+            [class^="icon-"]{
+                transform: translateX(100px);
+            }
+        }
+    }
+}
 
-.step-prospects-add-static{
-    margin-bottom: 25px;
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .step-actions-static{
+        @include flex(row, center, center);
+    }
+    .step-actions{
+        display: none;
+    }
+}
+
+//                      __   _  ___ ____  _  _     __
+//                     | _| / |/ _ \___ \| || |   |_ |
+//    _____ _____ _____| |  | | | | |__) | || |_   | |_____ _____ _____
+//   |_____|_____|_____| |  | | |_| / __/|__   _|  | |_____|_____|_____|
+//                     | |  |_|\___/_____|  |_|    | |
+//                     |__|                       |__|
+@media (min-width: 1024px) {
+    .step-prospects-add-static{
+        display: none;
+    }
+    .step-prospects-add{
+        margin-bottom: 30px;
+        width: calc(50% - 45px);
+        height: inherit;
+
+        button{
+            min-height: 535px;
+            background-color: transparent;
+            border-style: dashed;
+        }
+    }
+}
+//                      __   _ ____  ___   ___    __
+//                     | _| / |___ \( _ ) / _ \  |_ |
+//    _____ _____ _____| |  | | __) / _ \| | | |  | |_____ _____ _____
+//   |_____|_____|_____| |  | |/ __/ (_) | |_| |  | |_____|_____|_____|
+//                     | |  |_|_____\___/ \___/   | |
+//                     |__|                      |__|
+@media (min-width:1280px) {
+    .step-prospects-add {
+        width: calc(50% - 15px);
+    }
 }

@@ -338,4 +338,8 @@ class TicketProspect
 
         return $age;
     }
+
+    public function getBirthdayString(){
+        return date_format($this->getBirthday(), 'd/m/Y');
+    }
 }

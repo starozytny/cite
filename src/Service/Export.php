@@ -38,12 +38,13 @@ class Export
         }
     }
 
-    public function createFile($type, $title, $filename, $header, $data, $max, $url)
+    public function createFile($type, $title, $filename, $header, $data, $max, $url, $folder="")
     {
         $spreadsheet = new Spreadsheet();
 
-        $exportDirectory = $this->getExportDirectory();
-        $file = $exportDirectory . '/' . $filename;
+        $exportDirectory = $this->getExportDirectory() . '/' . $folder;
+        $this->createFolderIfNotExist($exportDirectory);
+        $file = $exportDirectory . $filename;
         if (file_exists($file)) {
             unlink($file);
         }

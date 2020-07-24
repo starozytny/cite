@@ -343,4 +343,13 @@ class TicketResponsable
 
         return $this;
     }
+
+    public function getCreateAtString(){
+        date_default_timezone_set('Europe/Paris');
+        return date_format($this->getCreateAt(), 'd/m/Y \à H\hi');
+    }
+
+    public function getAdresseString(){
+        return $this->getAdr() . ', ' . $this->getCp() . $this->getCity();
+    }
 }

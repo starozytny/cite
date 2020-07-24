@@ -167,8 +167,8 @@ class TicketDay
     }
 
     public function getMonthFr(){
-        $m = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-        $d = date_format($this->getDay(), 'm');
+        $m = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        $d = date_format($this->getDay(), 'n');
 
         return $m[intval($d)];
     }
@@ -176,6 +176,11 @@ class TicketDay
     public function getFullDateString()
     {
         return $this->getDayFr() . ' ' . date_format($this->getDay(), 'd') . ' ' . $this->getMonthFr() . ' ' . date_format($this->getDay(), 'Y');
+    }
+
+    public function getDateString()
+    {
+        return date_format($this->getDay(), 'd') . ' ' . $this->getMonthFr() . ' ' . date_format($this->getDay(), 'Y');
     }
 
     /**

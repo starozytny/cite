@@ -116,6 +116,8 @@ class BookingController extends AbstractController
      */
     public function duplicateProspect(TicketDay $id, Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+
         $day = $id;
         $data = json_decode($request->getContent());
         $prospects = $data->prospects;
@@ -126,17 +128,6 @@ class BookingController extends AbstractController
         }
         $this->history->updateFamille($data->historyId, count($prospects));
 
-        return new JsonResponse(['code' => 1]);
-    }
-
-    /**
-     * @Route("/tmp/book/{id}/add", options={"expose"=true}, name="tmp_book_add")
-     */
-    public function tmpBook(TicketDay $id, Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $data = json_decode($request->getContent());
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $horaire = date_format($creneau->getHoraire(), 'H\hi');
         $this->history->updateResp($data->historyId, $data->responsable);
@@ -171,7 +162,7 @@ class BookingController extends AbstractController
             $title = 'Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
             $html = 'root/app/email/booking/index.html.twig';
             $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
-            $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.png');
+            $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
             $barcode = base64_encode($img);
             $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
             $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -183,8 +174,7 @@ class BookingController extends AbstractController
     
             $this->history->updateTicket($data->historyId);
             $em->persist($responsable); $em->flush();
-            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print,
-            'message' => 'Réservation réussie. Un mail récapitulatif a été envoyé à l\'adresse du responsable : ' . $responsable->getEmail()]);
+            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print, 'message' => $responsable->getEmail()]);
         }else{
             return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
         }

@@ -1,6 +1,6 @@
 {% extends 'themes/default/app/layout/layout.html.twig' %}
 
-{% block title %}Réservation d'un ticket pour la journée d'inscription à la Cité de la musique{% endblock %}
+{% block title %}Réservation d'un ticket pour la journée d'inscription à la Cité de la musique de Marseille{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -12,7 +12,7 @@
     <div class="ariane">
         <span><a href="{{ path('app_homepage') }}">Accueil</a></span>
         <span class="active"><a href="{{ path('app_booking_index') }}">
-            Réservation {{ day is defined ? 'de ticket pour le ' ~ day.fullDateString : null }}
+            Réservation {{ day is defined ? 'd\'un ticket pour le ' ~ day.fullDateString | lower : null }}
         </a></span>
     </div>
 
@@ -22,8 +22,8 @@
         <div>
             <div class="section-infos">
                 <div class="informations">
-                    <h1>Réservation de tickets</h1>
-                    <p class="subtitle">Aucune inscription ouvert pour aujourd'hui.</p>
+                    <h1>Réservation d'un ticket</h1>
+                    <p class="subtitle">Aucune journée d'inscription à la cité de la musique n'est ouverte pour le moment.</p>
                 </div>
             </div>
         </div>

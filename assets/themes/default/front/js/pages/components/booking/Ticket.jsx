@@ -10,37 +10,8 @@ export class StepTicket extends Component {
     render () {
         const {classStep, day, horaire, prospects, code, finalMessage, ticket, barcode, print} = this.props;
 
-        let body = <>
-            <div className="final-content">
-                <div className="txt-success">{finalMessage}</div>
-                <div className="alert alert-info ticket">
-                    <div>TICKET : <b>{ticket}</b></div>
-                    <div className="ticket-barcode">
-                        <img src={ "data:image/png;base64," + barcode } />
-                    </div>
-                    <div>Pour le {day} à {horaire}.</div>
-                    <div className="ticket-download">
-                        <a href={print} target="_blank" download>Télécharger le billet</a>
-                    </div>
-                </div>
-                <div className="alert">
-                    <b>RAPPEL</b> : Avant de vous présenter, vérifiez que vous avez : 
-                    <ul>
-                        <li>Photocopie de votre avis d'imposition 2019 sur revenus 2018</li>
-                        <li>Un masque</li>
-                        <li>Photocopie de la carte étudiante pour les étudiants de moins de 26 ans</li>
-                        <li>Moyen de paiement: chèque ou espèces (CB non acceptée)</li>
-                    </ul>
-                </div>
-            </div>
-            
-        </>
-
-        let textRegular = <>
-            <div>Inscription pour la journée du : <b>{day}</b></div>
-            <div>Horaire de passage : <b>{horaire}</b></div>
-            <div>Nombre de personnes à inscrire : <b>{prospects.length}</b></div>
-        </>
+        let body = <><div>Chargement des données...</div></>
+        let textRegular = <div>Journée du : <b>{day}</b></div>
 
         if(code != 1){
             body = <>
@@ -53,13 +24,39 @@ export class StepTicket extends Component {
                         <b>Attention !</b> Vous êtes en file d'attente que pour la journée du <b>{day}</b>. Pour les prochaines journées, il faudra 
                         réitérer la demande. */}
                     </div>
+                </div>
+            </>
+        }else{
+            body = <>
+                <div className="final-content">
+                    <div className="alert alert-ticket">
+                        <div>TICKET : <b>{ticket}</b></div>
+                        <div className="ticket-barcode">
+                            <img src={ "data:image/png;base64," + barcode } />
+                        </div>
+                        <div>Pour le {day} à {horaire}.</div>
+                        <div className="ticket-email"><span>Votre ticket a été envoyé à <b>{finalMessage}</b> en <b>pièce jointe</b>.</span> <br/> Veuillez vérifiez vos spams/courriers indésirables.</div>
+                        <div className="ticket-download">
+                            <a href={print} target="_blank">Imprimer mon billet</a>
+                        </div>
+                    </div>
                     <div className="alert">
-                        <b>RAPPEL</b> : Durant cette journée, veuillez amener votre <b>dernier avis d'imposition</b> afin que l'on puisse procéder à votre inscription.
+                        <b>RAPPEL</b> : Avant de vous présenter, vérifiez que vous avez : 
+                        <ul>
+                            <li>Photocopie de votre avis d'imposition 2019 sur revenus 2018</li>
+                            <li>Un masque</li>
+                            <li>Photocopie de la carte étudiante pour les étudiants de moins de 26 ans</li>
+                            <li>Moyen de paiement: chèque ou espèces (CB non acceptée)</li>
+                        </ul>
                     </div>
                 </div>
             </>
 
-            textRegular = <div>Journée du : <b>{day}</b></div>
+            textRegular = <>
+                <div>Inscription pour la journée du : <b>{day}</b></div>
+                <div>Horaire de rendez-vous : <b>{horaire}</b></div>
+                <div>Nombre de personnes à inscrire : <b>{prospects.length}</b></div>
+            </>
         }
 
         return <Step id="4" classStep={classStep} title="Ticket" body={body} final="true">

@@ -7,7 +7,7 @@
     {{ encore_entry_link_tags('default_homepage') }}
 {% endblock %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Journées d'inscription à la cité de la musique de Marseille{% endblock %}
 
 {% block main_content %}
 
@@ -18,7 +18,7 @@
                 <p class="subtitle">de Marseille</p>
             </div>
             <div class="header-actions">
-                <a href="{{ path('app_booking_index') }}" class="btn">Prendre un ticket</a>
+                <a href="{{ path('app_booking_index') }}" class="btn">Réserver un ticket</a>
             </div>
         </div>
     </header>
@@ -56,9 +56,9 @@
                     Etant donné le grand nombre de demandes, un système de tickets d’entrée a été mis en place. 
                     Ce dispositif permet de limiter au maximum l’attente des enfants et des parents.
                     <br><br>
-                    <b>Si vous souhaitez assister à une journée, <span class="txt-primary">prenez un ticket</span>.</b>
+                    <b>Si vous souhaitez assister à une journée, <a href="{{ path('app_booking_index') }}" class="txt-primary">réservez un ticket</span>.</b>
                 </p>
-                <a href="{{ path('app_booking_index') }}" class="btn btn-primary">Prendre un ticket</a>
+                <a href="{{ path('app_booking_index') }}" class="btn btn-primary">Réservez un ticket</a>
             </div>
             <div class="illustration">
                 <div class="image">

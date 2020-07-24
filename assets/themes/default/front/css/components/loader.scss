@@ -9,7 +9,20 @@
     @include flex();
     display: none;
 
+    .icon-load{
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 36px;
+        animation: loadrotate 1.5s linear 0s infinite;
+    }
+
     span{
         color: $color4;
+    }
+}
+
+@keyframes loadrotate{
+    100%{
+        transform: rotate(360deg);
     }
 }

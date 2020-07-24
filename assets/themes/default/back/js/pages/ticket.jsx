@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {Details} from './components/ticket/Details.jsx';
 import {Slots} from './components/ticket/Slots.jsx';
+import {Ticket} from './components/ticket/Ticket.jsx';
 
 let details = document.getElementById("details");
 if(details){
@@ -17,5 +18,21 @@ if(slots){
     ReactDOM.render(
         <Slots dayId={slots.dataset.dayId} slots={slots.dataset.slots} />,
         slots
+    )
+}
+
+let ouvertureAncien = document.getElementById('toolbar-ancien');
+if(ouvertureAncien){
+    ReactDOM.render(
+        <Ticket type={ouvertureAncien.dataset.type} dateOpen={ouvertureAncien.dataset.dateOpen} id={ouvertureAncien.dataset.id} />,
+        ouvertureAncien
+    )
+}
+
+let ouvertureNouveau = document.getElementById('toolbar-nouveau');
+if(ouvertureNouveau){
+    ReactDOM.render(
+        <Ticket type={ouvertureNouveau.dataset.type} dateOpen={ouvertureNouveau.dataset.dateOpen} id={ouvertureNouveau.dataset.id} />,
+        ouvertureNouveau
     )
 }

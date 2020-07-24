@@ -4,7 +4,7 @@
     .alert{
         margin-top: 15px;
     }
-    .ticket{
+    .alert-ticket{
         text-align: center;
     }
 
@@ -14,8 +14,15 @@
             width: 280px;
         }
     }
-    .ticket-download{
+    .ticket-email{
         margin-top: 25px;
+        span{
+            color: $infoLabel;
+        }
+    }
+    .ticket-download{
+        margin-top: 10px;
+        color: $infoLabel;
     }
 }
 
@@ -27,8 +34,7 @@
 //                     |__|                    |__|
 @media (min-width:768px) {
     .final-content{
-        .ticket{
-            text-align: center;
+        .alert-ticket{
             padding: 50px 10px;
         }
     }

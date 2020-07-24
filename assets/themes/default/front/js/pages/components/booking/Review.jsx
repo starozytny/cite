@@ -23,7 +23,7 @@ export class StepReview extends Component {
     }    
 
     render () {
-        const {classStep, onClickPrev, toTicketStep, prospects, responsable, day, messageInfo, timeExpired, code, onAnnulation} = this.props;
+        const {classStep, onClickPrev, onToStep4, prospects, responsable, day, messageInfo, timeExpired, code, onAnnulation} = this.props;
 
         let itemsProspects = prospects.map((elem, index) => {
 
@@ -50,7 +50,7 @@ export class StepReview extends Component {
                 </div>
 
                 <div className="review-responsable">
-                    <div className="title">Responsable des personnes citées ci-dessus : </div>
+                    <div className="title">Responsable : </div>
                     <div className="review-cards">
                         <div className="review-card">
                             <div>{responsable.civility}. {responsable.lastname} {responsable.firstname}</div>
@@ -63,14 +63,14 @@ export class StepReview extends Component {
             </div>
         </>
 
-        let nextText = "Valider";
+        let nextText = "Obtenir mon ticket";
         if(code == 1){
-            nextText = (timeExpired ? "Expirée" : "Valider");
+            nextText = (timeExpired ? "Expirée" : nextText);
         }else if(code == 2){
             nextText = "Indisponible"
         }
 
-        return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} onClickNext={toTicketStep} body={body} 
+        return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} onClickNext={onToStep4} body={body} 
         nextText={nextText} expired={timeExpired} code={code}>
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>

@@ -39,101 +39,18 @@ export class Booking extends Component {
             historyId: null
         }
 
-        this.interval = null;
         this.handleClickStart = this.handleClickStart.bind(this);
-
-        this.toResponsableStep = this.toResponsableStep.bind(this);
-        this.backToProspects = this.backToProspects.bind(this);
-        this.toReviewStep = this.toReviewStep.bind(this);
-        this.backToResponsable = this.backToResponsable.bind(this);
-        this.toTicketStep = this.toTicketStep.bind(this);
-
         this.handleAnnulation = this.handleAnnulation.bind(this);
+
+        this.handleToStep2 = this.handleToStep2.bind(this);
+
+        this.handleBackStep1 = this.handleBackStep1.bind(this);
+        this.handleToStep3 = this.handleToStep3.bind(this);
+
+        this.handleBackStep2 = this.handleBackStep2.bind(this);
+        this.handleToStep4 = this.handleToStep4.bind(this);        
     }
 
-    /**
-    * Fonction pour commencer le processus de demande de ticket.
-    */
-    handleClickStart (e) {
-        AjaxSend.loader(true);
-        let self = this;
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }),
-        }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
-            if(code === 1){
-                self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
-                               creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
-                               timer: setInterval(() => self.tick(), 1000), min: 4, second: 60})
-            }            
-        });
-    }
-
-    backToProspects (e) {
-        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: '', min: 4, second: 60});
-    }
-    backToResponsable (e) {
-        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', min: 4, second: 60});
-    }
-
-    toResponsableStep (data) {
-        let dataNoDoublon = data.filter((thing, index, self) =>
-            index === self.findIndex((t) => (
-                t.civility === thing.civility && t.firstname === thing.firstname && t.lastname === thing.lastname &&
-                t.birthday === thing.birthday && t.numAdh === thing.numAdh
-            ))
-        )
-        this.setState({prospects: dataNoDoublon});
-        AjaxSend.loader(true);
-        let self = this;
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('app_booking_tmp_book_duplicate', { 'id' : this.props.dayId }), 
-            data: { prospects: dataNoDoublon, historyId: this.state.historyId } 
-        }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
-            
-            if(code === 1){       
-                self.setState({classDot: 'active-2', classStep1: 'full', classStep2: 'active'});                
-            }else{
-                let newProspects = [];
-                dataNoDoublon.forEach(element => {
-                    let newProspect = element;
-                    data.duplicated.forEach(duplicate => {
-                        if(JSON.stringify(element) === JSON.stringify(duplicate)){
-                            duplicate.registered = true;
-                            newProspect = duplicate;
-                        }
-                    });
-                    newProspects.push(newProspect);
-                });
-                
-                self.setState({ code: 2, prospects: newProspects });
-            }
-        });
-    }    
-
-    toReviewStep (data) {
-        this.setState({responsable: data, classDot: 'active-3', classStep2: 'full', classStep3: 'active', min: 4, second: 60});
-
-        const {creneauId} = this.state;
-
-        AjaxSend.loader(true);
-        let self = this;
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('app_booking_tmp_book_add', { 'id' : this.props.dayId }), 
-            data: {creneauId: creneauId, historyId: this.state.historyId, responsable: data} 
-        }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
-            if(code === 1){
-                self.setState({ code: 1, messageInfo: data.message, horaire: data.horaire, timer: setInterval(() => self.tick(), 1000)});
-            }else{
-                self.setState({ code: 0, messageInfo: '<div class="alert alert-info">' + data.message + '</div>' })
-            }
-        });
-    }
     tick(){
         const {min, second, responsableId} = this.state;
         
@@ -169,28 +86,25 @@ export class Booking extends Component {
         
         
     }
-
-    toTicketStep () {
-        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer), min: 99, second: 99});
-
-        const {prospects, responsable, responsableId, creneauId} = this.state;
-        
+    /**
+    * Fonction pour commencer le processus de demande de ticket.
+    */
+    handleClickStart (e) {
         AjaxSend.loader(true);
         let self = this;
         axios({ 
             method: 'post', 
-            url: Routing.generate('app_booking_confirmed_book_add', { 'id' : this.props.dayId }), 
-            data: { prospects: prospects, responsable: responsable, responsableId: responsableId, creneauId: creneauId, historyId: this.state.historyId } 
+            url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }),
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-
             if(code === 1){
-                self.setState({ code: 1, finalMessage: data.message, ticket: data.ticket, barcode: data.barcode, print: data.print})
-            }else{
-                self.setState({ code: 0, finalMessage: data.message })
-            }
+                self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
+                               creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
+                               timer: setInterval(() => self.tick(), 1000), min: 4, second: 60});
+                window.scrollTo(0, 0);
+            }            
         });
-    } 
+    }
 
     handleAnnulation (e) {
         e.preventDefault();
@@ -223,10 +137,78 @@ export class Booking extends Component {
                         }, 500);
                     }
                 });
-                
             }
         })
     }
+
+    handleToStep2 (data) {
+        this.setState({responsable: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active', min: 4, second: 60});
+        window.scrollTo(0, 0);
+    }
+
+    handleBackStep1 (e) {
+        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: '', min: 4, second: 60});
+    }
+
+    handleToStep3 (prospectsNoDoublon) {
+        this.setState({prospects: prospectsNoDoublon});
+
+        const {creneauId, historyId, responsable} = this.state;
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_tmp_book_duplicate', { 'id' : this.props.dayId }), 
+            data: { prospects: prospectsNoDoublon, historyId: historyId, creneauId: creneauId, responsable: responsable} 
+        }).then(function (response) {
+            let data = response.data; let code = data.code;  AjaxSend.loader(false);
+            
+            if(code === 1){       
+                self.setState({code: 1, classDot: 'active-3', classStep2: 'full', classStep3: 'active', messageInfo: data.message, horaire: data.horaire,  min: 4, second: 60});                
+            }else{
+                
+                let newProspects = [];
+                prospectsNoDoublon.forEach(element => {
+                    let newProspect = element;
+                    data.duplicated.forEach(duplicate => {
+                        if(JSON.stringify(element) === JSON.stringify(duplicate)){
+                            duplicate.registered = true;
+                            newProspect = duplicate;
+                        }
+                    });
+                    newProspects.push(newProspect);
+                });
+                self.setState({ code: 2, prospects: newProspects, min: 4, second: 60});
+            }
+        });
+    }
+
+    handleBackStep2 (e) {
+        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', min: 4, second: 60});
+    }
+
+    handleToStep4 () {
+        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer), min: 99, second: 99});
+
+        const {prospects, responsable, responsableId, creneauId} = this.state;
+        
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_confirmed_book_add', { 'id' : this.props.dayId }), 
+            data: { prospects: prospects, responsable: responsable, responsableId: responsableId, creneauId: creneauId, historyId: this.state.historyId } 
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+
+            if(code === 1){
+                self.setState({ code: 1, finalMessage: data.message, ticket: data.ticket, barcode: data.barcode, print: data.print})
+            }else{
+                self.setState({ code: 0, finalMessage: data.message })
+            }
+        });
+    } 
 
     render () {
         const {day, days, dayType, dayRemaining, dayTypeString} = this.props;
@@ -241,10 +223,10 @@ export class Booking extends Component {
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
                 <div className="steps">
-                    <StepProspects classStep={classStep1} dayType={dayType} prospects={prospects} toResponsableStep={this.toResponsableStep} onAnnulation={this.handleAnnulation}/>
-                    <StepResponsable classStep={classStep2} prospects={prospects} onClickPrev={this.backToProspects} toReviewStep={this.toReviewStep} onAnnulation={this.handleAnnulation}/>
-                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.backToResponsable} 
-                                timeExpired={timeExpired} code={code} toTicketStep={this.toTicketStep} onAnnulation={this.handleAnnulation}/>
+                    <StepResponsable classStep={classStep1} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
+                    <StepProspects classStep={classStep2} dayType={dayType} prospects={prospects} onClickPrev={this.handleBackStep1} onStep3={this.handleToStep3} onAnnulation={this.handleAnnulation}/>
+                    <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.handleBackStep2} 
+                                timeExpired={timeExpired} code={code} onToStep4={this.handleToStep4} onAnnulation={this.handleAnnulation}/>
                     <StepTicket classStep={classStep4} prospects={prospects} day={day} horaire={horaire} code={code} finalMessage={finalMessage} ticket={ticket} barcode={barcode} print={print}/>
                 </div>
             </section> 
@@ -254,8 +236,8 @@ export class Booking extends Component {
 
 function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
     let items = [
-        { active: classStep1, text: 'Famille à inscrire'},
-        { active: classStep2, text: 'Responsable'},
+        { active: classStep1, text: 'Responsable'},
+        { active: classStep2, text: 'Elève(s) à inscrire'},
         { active: classStep3, text: 'Récapitulatif'},
         { active: classStep4, text: 'Ticket'}
     ];
@@ -286,15 +268,16 @@ function Infos({day, dayTypeString}) {
             <h1>Réservation d'un ticket</h1>
             <p className="subtitle">Journée d'inscription des {dayTypeString} du {day} </p>
             <p>
-                La demande de ticket permet de faire une réservation pour une famille.
+                La réservation d'un ticket permet d'obtenir 1 ticket par famille. <br/>
                 <br />
-                Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email.
+                Votre <b>ticket</b> et <b>horaire de rendez-vous</b> vous seront envoyés par email. <br/>
+                Veuillez à vérifier vos spams/courriers indésirables.
                 <br /><br /><br />
                 <b className="txt-danger">Important :</b> Pour des raisons sanitaires, nous vous invitons à limiter le nombre d'accompagnants
                  et tout particulièrement les petits enfants. Le port du masque est obligatoire
             </p>
             <p className="informations-complementaire">
-                Pour toute information concernant le déroulement de cette journée : 
+                Pour toutes informations concernant le déroulement de cette journée : 
                 <br />
                 04 91 39 28 28
             </p>
@@ -307,7 +290,7 @@ function Starter({onClick, days, dayRemaining}) {
     let items = JSON.parse(days).map((elem, index) => {
         return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
-            <span> {elem.fullDateString}</span>
+            <span> {elem.fullDateString} </span>
             <span className="txt-discret">
                  - Journée des {elem.typeString}
             </span>
@@ -323,7 +306,7 @@ function Starter({onClick, days, dayRemaining}) {
                     <div className="starter-dates">{items} </div>
 
                     <div className="alert alert-info">
-                        <b>A apporter</b> : à la journée d'inscription, vérifiez que vous avez : 
+                        <b>A apporter</b> à la journée d'inscriptions : 
                         <ul>
                             <li>Photocopie de votre avis d'imposition 2019 sur revenus 2018</li>
                             <li>Un masque</li>
@@ -334,7 +317,7 @@ function Starter({onClick, days, dayRemaining}) {
                     {dayRemaining ? null : <div className="alert"> Il n'y a plus de place. </div>}
                 </div>
                 <div className="starter-btn">
-                    <button className="btn btn-primary" onClick={onClick}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
+                    <button className="btn btn-primary" onClick={dayRemaining > 0 ? onClick : null}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
                 </div>
             </div>
         </div>

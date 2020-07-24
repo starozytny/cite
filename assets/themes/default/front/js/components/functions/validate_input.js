@@ -5,12 +5,22 @@ function validateCustomPhone($value) {
             'message': 'Au moins 1 téléphone doit être renseigné.'
         };
     }
-    if (!(/^((\+)33|0)[1-9](\d{2}){4}$/.test($value))){
+    let arr = $value.match(/[0-9]/g);
+    if(arr != null){
+        $value = arr.join('');
+        if (!(/^((\+)33|0)[1-9](\d{2}){4}$/.test($value))){
+            return {
+                'code': false,
+                'message': 'Ce numéro n\'est pas valide.'
+            };
+        }
+    }else{
         return {
             'code': false,
             'message': 'Ce numéro n\'est pas valide.'
         };
     }
+    
     return {'code': true};
 }
 
@@ -47,6 +57,31 @@ function validateText($value) {
     return {'code': true};
 }
 
+function validateCp($value){
+    if($value === ""){
+        return {
+            'code': false,
+            'message': 'Ce champ doit être renseigné.'
+        };
+    }
+    let arr = $value.match(/[0-9]/g);
+    if(arr != null){
+        $value = arr.join('')
+        if($value.length != 5){
+            return {
+                'code': false,
+                'message': 'Cette valeur n\'est pas valide.'
+            };
+        }
+    }else{
+        return {
+            'code': false,
+            'message': 'Cette valeur n\'est pas valide.'
+        };
+    }
+    return {'code': true};
+}
+
 function validateEmail($value){
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test($value)){
         return {'code': true};
@@ -58,6 +93,12 @@ function validateEmail($value){
 }
 
 function validateConfirmeEmail($value, $value2){
+    if($value === ""){
+        return {
+            'code': false,
+            'message': 'Les adresses e-mail ne correspondent pas.'
+        };
+    }
     if($value != $value2){
         return {
             'code': false,
@@ -87,6 +128,9 @@ function validateur(values){
                 break;
             case 'confirmeEmail':
                 validate = validateConfirmeEmail(element.value, element.value2);
+                break;
+            case 'cp':
+                validate = validateCp(element.value);
                 break;
         }
         if(!validate.code){

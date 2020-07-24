@@ -12,7 +12,12 @@
     @include boxshadow($color3);
     @include fontSemibold();
     cursor: pointer;
-    transition: all 0.4s ease-in-out;
+    transition: all 0.2s ease-in-out;
+
+    &:hover{
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
 }
 
 .btn-primary{

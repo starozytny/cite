@@ -6,6 +6,33 @@ import {Input, Select} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
 import Swal from 'sweetalert2';
 
+function getSelectionChecked(selection){
+    let oneChecked = false;
+    let arr = [];
+    selection.forEach(element => { 
+        if(element.check){
+            arr.push(element.id);
+            return oneChecked = true;
+        } 
+    });
+    
+    return oneChecked ? arr : false;
+}
+
+function formattedPhone(elem){
+    if(elem != "" && elem != undefined){
+        let a = elem.substr(0,2);
+        let b = elem.substr(2,2);
+        let c = elem.substr(4,2);
+        let d = elem.substr(6,2);
+        let e = elem.substr(8,2);
+
+        elem = a + " " + b + " " + c + " " + d + " " + e;
+    }
+
+    return elem;
+}
+
 export class Details extends Component {
     constructor(props){
         super(props)
@@ -29,26 +56,41 @@ export class Details extends Component {
             saveProspects: JSON.parse(JSON.parse(this.props.prospects)),
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
-            selectHoraire: {value: '999', error: ''}
+            selectHoraire: {value: '999', error: ''},
+            selection: [],
+            openEdit: '',
+            prospectEdit: null
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
+        this.handleChangeStatusSelection = this.handleChangeStatusSelection.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleDeleteSelection = this.handleDeleteSelection.bind(this);
         this.handleChange = this.handleChange.bind(this);
 
         this.handleSearch = this.handleSearch.bind(this);
         this.handleSelectHoraire = this.handleSelectHoraire.bind(this);
+
+        this.handleOpenEdit = this.handleOpenEdit.bind(this);
+        this.handleClose = this.handleClose.bind(this);
     }
 
     handleChange (e) {
-        const {prospects, saveProspects} = this.state;
+        const {selection} = this.state;
 
         let value = e.target.value;
         let name = e.target.name;
         if(name === 'searched'){
-            this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value)});
+            document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
+            this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value), selection: [] });
+        }else if(name === 'check-prospect'){
+            let tmp = [{ id: value, check: e.target.checked }]
+            let arr = selection;
+            if(selection.length > 0){ arr = arr.filter(function(elem) { return elem.id != value }) }
+            this.setState({selection: [...arr, ...tmp]})
         }else{
-            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: this.handleSelectHoraire(value)});
+            document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
+            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: this.handleSelectHoraire(value), selection: [] });
         }
     }
 
@@ -134,26 +176,120 @@ export class Details extends Component {
                     })
 
                     self.setState({prospects: arr});
-
-                    Swal.fire(
-                        'Supprimé !',
-                        'Cet élément a été supprimé.',
-                        'success'
-                    );
                 });
             }
           })
     }
 
+    handleChangeStatusSelection (e) {
+        const {selection} = this.state;
+
+        if(selection.length > 0){
+            let arr = getSelectionChecked(selection);
+
+            if(arr != false){
+                AjaxSend.loader(true);
+                let self = this;
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('admin_prospect_update_status_selection'),
+                    data: { selection: arr }
+                }).then(function (response) {
+                    let data = response.data; let code = data.code; AjaxSend.loader(false);
+
+                    let arr = [];
+                    self.state.prospects.forEach((elem) => {
+                        data.prospects.forEach((element) => {
+                            if(parseInt(elem.id) === parseInt(element.id)){
+                                elem.status = element.status;
+                                elem.statusString = element.statusString;
+                            }
+                        })
+                        arr.push(elem);
+                    })
+                    self.setState({prospects: arr});
+                });
+            }
+        }
+    }
+
+    handleDeleteSelection (e) {
+        const {selection} = this.state;
+
+        if(selection.length > 0){
+            let arr = getSelectionChecked(selection);
+
+            if(arr != false){
+
+
+                Swal.fire({
+                    title: 'Etes-vous sur ?',
+                    text: "La suppression des élèves sélectionnés est irréversible.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, je supprime',
+                    cancelButtonText: "Non",
+                  }).then((result) => {
+                    if (result.value) {
+
+                        AjaxSend.loader(true);
+                        let self = this;
+                        axios({ 
+                            method: 'post', 
+                            url: Routing.generate('admin_prospect_delete_selection'),
+                            data: { selection: arr }
+                        }).then(function (response) {
+                            let data = response.data; let code = data.code; AjaxSend.loader(false);
+                            let newArr = self.state.prospects;
+                            arr.forEach((element) => {
+                                newArr.forEach((elem, index) => {
+                                    if(elem.id == parseInt(element)){
+                                        newArr.splice(index,1)
+                                    }
+                                })
+                            })
+        
+                            self.setState({prospects: newArr});
+                        });
+                    }
+                  })
+            }
+        }
+    }
+
+    handleOpenEdit (e) {
+        let id = parseInt(e.currentTarget.dataset.id);
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('admin_prospect_get_infos', { 'id' : id })
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            self.setState({openEdit: 'active', prospectEdit: JSON.parse(data.prospect)})
+        });
+
+    }
+
+    handleClose (e) {
+        this.setState({openEdit: ''})
+    }
+
     render () {
         const {dayId} = this.props;
-        const {prospects, searched, selectHoraire, saveCreneaux} = this.state;
+        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
+                <div className="col-0">
+                    <input type="checkbox" name="check-prospect" value={elem.id} onChange={this.handleChange} />
+                </div>
                 <div className="col-1">
                     {elem.numAdh != null ? <div>#{elem.numAdh}</div> : null}
-                    <div className="name">{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
+                    <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
                     <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
                 </div>
                 <div className="col-2">
@@ -191,7 +327,7 @@ export class Details extends Component {
                 </div>
                 <div className="toolbar-right">
                     <div className="item">
-                        <a href={Routing.generate('admin_ticket_export', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-primary">Exporter pour Weezevent</a>
+                        <a href={Routing.generate('admin_ticket_export_weezevent', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-primary">Exporter pour Weezevent</a>
                     </div>
                 </div>
             </div>
@@ -211,6 +347,7 @@ export class Details extends Component {
             
             <div className="prospects">
                 {items.length <= 0 ? <div>Aucun enregistrement.</div> : <div className="prospects-header">
+                    <div className="col-0"></div>
                     <div className="col-1">Identifiant</div>
                     <div className="col-2">Contact</div>
                     <div className="col-3">Adresse</div>
@@ -221,21 +358,82 @@ export class Details extends Component {
                 <div className="prospects-body">
                     {items}
                 </div>
+                <div className="prospects-footer">
+                    <div className="prospects-footer-left">
+                        <div className="item item-action">
+                            <button className="action" onClick={this.handleChangeStatusSelection}><span>Changer status</span></button>
+                            <button className="action" onClick={this.handleDeleteSelection}><span>Supprimer</span></button>
+                        </div>
+                    </div>
+                    <div className="prospects-footer-right">
+                        <div className="item">
+                        <a href={Routing.generate('admin_ticket_export_eleves', {'ticketDay': dayId})} download={"eleves-" + dayId + ".xlsx"} className="btn">Exporter EXCEL</a>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+            {openEdit == 'active' ? <AsideProspect openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} /> : null}
+            
         </>
     }
 }
 
-function formattedPhone(elem){
-    if(elem != "" && elem != undefined){
-        let a = elem.substr(0,2);
-        let b = elem.substr(2,2);
-        let c = elem.substr(4,2);
-        let d = elem.substr(6,2);
-        let e = elem.substr(8,2);
+export class AsideProspect extends Component {
+    constructor (props){
+        super(props);
 
-        elem = a + " " + b + " " + c + " " + d + " " + e;
+        this.state = {
+            firstname: {value: props.prospect.firstname, error: ''},
+            lastname: {value: props.prospect.lastname, error: ''},
+        }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    return elem;
+    handleSubmit (e) {
+        e.preventDefault();
+    }
+
+
+    render () {
+        const {openEdit, onClose, prospect} = this.props;
+        const {firstname, lastname} = this.state;
+
+        console.log(prospect)
+
+        return <div className="prospect-aside">
+        <div className="prospect-aside-edit">
+            <div className={"prospect-edit-overlay " + openEdit} onClick={onClose}></div>
+            <div className={"prospect-edit " + openEdit}>
+                <div className="title">
+                    <div>{prospect.civility}. {prospect.firstname} {prospect.lastname}</div>
+                    <div><span className="icon-close-circle" onClick={onClose}></span></div>
+                </div>
+
+                <div className="informations">
+                    <div>Ticket : <b>{prospect.responsable.ticket}</b></div>
+                    <div>Créé le : {prospect.responsable.createAtString}</div>
+                    <br/>
+                    <div>Responsable : 
+                        <ul>
+                            <li>{prospect.responsable.civility}. {prospect.responsable.firstname} {prospect.responsable.lastname}</li>
+                            <li>{prospect.responsable.email}</li>
+                            <li>{formattedPhone(prospect.responsable.phoneMobile)} {formattedPhone(prospect.responsable.phoneDomicile)}</li>
+                            <li>{prospect.responsable.adresseString}</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <form onSubmit={this.handleSubmit}>
+                    
+                    <div className="from-group">
+                        <button className="btn btn-primary" type="submit">Mettre à jour</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
 }
+

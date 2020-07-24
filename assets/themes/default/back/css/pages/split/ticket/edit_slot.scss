@@ -1,6 +1,6 @@
 @import "../../../vars/vars.scss";
 
-.slots-edit-overlay{
+.prospect-edit-overlay, .days-edit-overlay, .slots-edit-overlay{
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
@@ -15,7 +15,7 @@
     }
 }
 
-.slots-edit{
+.prospect-edit, .days-edit, .slots-edit{
     background: $alpha;
     padding: 15px;
     position: fixed;
@@ -37,6 +37,9 @@
             cursor: pointer;
         }
     }
+    .informations{
+        margin-bottom: 25px;
+    }
     .minimum{
         margin-bottom: 10px;
     }
@@ -55,7 +58,7 @@
 //                     | |   /_/  \___/ \___/   | |
 //                     |__|                    |__|
 @media (min-width:768px) {
-    .slots-edit{
+    .prospect-edit, .days-edit, .slots-edit{
         width: 40%;
     }
 }
@@ -67,7 +70,7 @@
 //                     | |  |_|_____\___/ \___/   | |
 //                     |__|                      |__|
 @media (min-width:1280px) {
-    .slots-edit{
+    .prospect-edit, .days-edit,.slots-edit{
         width: 30%;
     }
 }
