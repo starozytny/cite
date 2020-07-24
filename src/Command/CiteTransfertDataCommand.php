@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Entity\Windev\WindevAdherent;
+use App\Entity\Windev\WindevAncien;
 use App\Entity\Windev\WindevPersonne;
 use App\Manager\Transfert;
 use Doctrine\DBAL\DBALException;
@@ -42,7 +44,8 @@ class CiteTransfertDataCommand extends Command
         $io->text('Création et remplissage [OK]');
 
         $this->transfertTable($io, 'windev_personne', WindevPersonne::class);
-        // $this->transfertTable($io, 'adherent', Adherent::class);
+        $this->transfertTable($io, 'windev_adherent', WindevAdherent::class);
+        $this->transfertTable($io, 'windev_ancien', WindevAncien::class);
 
 //        $io->title('Drop des tables windev');
 //        $this->dropTable($io);
@@ -62,8 +65,11 @@ class CiteTransfertDataCommand extends Command
             case 'windev_personne':
                 $obj = $this->transfert->createPersonne($item);
                 break;
-            case 'adherent':
-                // $obj = $this->transfert->createMember($item);
+            case 'windev_adherent':
+                $obj = $this->transfert->createAdherent($item, false);
+                break;
+            case 'windev_ancien':
+                $obj = $this->transfert->createAdherent($item, true);
                 break;
             default:
                 break;
@@ -72,8 +78,6 @@ class CiteTransfertDataCommand extends Command
             $this->em->persist($obj);
         }
     }
-
-
 
     protected function transfertTable(SymfonyStyle $io, $table, $classe)
     {

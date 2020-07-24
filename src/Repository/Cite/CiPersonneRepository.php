@@ -2,7 +2,7 @@
 
 namespace App\Repository\Cite;
 
-use App\Entity\App\Entity\Cite\CiPersonne;
+use App\Entity\Cite\CiPersonne;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

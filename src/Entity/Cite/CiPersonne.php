@@ -2,11 +2,13 @@
 
 namespace App\Entity\Cite;
 
-use App\Repository\Cite\PersonneRepository;
+use App\Repository\Cite\CiPersonneRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=PersonneRepository::class)
+ * @ORM\Entity(repositoryClass=CiPersonneRepository::class)
  * @ORM\Table(name="ci_personne")
  */
 class CiPersonne
@@ -75,6 +77,16 @@ class CiPersonne
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $city;
+
+    /**
+     * @ORM\OneToMany(targetEntity=CiAdherent::class, mappedBy="personne")
+     */
+    private $adherents;
+
+    public function __construct()
+    {
+        $this->adherents = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -209,6 +221,37 @@ class CiPersonne
     public function setOldId(int $oldId): self
     {
         $this->oldId = $oldId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CiAdherent[]
+     */
+    public function getAdherents(): Collection
+    {
+        return $this->adherents;
+    }
+
+    public function addAdherent(CiAdherent $adherent): self
+    {
+        if (!$this->adherents->contains($adherent)) {
+            $this->adherents[] = $adherent;
+            $adherent->setPersonne($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdherent(CiAdherent $adherent): self
+    {
+        if ($this->adherents->contains($adherent)) {
+            $this->adherents->removeElement($adherent);
+            // set the owning side to null (unless already changed)
+            if ($adherent->getPersonne() === $this) {
+                $adherent->setPersonne(null);
+            }
+        }
 
         return $this;
     }

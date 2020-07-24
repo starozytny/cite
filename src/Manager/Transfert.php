@@ -3,8 +3,8 @@
 
 namespace App\Manager;
 
+use App\Entity\Cite\CiAdherent;
 use App\Entity\Cite\CiPersonne;
-use App\Entity\Cite\Personne;
 use App\Entity\Windev\WindevPersonne;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,7 +35,7 @@ class Transfert
         return $value != null ? str_replace('.' , '', $value) : null;
     }
 
-    public function createPersonne(WindevPersonne $item)
+    protected function getCivility($item)
     {
         $title = CiPersonne::TITLE_UNKNOWN;
         switch ($item->getTicleunik()){
@@ -51,6 +51,10 @@ class Transfert
                 break;
         }
 
+        return $title;
+    }
+
+    protected function getPrenomNom($item){
         $nom = $item->getNom();
         $prenom = $item->getPrenom();
         if($prenom == null){
@@ -62,16 +66,24 @@ class Transfert
                 $prenom = $nom;
             }
         }
-        $prenom = ucfirst(mb_strtolower($prenom));
+        return [
+            $nom,
+            ucfirst(mb_strtolower($prenom))
+        ];
+    }
 
+    public function createPersonne(WindevPersonne $item)
+    {
+        
+    
         $cp = strlen($item->getCdePostal()) < 5 ? 0 . $item->getCdePostal() : $item->getCdePostal();
         
 
         return (new CiPersonne())
             ->setOldId($item->getId())
-            ->setLastname($nom)
-            ->setFirstname($prenom)
-            ->setCivility($title)
+            ->setLastname($this->getPrenomNom($item)[0])
+            ->setFirstname($this->getPrenomNom($item)[1])
+            ->setCivility($this->getCivility($item))
             ->setEmail($item->getEmailPers())
             ->setAdr($item->getAdresse1())
             ->setComplement($item->getAdresse2())
@@ -82,46 +94,21 @@ class Transfert
             ;
     }
 
-    // public function createMember(Adherent $item)
-    // {
-    //     $information = (new Information())
-    //         ->setAdr($item->getAdresseAdh())
-    //         ->setPhone1($item->getTelephone1())
-    //         ->setPhone2($item->getTelephone2())
-    //         ->setInfoPhone1($item->getInfoTel1())
-    //         ->setInfoPhone2($item->getInfoTel2())
-    //     ;
-
-    //     $this->em->persist($information);
-
-    //     $center = $this->em->getRepository(Center::class)->findOneBy(array(
-    //         'id' => $item->getCecleunik()
-    //     ));
-
-    //     $createAt = $this->createDate($item->getDatecreation());
-    //     $birthday = $this->createDate($item->getNaissance());
-    //     $inscription = $this->createDate($item->getInscription());
-
-    //     return (new Member())
-    //         ->setOldId($item->getId())
-    //         ->setLastname($item->getNom())
-    //         ->setFirstname($item->getPrenom())
-    //         ->setEmail($item->getEmailAdh())
-    //         ->setComment($item->getComment())
-    //         ->setCreateAt($createAt)
-    //         ->setBirthday($birthday)
-    //         ->setInscription($inscription)
-    //         ->setCarteAdh($item->getCarteadherent())
-    //         ->setDispenseSolfege($item->getDispsolfege())
-    //         ->setNumCompta($item->getNocompta())
-    //         ->setNumFamille($item->getNumFamille())
-    //         ->setNumFiche($item->getNumFiche())
-    //         ->setNumTarif($item->getNotarif())
-    //         ->setRenouvellement($item->getRenouvellement())
-    //         ->setSex($item->getSexe())
-    //         ->setInformation($information)
-    //         ->setCenter($center)
-    //         ->setPersonne($this->em->getRepository(Personne::class)->findOneBy(array('old_id' => $item->getId())))
-    //     ;
-    // }
+    public function createAdherent($item, $ancien)
+    {
+        return (new CiAdherent())
+            ->setOldId($item->getId())
+            ->setCivility($this->getCivility($item))
+            ->setLastname($this->getPrenomNom($item)[0])
+            ->setFirstname($this->getPrenomNom($item)[1])
+            ->setEmail($item->getEmailAdh())
+            ->setBirthday($this->createDate($item->getNaissance()))
+            ->setNumAdh($item->getId())
+            ->setIsAncien($ancien)
+            ->setAdr($item->getAdresseAdh())
+            ->setPhoneMobile($this->formattedPhone($item->getTelephone1()))
+            ->setPhoneDomicile($this->formattedPhone($item->getTelephone2()))
+            ->setPersonne($this->em->getRepository(CiPersonne::class)->findOneBy(array('id' => $item->getPecleunik())))
+        ;
+    }
 }

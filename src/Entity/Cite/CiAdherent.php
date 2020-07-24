@@ -4,6 +4,7 @@ namespace App\Entity\Cite;
 
 use App\Repository\Cite\CiAdherentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use \App\Entity\Cite\CiPersonne;
 
 /**
  * @ORM\Entity(repositoryClass=CiAdherentRepository::class)
@@ -22,6 +23,16 @@ class CiAdherent
      * @ORM\Column(type="integer")
      */
     private $oldId;
+
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    private $numAdh;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isAncien;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -44,7 +55,7 @@ class CiAdherent
     private $email;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $birthday;
 
@@ -74,14 +85,9 @@ class CiAdherent
     private $city;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\ManyToOne(targetEntity=CiPersonne::class, inversedBy="adherents")
      */
-    private $numAdh;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isAncien;
+    private $personne;
 
     public function getId(): ?int
     {
@@ -141,7 +147,7 @@ class CiAdherent
         return $this->birthday;
     }
 
-    public function setBirthday(\DateTimeInterface $birthday): self
+    public function setBirthday(?\DateTimeInterface $birthday): self
     {
         $this->birthday = $birthday;
 
@@ -240,6 +246,18 @@ class CiAdherent
     public function setOldId(int $oldId): self
     {
         $this->oldId = $oldId;
+
+        return $this;
+    }
+
+    public function getPersonne(): ?CiPersonne
+    {
+        return $this->personne;
+    }
+
+    public function setPersonne(?CiPersonne $personne): self
+    {
+        $this->personne = $personne;
 
         return $this;
     }
