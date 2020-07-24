@@ -19,12 +19,13 @@
     background: $alpha;
     padding: 15px;
     position: fixed;
-    width: calc(100% - 80px);height: 100%;
+    width: calc(100% - 80px);    height: calc(100% - 30px);
     top: 0;
     right: -200%;
     opacity: 0;
     z-index: -1;
     @include boxsh();
+    overflow-y: auto;
     transition: all 0.2s ease-in-out;
 
     .title{
@@ -60,6 +61,7 @@
 @media (min-width:768px) {
     .prospect-edit, .days-edit, .slots-edit{
         width: 40%;
+        padding-bottom: 50px;
     }
 }
 

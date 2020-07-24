@@ -5,6 +5,11 @@ import AjaxSend from '../../../components/functions/ajax_classique';
 import {Input, Select} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
 import Swal from 'sweetalert2';
+import DatePicker from "react-datepicker";
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import fr from 'date-fns/locale/fr';
+registerLocale('fr', fr)
+import "react-datepicker/dist/react-datepicker.css";
 
 function getSelectionChecked(selection){
     let oneChecked = false;
@@ -33,14 +38,19 @@ function formattedPhone(elem){
     return elem;
 }
 
+function addSelection(selection, value, checked){
+    let tmp = [{ id: value, check: checked }]
+    let arr = selection;
+    if(selection.length > 0){ arr = arr.filter(function(elem) { return elem.id != value }) }
+
+    return tmp;
+}
+
 export class Details extends Component {
     constructor(props){
         super(props)
 
-        let creneaux = [{
-            'value': 999,
-            'libelle': 'Tous'
-        }];
+        let creneaux = [];
         JSON.parse(JSON.parse(this.props.prospects)).forEach((elem, index) => {
             creneaux.push({
                 'value': elem.creneau.id,
@@ -50,16 +60,25 @@ export class Details extends Component {
         creneaux = creneaux.filter((thing, index, self) =>
             index === self.findIndex((t) => ( t.value === thing.value  ))
         )
+
+        let oriProspects = JSON.parse(JSON.parse(this.props.prospects));
+        let horaireProspects = oriProspects.filter(function(elem){
+            if(elem.creneau.id == creneaux[0].value){ return elem; }                
+        });     
         
         this.state = {
-            prospects: JSON.parse(JSON.parse(this.props.prospects)),
-            saveProspects: JSON.parse(JSON.parse(this.props.prospects)),
+            prospects: horaireProspects,
+            saveProspects: oriProspects,
+            horaireProspects: horaireProspects,
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
-            selectHoraire: {value: '999', error: ''},
+            selectHoraire: {value: creneaux[0].value, error: ''},
             selection: [],
             openEdit: '',
-            prospectEdit: null
+            prospectEdit: null,
+            responsableIdEdit: null,
+            idEdit: null,
+            errorEdit: ''
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
@@ -73,6 +92,9 @@ export class Details extends Component {
 
         this.handleOpenEdit = this.handleOpenEdit.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handleEditProspect = this.handleEditProspect.bind(this);
+
+        this.handleSendTicket = this.handleSendTicket.bind(this);
     }
 
     handleChange (e) {
@@ -80,24 +102,41 @@ export class Details extends Component {
 
         let value = e.target.value;
         let name = e.target.name;
-        if(name === 'searched'){
-            document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
+        let allCheck = document.querySelectorAll("input[name='check-prospect']");
+        let arr = selection;
+
+        if(name === 'searched') {
+            allCheck.forEach((el => el.checked = false))
             this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value), selection: [] });
-        }else if(name === 'check-prospect'){
+        }else if(name === 'check-prospect') {
             let tmp = [{ id: value, check: e.target.checked }]
             let arr = selection;
             if(selection.length > 0){ arr = arr.filter(function(elem) { return elem.id != value }) }
             this.setState({selection: [...arr, ...tmp]})
+        }else if(name === 'check-prospect-all') {
+            if(e.target.checked){
+                let fill = [];
+                allCheck.forEach(function(el) {
+                    el.checked = true;
+                    fill.push({ id: el.value, check: true })
+                })
+                this.setState({selection: fill})
+            }else{
+                allCheck.forEach(function(el) { el.checked = false })
+                this.setState({selection: []})
+            }
+            
         }else{
-            document.querySelectorAll("input[name='check-prospect']").forEach((el => el.checked = false))
-            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: this.handleSelectHoraire(value), selection: [] });
+            allCheck.forEach((el => el.checked = false))
+            let newP = this.handleSelectHoraire(value);
+            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: newP, horaireProspects: newP, selection: [] });
         }
     }
 
     handleSearch (value) {
-        const {prospects, saveProspects, selectHoraire} = this.state;
+        const {horaireProspects} = this.state;
         if(value != ""){
-            return prospects.filter(function(elem){
+            return horaireProspects.filter(function(elem){
                 let val = value.toLowerCase();
                 let firstname = elem.firstname.toLowerCase();
                 let lastname = elem.lastname.toLowerCase();
@@ -105,24 +144,15 @@ export class Details extends Component {
                 if(firstname.indexOf(val) > -1 || lastname.indexOf(val) > -1 || numAdh.indexOf(val) > -1){ return elem; }                
             });
         }else{
-            if(selectHoraire.value === "999"){
-                return saveProspects;
-            }else{
-                return this.handleSelectHoraire(selectHoraire.value);
-            }
+            return this.handleSelectHoraire(selectHoraire.value);
         }        
     }
 
     handleSelectHoraire (value) {
         const {saveProspects} = this.state;
-        if(value != "999"){
-            return saveProspects.filter(function(elem){
-                if(elem.creneau.id == value){ return elem; }                
-            });
-        }else{
-            return saveProspects;       
-        }
-        
+        return saveProspects.filter(function(elem){
+            if(elem.creneau.id == value){ return elem; }                
+        });        
     }
 
     handleChangeStatus (e) {
@@ -269,7 +299,7 @@ export class Details extends Component {
             url: Routing.generate('admin_prospect_get_infos', { 'id' : id })
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-            self.setState({openEdit: 'active', prospectEdit: JSON.parse(data.prospect)})
+            self.setState({openEdit: 'active', prospectEdit: JSON.parse(data.prospect), idEdit: id, responsableIdEdit: JSON.parse(data.prospect).responsable.id})
         });
 
     }
@@ -278,9 +308,77 @@ export class Details extends Component {
         this.setState({openEdit: ''})
     }
 
+    handleEditProspect (data) {
+
+        const {responsableIdEdit, idEdit} = this.state;
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('admin_prospect_set_infos', { 'id' : idEdit }),
+            data: {prospect: data}
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+
+            if (code === 1){
+                Swal.fire({
+                    title: 'Souhaitez-vous renvoyer le ticket ?',
+                    text: "Le ticket sera envoyé à l\'adresse email du responsable.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmer',
+                    cancelButtonText: "Non",
+                  }).then((result) => {
+                    AjaxSend.loader(true);
+
+                    if (result.value) {
+                        axios({  
+                            method: 'post',  url: Routing.generate('admin_ticket_send', {'id': responsableIdEdit}) 
+                        }).then(function (response) {
+                            location.reload();
+                        });
+                    }else{
+                        location.reload();
+                    }
+                  })
+            }else{
+                self.setState({ errorEdit: data.message });
+            }
+        });
+    }
+
+    handleSendTicket (e) {
+        const {responsableIdEdit} = this.state;
+
+        Swal.fire({
+            title: 'Souhaitez-vous renvoyer le ticket ?',
+            text: "Le ticket sera envoyé à l\'adresse email du responsable.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirmer',
+            cancelButtonText: "Non",
+          }).then((result) => {
+            if (result.value) {
+                AjaxSend.loader(true);
+                axios({ 
+                    method: 'post', 
+                    url: Routing.generate('admin_ticket_send', {'id': responsableIdEdit}),
+                }).then(function (response) {
+                    AjaxSend.loader(false);
+                    Swal.fire('Ticket envoyé!', '', 'success' )
+                });
+            }
+          })
+    }
+
     render () {
         const {dayId} = this.props;
-        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit} = this.state;
+        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit, errorEdit} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
@@ -327,7 +425,7 @@ export class Details extends Component {
                 </div>
                 <div className="toolbar-right">
                     <div className="item">
-                        <a href={Routing.generate('admin_ticket_export_weezevent', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-primary">Exporter pour Weezevent</a>
+                        <a href={Routing.generate('admin_ticket_export_weezevent', {'ticketDay': dayId})} download={"liste-" + dayId + ".csv"} className="btn btn-secondary">Weezevent</a>
                     </div>
                 </div>
             </div>
@@ -347,7 +445,7 @@ export class Details extends Component {
             
             <div className="prospects">
                 {items.length <= 0 ? <div>Aucun enregistrement.</div> : <div className="prospects-header">
-                    <div className="col-0"></div>
+                    <div className="col-0"><input type="checkbox" name="check-prospect-all" onChange={this.handleChange} /></div>
                     <div className="col-1">Identifiant</div>
                     <div className="col-2">Contact</div>
                     <div className="col-3">Adresse</div>
@@ -373,7 +471,7 @@ export class Details extends Component {
                 </div>
             </div>
             
-            {openEdit == 'active' ? <AsideProspect openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} /> : null}
+            {openEdit == 'active' ? <AsideProspect error={errorEdit} openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} onEdit={this.handleEditProspect} onSend={this.handleSendTicket} /> : null}
             
         </>
     }
@@ -384,23 +482,64 @@ export class AsideProspect extends Component {
         super(props);
 
         this.state = {
+            error: '',
+            civility: {value: props.prospect.civility, error: ''},
             firstname: {value: props.prospect.firstname, error: ''},
             lastname: {value: props.prospect.lastname, error: ''},
+            birthday: {value: props.prospect.birthdayString, error: '', inputVal: new Date(props.prospect.birthdayJavascript)},
+            numAdh: {value: props.prospect.numAdh == null ? '' : props.prospect.numAdh, error: ''},
+            email: {value: props.prospect.email == null ? '' : props.prospect.email, error: ''},
+            phoneMobile: {value: props.prospect.phoneMobile == null ? '' : props.prospect.phoneMobile, error: ''},
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleDate = this.handleDate.bind(this);
+    }
+
+    handleDate (e) {
+        this.setState({ birthday: {inputVal: e, value: new Date(e).toLocaleDateString()} });
+    }
+
+    handleChange (e) {
+        let name = e.target.name;
+        let value = e.target.value;
+        this.setState({ [name]: {value: value} });
     }
 
     handleSubmit (e) {
         e.preventDefault();
+
+        const {civility, firstname, lastname, birthday, numAdh, email, phoneMobile} = this.state;
+
+        let validate = Validateur.validateur([
+            {type: "text", id: 'firstname', value: firstname.value},
+            {type: "text", id: 'lastname', value: lastname.value},
+            {type: "text", id: 'birthday', value: birthday.value},
+            {type: "email", id: 'email', value: email.value},
+            {type: "phone", id: 'phoneMobile', value: phoneMobile.value},
+        ]);
+
+        if(!validate.code){
+            this.setState(validate.errors);
+        }else{
+            let data = {
+                civility: civility.value,
+                firstname: firstname.value,
+                lastname: lastname.value,
+                email: email.value,
+                birthday: birthday.value,
+                phoneMobile: phoneMobile.value,
+                numAdh: numAdh.value,
+            }
+            this.props.onEdit(data);
+        }
     }
 
 
     render () {
-        const {openEdit, onClose, prospect} = this.props;
-        const {firstname, lastname} = this.state;
-
-        console.log(prospect)
+        const {openEdit, onClose, prospect, error, onSend} = this.props;
+        const {civility, firstname, lastname, birthday, numAdh, email, phoneMobile} = this.state;
 
         return <div className="prospect-aside">
         <div className="prospect-aside-edit">
@@ -423,10 +562,55 @@ export class AsideProspect extends Component {
                             <li>{prospect.responsable.adresseString}</li>
                         </ul>
                     </div>
+                    <div>
+                        <button className="btn btn-secondary" onClick={onSend}>Renvoyer le ticket</button>
+                    </div>
                 </div>
+
+                <hr/>
                 
                 <form onSubmit={this.handleSubmit}>
-                    
+                    <h3>Edition de l'élève</h3>
+
+                    {error != "" ? <div className="alert alert-danger">{error}</div> : null}
+
+                    <div className="line">
+                        <RadioCivility civility={civility} onChange={this.handleChange}/>
+                    </div>
+
+                    <div className="line line-2">
+                        <Input type="text" identifiant="firstname" value={firstname.value} onChange={this.handleChange} error={firstname.error}>Prénom</Input>
+                        <Input type="text" identifiant="lastname" value={lastname.value} onChange={this.handleChange} error={lastname.error}>Nom</Input>
+                    </div>
+
+                    <div className="line line-2">
+                        <div className={'form-group-date form-group' + (birthday.error ? " form-group-error" : "")}>
+                            <label>Date anniversaire</label>
+                            <DatePicker
+                                locale="fr"
+                                selected={birthday.inputVal}
+                                onChange={this.handleDate}
+                                dateFormat="dd/MM/yyyy"
+                                peekNextMonth
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                placeholderText="DD/MM/YYYY"
+                                />
+                            <div className='error'>{birthday.error ? birthday.error : null}</div>
+                        </div>
+                        <Input type="text" identifiant="numAdh" value={numAdh.value} onChange={this.handleChange} placeholder="(facultatif)" error={numAdh.error}>Numéro adhérent</Input>
+                    </div> 
+
+                    <div className="line line-2">
+                        <Input type="text" identifiant="email" value={email.value} onChange={this.handleChange} error={email.error}>Adresse e-mail</Input>
+                        <Input type="number" identifiant="phoneMobile" value={phoneMobile.value} onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
+                    </div>
+
+                    <div className="alert alert-infos">
+                        Après modification, assurez-vous de <b>renvoyer</b> le ticket au responsable.
+                    </div>
+
                     <div className="from-group">
                         <button className="btn btn-primary" type="submit">Mettre à jour</button>
                     </div>
@@ -437,3 +621,17 @@ export class AsideProspect extends Component {
     }
 }
 
+function RadioCivility({civility, onChange}) {
+    return (
+        <div className="form-group form-group-radio">
+            <div>
+                <input type="radio" id="civility-mr" name="civility" value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
+                <label htmlFor="civility-mr">Mr</label>
+            </div>
+            <div>
+                <input type="radio" id="civility-mme" name="civility" value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
+                <label htmlFor="civility-mme">Mme</label>
+            </div>
+        </div>
+    )
+}
