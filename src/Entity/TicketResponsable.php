@@ -350,6 +350,6 @@ class TicketResponsable
     }
 
     public function getAdresseString(){
-        return $this->getAdr() . ', ' . $this->getCp() . $this->getCity();
+        return $this->getAdr() . ', ' . $this->getCp() . " " . $this->getCity();
     }
 }

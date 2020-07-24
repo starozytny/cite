@@ -5,6 +5,11 @@ import AjaxSend from '../../../components/functions/ajax_classique';
 import {Input, Select} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
 import Swal from 'sweetalert2';
+import DatePicker from "react-datepicker";
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import fr from 'date-fns/locale/fr';
+registerLocale('fr', fr)
+import "react-datepicker/dist/react-datepicker.css";
 
 function getSelectionChecked(selection){
     let oneChecked = false;
@@ -59,7 +64,10 @@ export class Details extends Component {
             selectHoraire: {value: '999', error: ''},
             selection: [],
             openEdit: '',
-            prospectEdit: null
+            prospectEdit: null,
+            responsableIdEdit: null,
+            idEdit: null,
+            errorEdit: ''
         }
 
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
@@ -73,6 +81,7 @@ export class Details extends Component {
 
         this.handleOpenEdit = this.handleOpenEdit.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handleEditProspect = this.handleEditProspect.bind(this);
     }
 
     handleChange (e) {
@@ -269,7 +278,8 @@ export class Details extends Component {
             url: Routing.generate('admin_prospect_get_infos', { 'id' : id })
         }).then(function (response) {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
-            self.setState({openEdit: 'active', prospectEdit: JSON.parse(data.prospect)})
+            console.log(data.prospect)
+            self.setState({openEdit: 'active', prospectEdit: JSON.parse(data.prospect), idEdit: id, responsableIdEdit: JSON.parse(data.prospect).responsable.id})
         });
 
     }
@@ -278,9 +288,52 @@ export class Details extends Component {
         this.setState({openEdit: ''})
     }
 
+    handleEditProspect (data) {
+
+        const {responsableIdEdit, idEdit} = this.state;
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('admin_prospect_set_infos', { 'id' : idEdit }),
+            data: {prospect: data}
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+
+            if (code === 1){
+                Swal.fire({
+                    title: 'Souhaitez-vous renvoyer le ticket ?',
+                    text: "Le ticket sera envoyé à l\'adresse du responsable.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmer',
+                    cancelButtonText: "Non",
+                  }).then((result) => {
+                    AjaxSend.loader(true);
+
+                    if (result.value) {
+                        axios({ 
+                            method: 'post', 
+                            url: Routing.generate('admin_ticket_send', {'id': responsableIdEdit}),
+                        }).then(function (response) {
+                            location.reload();
+                        });
+                    }else{
+                        location.reload();
+                    }
+                  })
+            }else{
+                self.setState({ errorEdit: data.message });
+            }
+        });
+    }
+
     render () {
         const {dayId} = this.props;
-        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit} = this.state;
+        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit, errorEdit} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
@@ -373,7 +426,7 @@ export class Details extends Component {
                 </div>
             </div>
             
-            {openEdit == 'active' ? <AsideProspect openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} /> : null}
+            {openEdit == 'active' ? <AsideProspect error={errorEdit} openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} onEdit={this.handleEditProspect} /> : null}
             
         </>
     }
@@ -384,23 +437,64 @@ export class AsideProspect extends Component {
         super(props);
 
         this.state = {
+            error: '',
+            civility: {value: props.prospect.civility, error: ''},
             firstname: {value: props.prospect.firstname, error: ''},
             lastname: {value: props.prospect.lastname, error: ''},
+            birthday: {value: props.prospect.birthdayString, error: '', inputVal: new Date(props.prospect.birthdayJavascript)},
+            numAdh: {value: props.prospect.numAdh == null ? '' : props.prospect.numAdh, error: ''},
+            email: {value: props.prospect.email == null ? '' : props.prospect.email, error: ''},
+            phoneMobile: {value: props.prospect.phoneMobile == null ? '' : props.prospect.phoneMobile, error: ''},
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleDate = this.handleDate.bind(this);
+    }
+
+    handleDate (e) {
+        this.setState({ birthday: {inputVal: e, value: new Date(e).toLocaleDateString()} });
+    }
+
+    handleChange (e) {
+        let name = e.target.name;
+        let value = e.target.value;
+        this.setState({ [name]: {value: value} });
     }
 
     handleSubmit (e) {
         e.preventDefault();
+
+        const {civility, firstname, lastname, birthday, numAdh, email, phoneMobile} = this.state;
+
+        let validate = Validateur.validateur([
+            {type: "text", id: 'firstname', value: firstname.value},
+            {type: "text", id: 'lastname', value: lastname.value},
+            {type: "text", id: 'birthday', value: birthday.value},
+            {type: "email", id: 'email', value: email.value},
+            {type: "phone", id: 'phoneMobile', value: phoneMobile.value},
+        ]);
+
+        if(!validate.code){
+            this.setState(validate.errors);
+        }else{
+            let data = {
+                civility: civility.value,
+                firstname: firstname.value,
+                lastname: lastname.value,
+                email: email.value,
+                birthday: birthday.value,
+                phoneMobile: phoneMobile.value,
+                numAdh: numAdh.value,
+            }
+            this.props.onEdit(data);
+        }
     }
 
 
     render () {
-        const {openEdit, onClose, prospect} = this.props;
-        const {firstname, lastname} = this.state;
-
-        console.log(prospect)
+        const {openEdit, onClose, prospect, error} = this.props;
+        const {civility, firstname, lastname, birthday, numAdh, email, phoneMobile} = this.state;
 
         return <div className="prospect-aside">
         <div className="prospect-aside-edit">
@@ -423,10 +517,55 @@ export class AsideProspect extends Component {
                             <li>{prospect.responsable.adresseString}</li>
                         </ul>
                     </div>
+                    <div>
+                        <button className="btn btn-secondary">Renvoyer le ticket</button>
+                    </div>
                 </div>
+
+                <hr/>
                 
                 <form onSubmit={this.handleSubmit}>
-                    
+                    <h3>Edition de l'élève</h3>
+
+                    {error != "" ? <div className="alert alert-danger">{error}</div> : null}
+
+                    <div className="line">
+                        <RadioCivility civility={civility} onChange={this.handleChange}/>
+                    </div>
+
+                    <div className="line line-2">
+                        <Input type="text" identifiant="firstname" value={firstname.value} onChange={this.handleChange} error={firstname.error}>Prénom</Input>
+                        <Input type="text" identifiant="lastname" value={lastname.value} onChange={this.handleChange} error={lastname.error}>Nom</Input>
+                    </div>
+
+                    <div className="line line-2">
+                        <div className={'form-group-date form-group' + (birthday.error ? " form-group-error" : "")}>
+                            <label>Date anniversaire</label>
+                            <DatePicker
+                                locale="fr"
+                                selected={birthday.inputVal}
+                                onChange={this.handleDate}
+                                dateFormat="dd/MM/yyyy"
+                                peekNextMonth
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                placeholderText="DD/MM/YYYY"
+                                />
+                            <div className='error'>{birthday.error ? birthday.error : null}</div>
+                        </div>
+                        <Input type="text" identifiant="numAdh" value={numAdh.value} onChange={this.handleChange} placeholder="(facultatif)" error={numAdh.error}>Numéro adhérent</Input>
+                    </div> 
+
+                    <div className="line line-2">
+                        <Input type="text" identifiant="email" value={email.value} onChange={this.handleChange} error={email.error}>Adresse e-mail</Input>
+                        <Input type="number" identifiant="phoneMobile" value={phoneMobile.value} onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
+                    </div>
+
+                    <div className="alert alert-infos">
+                        Après modification, assurez-vous de <b>renvoyer</b> le ticket au responsable.
+                    </div>
+
                     <div className="from-group">
                         <button className="btn btn-primary" type="submit">Mettre à jour</button>
                     </div>
@@ -437,3 +576,17 @@ export class AsideProspect extends Component {
     }
 }
 
+function RadioCivility({civility, onChange}) {
+    return (
+        <div className="form-group form-group-radio">
+            <div>
+                <input type="radio" id="civility-mr" name="civility" value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
+                <label htmlFor="civility-mr">Mr</label>
+            </div>
+            <div>
+                <input type="radio" id="civility-mme" name="civility" value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
+                <label htmlFor="civility-mme">Mme</label>
+            </div>
+        </div>
+    )
+}

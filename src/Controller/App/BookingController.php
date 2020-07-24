@@ -229,9 +229,10 @@ class BookingController extends AbstractController
         if($dayType == TicketDay::TYPE_NOUVEAU){
 
             foreach($prospects as $item){
+                
                 $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
-
                 $numAdh = $item->numAdh == "" ? null : $item->numAdh;
+
                 if($em->getRepository(TicketProspect::class)->findOneBy(array(
                     'civility' => $item->civility,
                     'firstname' => $item->firstname,

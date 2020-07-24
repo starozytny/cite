@@ -9,6 +9,7 @@ use App\Entity\TicketOuverture;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
 use App\Service\Export;
+use App\Service\Mailer;
 use App\Service\OpenDay;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -296,5 +298,33 @@ class TicketController extends AbstractController
         $json = $export->createFile('excel', 'Liste des élèves du ' . $ticketDay->getId(), $fileName , $header, $data, 7, null, 'eleves/');
         
         return new BinaryFileResponse($this->getParameter('export_eleves_directory'). '/' . $fileName);
+    }
+    
+    /**
+     * @Route("/send/ticket/{id}", options={"expose"=true}, name="send")
+     */
+    public function sendTicket(TicketResponsable $id, Mailer $mailer)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $responsable = $id;
+        $day = $responsable->getDay();
+        $ticket = $responsable->getTicket();
+        $horaireString = $responsable->getCreneau()->getHoraireString();
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('responsable' => $responsable->getId()));
+
+        $title = 'Réservation journée des ' . $day->getTypeString() . ' du ' . date_format($day->getDay(), 'd/m/Y') . '. - Cité de la musique';
+        $html = 'root/app/email/booking/index.html.twig';
+        $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
+        $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
+        $barcode = base64_encode($img);
+        $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaireString, 'day' => $day, 'responsable' => $responsable, 'prospects' => $prospects];
+        $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $day->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        // Send mail     
+        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file ) != true){
+            return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
+        }
+
+        return new JsonResponse(['code' => 1]);
     }
 }
