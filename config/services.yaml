@@ -4,11 +4,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    barcode_directory: '%kernel.project_dir%/barcode'
+    barcode_directory: '%kernel.project_dir%/data/barcode'
     public_directory: '%kernel.project_dir%'
-    export_directory: '%kernel.project_dir%/export'
-    export_weezevent_directory: '%kernel.project_dir%/export/weezevent'
-    export_eleves_directory: '%kernel.project_dir%/export/eleves'
+    export_directory: '%kernel.project_dir%/data/export'
+    export_weezevent_directory: '%kernel.project_dir%/data/export/weezevent'
+    export_eleves_directory: '%kernel.project_dir%/data/export/eleves'
 
 services:
     # default configuration for services in *this* file
