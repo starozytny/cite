@@ -27,6 +27,12 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
+.icon-question-mark:before {
+  content: "\e91a";
+}
+.icon-warning:before {
+  content: "\e91b";
+}
 .icon-plus:before {
   content: "\e919";
 }
