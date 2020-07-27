@@ -51,7 +51,9 @@ export class StepProspects extends Component {
             let input0 = document.querySelector('.step-prospect-' + v + ' #numAdh-' + v);
             let input1 = document.querySelector('.step-prospect-' + v + ' #firstname-' + v);
             input0 != null ? input0.focus() : input1.focus();
-            window.scrollTo({ top: element.offsetTop, behavior: 'smooth' });
+            const supportsNativeSmoothScroll = 'scrollBehavior' in document.documentElement.style;
+            supportsNativeSmoothScroll ? window.scrollTo({ top: element.offsetTop, behavior: 'smooth' }) : window.scrollTo(0, element.offsetTop);
+            
         }, 250);
     }
 
