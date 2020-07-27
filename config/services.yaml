@@ -37,5 +37,10 @@ services:
         arguments:
             $exportDirectory: '%export_directory%'
 
+    App\Service\Mailer:
+        arguments:
+            $barcodeDirectory: '%barcode_directory%'
+            $publicDirectory: '%public_directory%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
