@@ -45,6 +45,14 @@ export class StepProspects extends Component {
         }else{
             this.setState({classAdd: 'full'});
         }
+        setTimeout(() => {
+            let v = value - 1;
+            let element = document.querySelector('.step-prospect-' + v);
+            let input0 = document.querySelector('.step-prospect-' + v + ' #numAdh-' + v);
+            let input1 = document.querySelector('.step-prospect-' + v + ' #firstname-' + v);
+            input0 != null ? input0.focus() : input1.focus();
+            window.scrollTo({ top: element.offsetTop, behavior: 'smooth' });
+        }, 250);
     }
 
     /**
@@ -91,13 +99,6 @@ export class StepProspects extends Component {
                 ))
             )
             this.props.onStep3(prospectsNoDoublon);
-        }else{
-            // Swal.fire({
-            //     title: 'Erreur !',
-            //     html: 'Veuillez compléter les informations des élèves à inscrire avant de continuer.',
-            //     icon: 'error',
-            //     confirmButtonText: 'Confirmer'
-            // })
         }
     }
 
@@ -133,6 +134,7 @@ export class StepProspects extends Component {
                         <span>Ajouter un élève</span>
                     </button>
                 </div>
+                <div className="step-prospects-add-anchor"></div>
             </div>
         </>
 
@@ -293,7 +295,7 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
                         onChange, onDelete, onClickEdit, onChangeDate}) 
     {
 
-    return <div className={"step-card step-prospect " +  registered}>
+    return <div className={"step-card step-prospect-"+ id +" step-prospect " +  registered}>
         <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
         <div className="line line-2">
