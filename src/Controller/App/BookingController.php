@@ -168,7 +168,7 @@ class BookingController extends AbstractController
             $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
     
             // Send mail     
-            if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file ) != true){
+            if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file, $responsable ) != true){
                 return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
             }
     
