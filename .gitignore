@@ -29,3 +29,5 @@ yarn-error.log
 /data/barcode/
 /data/export/
 /data/import/
+/bin/traiter/
+/bin/original/
