@@ -57,8 +57,6 @@ class TicketGenerator
         $img = file_get_contents($fileImage);
         $data = base64_encode($img);
 
-        dump($data);
-
         $mpdf->SetTitle('Ticket cité de la musique - ' . $responsable->getFirstname() . ' ' . $responsable->getLastname());
         $stylesheet = file_get_contents($this->getPublicDirectory() . '/public/pdf/css/bootstrap.min.css');
         $stylesheet2 = file_get_contents($this->getPublicDirectory() . '/public/pdf/css/custom-pdf.css');

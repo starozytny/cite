@@ -13,7 +13,6 @@
         width: 50%;
         border-radius: 0;
         height: 100%;
-        margin-left: 15px;
         
         &.inactive{
             cursor: not-allowed;
@@ -30,6 +29,12 @@
     display: none;
     width: 100%;
     text-align: right;
+
+    &.fixe{
+        position: fixed;
+        bottom: 0;
+        right: 0;
+    }
 
     .btn-back{
         border: 1px solid $color6;

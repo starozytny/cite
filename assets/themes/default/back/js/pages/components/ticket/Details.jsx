@@ -38,14 +38,6 @@ function formattedPhone(elem){
     return elem;
 }
 
-function addSelection(selection, value, checked){
-    let tmp = [{ id: value, check: checked }]
-    let arr = selection;
-    if(selection.length > 0){ arr = arr.filter(function(elem) { return elem.id != value }) }
-
-    return tmp;
-}
-
 export class Details extends Component {
     constructor(props){
         super(props)
@@ -72,7 +64,7 @@ export class Details extends Component {
             horaireProspects: horaireProspects,
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
-            selectHoraire: {value: creneaux[0].value, error: ''},
+            selectHoraire: {value: creneaux[0] != undefined ? creneaux[0].value : '', error: ''},
             selection: [],
             openEdit: '',
             prospectEdit: null,
@@ -386,8 +378,16 @@ export class Details extends Component {
                     <input type="checkbox" name="check-prospect" value={elem.id} onChange={this.handleChange} />
                 </div>
                 <div className="col-1">
-                    {elem.numAdh != null ? <div>#{elem.numAdh}</div> : null}
-                    <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility} {elem.firstname} <span>{elem.lastname}</span></div>
+                    {elem.numAdh != null ? 
+                        <div className="haveNumAdh">
+                            <div className="numAdh">#{elem.numAdh}</div>
+                            {/* <div className="haveNumAdh-status">
+                                <span className="icon-warning"></span>
+                                <span className="icon-question-mark"></span>
+                            </div> */}
+                        </div>
+                        : null}
+                    <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. {elem.firstname} <span>{elem.lastname}</span></div>
                     <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
                 </div>
                 <div className="col-2">
@@ -397,8 +397,9 @@ export class Details extends Component {
                 </div>
                 <div className="col-3">
                     <div className="adresse">
-                        <div>{elem.adr}, </div>
-                        <div>{elem.cp} {elem.city}</div>
+                        <div>{elem.responsable.civility}. {elem.responsable.firstname} {elem.responsable.lastname}</div>
+                        {/* <div>{elem.adr}, </div>
+                        <div>{elem.cp} {elem.city}</div> */}
                     </div>
                 </div>
                 <div className="col-4">
@@ -408,7 +409,9 @@ export class Details extends Component {
                     <div className={"status status-" + elem.status} data-id={elem.id} onClick={elem.status == 1 || elem.status == 2 ? this.handleChangeStatus : null}>{elem.statusString}</div>
                 </div>
                 <div className="col-6">
-                    <button className="btn-delete" data-id={elem.id} onClick={this.handleDelete}>Supprimer</button>
+                    <button className="btn-delete" data-id={elem.id} onClick={this.handleDelete}>
+                        <span className="icon-trash"></span>
+                    </button>
                 </div>
             </div>
         })
@@ -448,7 +451,7 @@ export class Details extends Component {
                     <div className="col-0"><input type="checkbox" name="check-prospect-all" onChange={this.handleChange} /></div>
                     <div className="col-1">Identifiant</div>
                     <div className="col-2">Contact</div>
-                    <div className="col-3">Adresse</div>
+                    <div className="col-3">Responsable</div>
                     <div className="col-4">Horaire</div>
                     <div className="col-5">Status</div>
                     <div className="col-6"></div>

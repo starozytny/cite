@@ -159,7 +159,7 @@ class BookingController extends AbstractController
             $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
             $horaireString = $responsable->getCreneau()->getHoraireString();
 
-            $title = 'Réservation journée des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cité de la musique';
+            $title = 'Reservation journee des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cite de la musique';
             $html = 'root/app/email/booking/index.html.twig';
             $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
             $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
