@@ -30,4 +30,5 @@ yarn-error.log
 /data/export/
 /data/import/
 /bin/traiter/
+/bin/traiter/*.csv
 /bin/original/
