@@ -12,7 +12,7 @@ class Mailer
 {
     private $mailer;
 
-    public function __construct(MailerInterface $mailer, EntityManagerInterface $em)
+    public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
     }
@@ -21,7 +21,7 @@ class Mailer
     {
         $email = (new TemplatedEmail())
             ->from($from)
-            ->cc($email)
+            ->to($email)
             ->subject($title)
             ->text($text)
             ->htmlTemplate($html)

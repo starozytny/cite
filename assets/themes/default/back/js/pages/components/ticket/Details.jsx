@@ -64,7 +64,7 @@ export class Details extends Component {
             horaireProspects: horaireProspects,
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
-            selectHoraire: {value: creneaux[0].value, error: ''},
+            selectHoraire: {value: creneaux[0] != undefined ? creneaux[0].value : '', error: ''},
             selection: [],
             openEdit: '',
             prospectEdit: null,

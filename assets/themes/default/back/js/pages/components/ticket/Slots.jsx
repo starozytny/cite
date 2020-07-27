@@ -177,7 +177,7 @@ export class Slots extends Component {
                 </div>
                 <div className="slot-card-actions">
                     {elem.remaining === elem.max ? <button className="btn-delete" onClick={this.handleDelete} data-id={elem.id}>Supprimer</button> : null}
-                    <button className="btn-edit" onClick={this.handleEdit} data-id={elem.id} data-horaire={elem.horaireString} data-max={elem.max} data-remaining={elem.remaining}>Editer</button>
+                    <button className="btn-edit" onClick={this.handleEdit} data-id={elem.id} data-horaire={elem.horaireString} data-max={elem.max} data-remaining={elem.remaining}>Modifier</button>
                 </div>
             </div>
         })
@@ -209,7 +209,7 @@ export class Slots extends Component {
                         <div className={"slots-edit-overlay " + openEdit} onClick={this.handleClose}></div>
                         <div className={"slots-edit " + openEdit}>
                             <div className="title">
-                                <div>Editer {editHoraire}</div>
+                                <div>Modifier {editHoraire}</div>
                                 <div><span className="icon-close-circle" onClick={this.handleClose}></span></div>
                             </div>
                             {error != "" ? <div className="alert alert-danger">{error}</div> : null}

@@ -101,7 +101,9 @@ export class Booking extends Component {
                 self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
                                creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
                                timer: setInterval(() => self.tick(), 1000), min: 4, second: 60});
-                window.scrollTo(0, 0);
+                let input0 = document.querySelector('.ext-responsable #firstname');
+                input0.focus();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }            
         });
     }
@@ -143,7 +145,13 @@ export class Booking extends Component {
 
     handleToStep2 (data) {
         this.setState({responsable: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active', min: 4, second: 60});
-        window.scrollTo(0, 0);
+        let input0 = document.querySelector('.step-prospect-0 #numAdh-0');
+        let input1 = document.querySelector('.step-prospect-0 #firstname-0');
+        setTimeout(() => {
+            input0 != null ? input0.focus() : input1.focus();
+        }, 10);
+        listenScroll();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     handleBackStep1 (e) {
@@ -322,4 +330,23 @@ function Starter({onClick, days, dayRemaining}) {
             </div>
         </div>
     )
+}
+
+function listenScroll(){
+    setTimeout(() => {
+        var position_scroll = 0;
+
+        console.log(document.querySelector('.step-prospects-add-anchor'));
+        let actions = document.querySelector('.step-2 .step-actions-static ');
+    
+        window.addEventListener('scroll', function(e) {
+            position_scroll = window.scrollY;
+            let ancre = document.querySelector('.step-prospects-add-anchor');
+            if(position_scroll >= ancre.offsetTop){
+                actions.classList.remove('fixe')
+            }else{
+                actions.classList.add('fixe')
+            }
+        });
+    }, 500);
 }
