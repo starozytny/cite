@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Cite\CiAdherent;
 use App\Repository\TicketProspectRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -105,6 +106,11 @@ class TicketProspect
     private $day;
 
     private $age;
+
+    /**
+     * @ORM\OneToOne(targetEntity=CiAdherent::class, cascade={"persist", "remove"})
+     */
+    private $adherent;
 
     public function __construct()
     {
@@ -346,5 +352,17 @@ class TicketProspect
     public function getBirthdayJavascript(){
         date_default_timezone_set('Europe/Paris');
         return date_format($this->getBirthday(), 'F d, Y 00:00:00');
+    }
+
+    public function getAdherent(): ?CiAdherent
+    {
+        return $this->adherent;
+    }
+
+    public function setAdherent(?CiAdherent $adherent): self
+    {
+        $this->adherent = $adherent;
+
+        return $this;
     }
 }

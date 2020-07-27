@@ -226,32 +226,21 @@ class BookingController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $alreadyRegistered = [];
 
-        if($dayType == TicketDay::TYPE_NOUVEAU){
-
-            foreach($prospects as $item){
+        foreach($prospects as $item){
                 
-                $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
-                $numAdh = $item->numAdh == "" ? null : $item->numAdh;
+            $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
+            $numAdh = $item->numAdh == "" ? null : $item->numAdh;
 
-                if($em->getRepository(TicketProspect::class)->findOneBy(array(
-                    'civility' => $item->civility,
-                    'firstname' => $item->firstname,
-                    'lastname' => $item->lastname,
-                    'email' => $item->email,
-                    'birthday' => new DateTime($birthday),
-                    'numAdh' => $numAdh
-                ))){
-                    array_push($alreadyRegistered, $item);
-                }
+            if($em->getRepository(TicketProspect::class)->findOneBy(array(
+                'civility' => $item->civility,
+                'firstname' => $item->firstname,
+                'lastname' => $item->lastname,
+                'email' => $item->email,
+                'birthday' => new DateTime($birthday),
+                'numAdh' => $numAdh
+            ))){
+                array_push($alreadyRegistered, $item);
             }
-        }else{
-
-            foreach($prospects as $item){
-                if($em->getRepository(TicketProspect::class)->findOneBy(array( 'numAdh' => $item->numAdh ))){
-                    array_push($alreadyRegistered, $item);
-                } 
-            }
-
         }
 
         return $alreadyRegistered;
