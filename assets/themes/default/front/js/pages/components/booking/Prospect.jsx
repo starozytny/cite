@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import axios from 'axios/dist/axios';
+import Routing from '../../../../../../../../public/bundles/fosjsrouting/js/router.min.js';
+import AjaxSend from '../../../components/functions/ajax_classique';
 import {Step} from './Step';
 import {Input} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
@@ -181,6 +184,8 @@ class Prospect extends Component {
         this.handleDelete = this.handleDelete.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleClickEdit = this.handleClickEdit.bind(this);
+
+        this.handleBlur = this.handleBlur.bind(this);
     }
 
     handleDelete (e) {
@@ -221,16 +226,47 @@ class Prospect extends Component {
         }
     }
 
+    handleBlur (e) {
+        let value = e.currentTarget.value;
+        let self = this;
+        if(value !== ""){
+            axios({ 
+                method: 'post', 
+                url: Routing.generate('app_booking_tmp_prospect_preset'),
+                data: {numAdh: value}
+            }).then(function (response) {
+                let data = response.data; let code = data.code; AjaxSend.loader(false);
+                if(code === 1){
+                    let item = JSON.parse(data.infos);
+
+                    self.setState({
+                        firstname: {value: item.firstname, error: ''},
+                        lastname: {value: item.lastname, error: ''},
+                        civility: {value: item.civility, error: ''},
+                        phoneDomicile: {value: item.phoneDomicile, error: ''},
+                        phoneMobile: {value: item.phoneMobile, error: ''},
+                        email: {value: item.email, error: ''},
+                        adr: {value: item.adr, error: ''},
+                        cp: {value: item.cp, error: ''},
+                        city: {value: item.city, error: ''},
+                        birthday: {value: item.birthday != null ? item.birthday : '', error: '', inputVal: item.birthdayJavascript}
+                    })
+                }            
+            });
+        }
+    }
+
     handleClickEdit (e) {
         this.setState({valide: ''})
     }
 
     handleClick (e) {
-        const {firstname, lastname, email, birthday, phoneMobile, isAdh, numAdh} = this.state;
+        const {firstname, civility, lastname, email, birthday, phoneMobile, isAdh, numAdh} = this.state;
 
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
+            {type: "text", id: 'civility', value: civility.value},
             {type: "text", id: 'birthday', value: birthday.value},
         ]);
 
@@ -287,18 +323,18 @@ class Prospect extends Component {
         return <>
             {renderCompo ? <ProspectCard id={id} dayType={dayType} registered={registered} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
                             birthday={birthday} phoneMobile={phoneMobile} email={email} isAdh={isAdh} numAdh={numAdh}
-                            onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit} onChangeDate={this.handleDate}/> 
+                            onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit} onChangeDate={this.handleDate} onBlur={this.handleBlur}/> 
                         : null}
         </>
     }
 } 
 
 function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh,
-                        onChange, onDelete, onClickEdit, onChangeDate}) 
+                        onChange, onDelete, onClickEdit, onChangeDate, onBlur}) 
     {
 
     return <div className={"step-card step-prospect-"+ id +" step-prospect " +  registered}>
-        <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange}/>
+        <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange} onBlur={onBlur}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
         <div className="line line-2">
             <Input type="text" identifiant={"firstname-" + id} value={firstname.value} onChange={onChange} error={firstname.error}>Prénom</Input>
@@ -354,20 +390,21 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
 
 function RadioCivility({id, civility, onChange}) {
     return (
-        <div className="form-group form-group-radio">
+        <div className={'form-group-radio form-group' + (civility.error ? " form-group-error" : "")}>
             <div>
                 <input type="radio" id={"civility-mr-" + id} name={"civility-" + id} value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
                 <label htmlFor={"civility-mr-" + id}>Mr</label>
             </div>
             <div>
-                <input type="radio" id={"civility-mme-" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
+                <input type="radio" id={"civility-mme-" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange}/>
                 <label htmlFor={"civility-mme-" + id}>Mme</label>
             </div>
+            <div className='error'>{civility.error ? civility.error : null}</div>
         </div>
     )
 }
 
-function IsAdh({id, isAdh, dayType, numAdh, onChange}) {
+function IsAdh({id, isAdh, dayType, numAdh, onChange, onBlur}) {
     let dis = dayType == 0 ? "disabled" : "";
     return (
         <div className="line line-2">
@@ -375,7 +412,7 @@ function IsAdh({id, isAdh, dayType, numAdh, onChange}) {
                 <label htmlFor={"isAdh-" + id}>Déjà adhérent ?</label>
                 <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} disabled={dis} onChange={onChange} />
             </div>
-            {isAdh.value ? <Input type="text" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error}>Numéro adhérent</Input> 
+            {isAdh.value ? <Input type="text" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error} onBlur={onBlur}>Numéro adhérent</Input> 
                 : null}
         </div>
     )

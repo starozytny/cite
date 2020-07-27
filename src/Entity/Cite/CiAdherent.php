@@ -261,4 +261,9 @@ class CiAdherent
 
         return $this;
     }
+
+    public function getBirthdayJavascript(){
+        date_default_timezone_set('Europe/Paris');
+        return $this->getBirthday() != null ? date_format($this->getBirthday(), 'F d, Y 00:00:00') : null;
+    }
 }

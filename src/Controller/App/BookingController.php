@@ -2,6 +2,7 @@
 
 namespace App\Controller\App;
 
+use App\Entity\Cite\CiAdherent;
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketHistory;
@@ -196,6 +197,28 @@ class BookingController extends AbstractController
         
         $url = $this->generateUrl('app_booking_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
         return new JsonResponse(['code' => 1, 'url' => $url]);
+    }
+
+        /**
+     * @Route("/tmp/prospect/preset", options={"expose"=true}, name="tmp_prospect_preset")
+     */
+    public function preset(Request $request, SerializerInterface $serializer)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $data = json_decode($request->getContent());
+        $numAdh = $data->numAdh;
+        $adh = $em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $numAdh));
+
+        $prospect = $serializer->serialize($adh, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'birthdayJavascript', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city'
+        ]]);
+        
+        if($adh){
+            return new JsonResponse(['code' => 1, 'infos' => $prospect]);
+        }
+
+        return new JsonResponse(['code' => 0]);
     }
 
     /**
