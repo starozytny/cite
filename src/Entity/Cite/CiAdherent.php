@@ -35,6 +35,11 @@ class CiAdherent
     private $isAncien;
 
     /**
+     * @ORM\ManyToOne(targetEntity=CiPersonne::class, inversedBy="adherents")
+     */
+    private $personne;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $firstname;
@@ -83,11 +88,6 @@ class CiAdherent
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $city;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=CiPersonne::class, inversedBy="adherents")
-     */
-    private $personne;
 
     public function getId(): ?int
     {

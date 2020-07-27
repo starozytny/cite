@@ -8,6 +8,7 @@ use App\Entity\Cite\CiPersonne;
 use App\Entity\Windev\WindevPersonne;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 class Transfert
 {
@@ -96,6 +97,13 @@ class Transfert
 
     public function createAdherent($item, $ancien)
     {
+        // $numAdh = $ancien ? $item->getNumFiche() : ($item->getNumFiche() != null ? $item->getNumFiche() : $item->getId());
+        $numAdh = $ancien ? $item->getNumFiche() : $item->getId();
+
+        if($this->em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $numAdh))){
+            throw new Exception("Erreur - Numero adherent non unique : " . $numAdh);
+        }
+
         return (new CiAdherent())
             ->setOldId($item->getId())
             ->setCivility($this->getCivility($item))
@@ -103,7 +111,7 @@ class Transfert
             ->setFirstname($this->getPrenomNom($item)[1])
             ->setEmail($item->getEmailAdh())
             ->setBirthday($this->createDate($item->getNaissance()))
-            ->setNumAdh($item->getId())
+            ->setNumAdh($numAdh)
             ->setIsAncien($ancien)
             ->setAdr($item->getAdresseAdh())
             ->setPhoneMobile($this->formattedPhone($item->getTelephone1()))
