@@ -336,12 +336,12 @@ function listenScroll(){
     setTimeout(() => {
         var position_scroll = 0;
 
-        console.log(document.querySelector('.step-prospects-add-anchor'));
         let actions = document.querySelector('.step-2 .step-actions-static ');
     
         window.addEventListener('scroll', function(e) {
-            position_scroll = window.scrollY;
+            position_scroll = window.scrollY != undefined ? window.scrollY : window.pageYOffset;
             let ancre = document.querySelector('.step-prospects-add-anchor');
+
             if(position_scroll >= ancre.offsetTop){
                 actions.classList.remove('fixe')
             }else{
