@@ -57,6 +57,16 @@ function validateText($value) {
     return {'code': true};
 }
 
+function validateCivility($value){
+    if($value === "" || $value === "Mme ou Mr"){
+        return {
+            'code': false,
+            'message': 'Ce champ doit être renseigné.'
+        };
+    }
+    return {'code': true};
+}
+
 function validateCp($value){
     if($value === ""){
         return {
@@ -131,6 +141,10 @@ function validateur(values){
                 break;
             case 'cp':
                 validate = validateCp(element.value);
+                break;
+                break;
+            case 'civility':
+                validate = validateCivility(element.value);
                 break;
         }
         if(!validate.code){

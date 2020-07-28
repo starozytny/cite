@@ -163,13 +163,15 @@ export class StepResponsable extends Component {
 function RadioCivility({civility, onChange}) {
     return (
         <div className="form-group form-group-radio">
-            <div>
-                <input type="radio" autoComplete="off" id="civility-mr" name="civility" value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
-                <label htmlFor="civility-mr">Mr</label>
-            </div>
-            <div>
-                <input type="radio" autoComplete="off" id="civility-mme" name="civility" value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
-                <label htmlFor="civility-mme">Mme</label>
+            <div className="radio-choices">
+                <div>
+                    <input type="radio" autoComplete="off" id="civility-mr" name="civility" value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
+                    <label htmlFor="civility-mr">Mr</label>
+                </div>
+                <div>
+                    <input type="radio" autoComplete="off" id="civility-mme" name="civility" value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
+                    <label htmlFor="civility-mme">Mme</label>
+                </div>
             </div>
         </div>
     )

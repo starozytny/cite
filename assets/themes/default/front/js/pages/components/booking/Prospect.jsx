@@ -209,7 +209,7 @@ class Prospect extends Component {
     }
 
     handleDate (e) {
-        this.setState({ birthday: {inputVal: e, value: new Date(e).toLocaleDateString()} });
+        this.setState({ birthday: {value: new Date(e).toLocaleDateString(), inputVal: e} });
     }
 
     handleChange (e) {
@@ -240,16 +240,19 @@ class Prospect extends Component {
                     let item = JSON.parse(data.infos);
 
                     self.setState({
-                        firstname: {value: item.firstname, error: ''},
-                        lastname: {value: item.lastname, error: ''},
-                        civility: {value: item.civility, error: ''},
-                        phoneDomicile: {value: item.phoneDomicile, error: ''},
-                        phoneMobile: {value: item.phoneMobile, error: ''},
-                        email: {value: item.email, error: ''},
-                        adr: {value: item.adr, error: ''},
-                        cp: {value: item.cp, error: ''},
-                        city: {value: item.city, error: ''},
-                        birthday: {value: item.birthday != null ? item.birthday : '', error: '', inputVal: item.birthdayJavascript}
+                        firstname: {value: setEmptyIfNull(item.firstname), error: ''},
+                        lastname: {value: setEmptyIfNull(item.lastname), error: ''},
+                        civility: {value: setEmptyIfNull(item.civility), error: ''},
+                        phoneDomicile: {value: setEmptyIfNull(item.phoneDomicile), error: ''},
+                        phoneMobile: {value: setEmptyIfNull(item.phoneMobile), error: ''},
+                        email: {value: setEmptyIfNull(item.email), error: ''},
+                        adr: {value: setEmptyIfNull(item.adr), error: ''},
+                        cp: {value: setEmptyIfNull(item.cp), error: ''},
+                        city: {value: setEmptyIfNull(item.city), error: ''},
+                        birthday: {
+                            error: '', 
+                            value: item.birthday != null ? new Date(item.birthdayJavascript).toLocaleDateString() : "", 
+                            inputVal: item.birthdayJavascript != null ? new Date(item.birthdayJavascript) : null}
                     })
                 }            
             });
@@ -266,7 +269,7 @@ class Prospect extends Component {
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
-            {type: "text", id: 'civility', value: civility.value},
+            {type: "civility", id: 'civility', value: civility.value},
             {type: "text", id: 'birthday', value: birthday.value},
         ]);
 
@@ -302,6 +305,8 @@ class Prospect extends Component {
                 validate.errors = {...validate.errors, ...validateAdh.errors};
             }
         }
+
+        console.log(validate)
 
         // -------
         if(!validate.code){
@@ -391,13 +396,15 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
 function RadioCivility({id, civility, onChange}) {
     return (
         <div className={'form-group-radio form-group' + (civility.error ? " form-group-error" : "")}>
-            <div>
-                <input type="radio" id={"civility-mr-" + id} name={"civility-" + id} value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
-                <label htmlFor={"civility-mr-" + id}>Mr</label>
-            </div>
-            <div>
-                <input type="radio" id={"civility-mme-" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange}/>
-                <label htmlFor={"civility-mme-" + id}>Mme</label>
+            <div className="radio-choices">
+                <div>
+                    <input type="radio" id={"civility-mr-" + id} name={"civility-" + id} value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
+                    <label htmlFor={"civility-mr-" + id}>Mr</label>
+                </div>
+                <div>
+                    <input type="radio" id={"civility-mme-" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange}/>
+                    <label htmlFor={"civility-mme-" + id}>Mme</label>
+                </div>
             </div>
             <div className='error'>{civility.error ? civility.error : null}</div>
         </div>
@@ -416,4 +423,8 @@ function IsAdh({id, isAdh, dayType, numAdh, onChange, onBlur}) {
                 : null}
         </div>
     )
+}
+
+function setEmptyIfNull(value){
+    return value != null ? value : "";
 }
