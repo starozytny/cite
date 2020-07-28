@@ -45,6 +45,21 @@ export class StepResponsable extends Component {
             if(mars.includes(value)){
                 this.setState({ city: {value: 'Marseille', error: ''} });
             }
+            let othersCp = ['03000', '05000', '04130', '04190', '06100', '06800', '07320', '13100', '13090', '13105', '13109', '13110', '13111', '13112',
+                            '13116', '13119', '13120', '13122', '13124', '13127', '13130', '13140', '13150', '13170', '13180', '13190', '13200', '13220',
+                            '13240', '13250', '13260', '13250', '13270', '13300', '13320', '13330', '13340', '13360', '13370', '13380', '13390', '13400',
+                            '13410', '13420', '13470', '13480', '13500', '13510', '13530', '13540', '13560', '13580', '13590', '13600', '13610', '13620',
+                            '13640', '13650', '13700', '13720', '13740', '13770', '13780', '13820', '13821', '83270'];
+            let othersCity = ['Montilly', 'Gap', 'Volx', 'Les Mees', 'Nice', 'Cagnes-sur-mer', 'Devesset', 'Aix-en-Provence', 'Aix-en-Provence', 'Mimet', 'Siminiane-Collongue', 'Port-de-Bouc',
+                              'Coudoux', 'La Destrousse', 'Vernegues', 'Saint-Savournin', 'Gardanne', 'Ventabren', 'Peypin', 'Vitrolles', 'Berre-l\'Etang', 'Miramas', 'Tarascon', 
+                              'Les Pennes-Mirabeau', 'Gignac-la-Nerthe', 'Allauch', 'Arles', 'Chateauneuf-les-Martigues', 'Septemes-les-Vallons', 'Saint-Chamas','Cassis',
+                              'Cornillon-Confoux', 'Fos-sur-Mer', 'Salon-de-Provence', 'Bouc-Bel-Air', 'Pelissanne', 'Rognac', 'Roquevaire', 'Mallemort', 'Plan-de-Cuques',
+                              'Auriol', 'Aubagne', 'Lambesc', 'Gemenos', 'Carnoux-en-Provence', 'Cabries', 'Martigues', 'Eguilles', 'Trets', 'Puyricard', 'Senas', 'La Fare-les-Oliviers',
+                              'Meyreuil', 'La Ciotat', 'Le Puy-Sainte-Réparade', 'Carry-le-Rouet', 'La Roque-d\'Antheron', 'Meyrargues', 'Marignane', 'La Bouilladisse', 'Le Rove',
+                              'Venelles', 'Cuges-les-Pins', 'Ensues-la-Redonne', 'La Penne-sur-Huveaune', 'Saint-Cyr-sur-Mer'];
+            if(othersCp.includes(value)){
+                this.setState({ city: {value: othersCity[othersCp.indexOf(value)], error: ''} });
+            }
         }
     }
 
