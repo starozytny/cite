@@ -9,6 +9,7 @@ parameters:
     export_directory: '%kernel.project_dir%/data/export'
     export_weezevent_directory: '%kernel.project_dir%/data/export/weezevent'
     export_eleves_directory: '%kernel.project_dir%/data/export/eleves'
+    export_synchro_directory: '%kernel.project_dir%/data/export/synchro'
 
 services:
     # default configuration for services in *this* file
