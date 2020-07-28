@@ -273,27 +273,6 @@ class Prospect extends Component {
             {type: "text", id: 'birthday', value: birthday.value},
         ]);
 
-        // phone facultatif
-        // let validatePhone;
-        // if((phoneDomicile.value === "" && phoneMobile.value === "") || (phoneDomicile.value !== "" && phoneMobile.value !== "")){
-        //     validatePhone = Validateur.validateur([
-        //         {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value},
-        //         {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
-        //     ])
-        // }else if(phoneDomicile.value !== "" && phoneMobile.value === ""){
-        //     validatePhone = Validateur.validateur([
-        //         {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value}
-        //     ])
-        // }else if(phoneDomicile.value === "" && phoneMobile.value !== ""){
-        //     validatePhone = Validateur.validateur([
-        //         {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
-        //     ])
-        // }
-        // if(!validatePhone.code){
-        //     validate.code = false;
-        //     validate.errors = {...validate.errors, ...validatePhone.errors};
-        // }
-
         // if isAdh is checked
         if(isAdh.value){
             let validateAdh = Validateur.validateur([
@@ -305,8 +284,6 @@ class Prospect extends Component {
                 validate.errors = {...validate.errors, ...validateAdh.errors};
             }
         }
-
-        console.log(validate)
 
         // -------
         if(!validate.code){

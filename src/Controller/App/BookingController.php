@@ -123,7 +123,7 @@ class BookingController extends AbstractController
         $data = json_decode($request->getContent());
         $prospects = $data->prospects;
 
-        $alreadyRegistered = $this->alreadyRegistered($prospects, $day->getType());
+        $alreadyRegistered = $this->alreadyRegistered($prospects, $data->responsable);
         if(count($alreadyRegistered) != 0){
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered]);
         }
@@ -244,7 +244,7 @@ class BookingController extends AbstractController
         return $responsable;
     }
 
-    public function alreadyRegistered($prospects, $dayType)
+    public function alreadyRegistered($prospects, $responsable)
     {
         $em = $this->getDoctrine()->getManager();
         $alreadyRegistered = [];
@@ -254,17 +254,20 @@ class BookingController extends AbstractController
             $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
             $numAdh = $item->numAdh == "" ? null : $item->numAdh;
 
-            if($em->getRepository(TicketProspect::class)->findOneBy(array(
+            $existe = $em->getRepository(TicketProspect::class)->findOneBy(array(
                 'civility' => $item->civility,
                 'firstname' => $item->firstname,
                 'lastname' => $item->lastname,
-                'email' => $item->email,
+                'email' => $item->email != "" ? $item->email : $responsable->email,
                 'birthday' => new DateTime($birthday),
                 'numAdh' => $numAdh
-            ))){
+            ));
+            if($existe){
                 array_push($alreadyRegistered, $item);
             }
         }
+
+       
 
         return $alreadyRegistered;
     }
@@ -275,10 +278,16 @@ class BookingController extends AbstractController
      */
     private function createProspect($item, $day, $creneau, $responsable, $waiting=false)
     {
+        $em = $this->getDoctrine()->getManager();
         $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
 
         $phoneMobile = $item->phoneMobile != "" ? $this->setToNullIfEmpty($item->phoneMobile) : $responsable->getPhoneMobile();
         $email = $item->email != "" ? $item->email : $responsable->getEmail();
+
+        $adh = null;
+        if($item->numAdh != ""){
+            $adh = $em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $item->numAdh));
+        }
 
         $pro = (new TicketProspect())
             ->setFirstname($item->firstname)
@@ -296,6 +305,7 @@ class BookingController extends AbstractController
             ->setCreneau($creneau)
             ->setDay($day)
             ->setStatus(TicketProspect::ST_CONFIRMED)
+            ->setAdherent($adh)
         ;
         if($waiting){
             $pro->setStatus(TicketProspect::ST_WAITING);
