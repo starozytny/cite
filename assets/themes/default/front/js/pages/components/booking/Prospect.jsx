@@ -256,7 +256,22 @@ class Prospect extends Component {
                             inputVal: item.birthdayJavascript != null ? new Date(item.birthdayJavascript) : null},
                         disabledInput: true
                     })
-                }            
+                }else{
+                    self.setState({
+                        firstname: {value: '', error: ''},
+                        lastname: {value: '', error: ''},
+                        civility: {value: '', error: ''},
+                        phoneDomicile: {value: '', error: ''},
+                        phoneMobile: {value: '', error: ''},
+                        email: {value: '', error: ''},
+                        adr: {value: '', error: ''},
+                        cp: {value: '', error: ''},
+                        city: {value: '', error: ''},
+                        numAdh: {value: value, error: 'Ce numéro adhérent n\'existe pas.'},
+                        birthday: {value: '', error: '', inputVal: null},
+                        disabledInput: false
+                    })
+                }
             });
         }else{
             self.setState({disabledInput: false})

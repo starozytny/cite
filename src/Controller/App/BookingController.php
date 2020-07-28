@@ -267,14 +267,11 @@ class BookingController extends AbstractController
                     'numAdh' => $numAdh
                 ));
             }
-            
+
             if($existe){
                 array_push($alreadyRegistered, $item);
             }
         }
-
-       
-
         return $alreadyRegistered;
     }
    
