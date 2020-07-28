@@ -1,0 +1,39 @@
+{% extends 'themes/default/admin/pages/ticket/template.html.twig' %}
+
+{% block title %}Responsable {{ responsable.firstname }} {{ responsable.lastname }}{% endblock %}
+
+{% block main_content %}
+
+    <section class="title">
+        <h1>Responsable {{ responsable.civility }}. {{ responsable.firstname }} {{ responsable.lastname }}</h1>
+    </section>
+
+    <section class="content">
+
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="item">
+                    <div>Ticket : <b>{{ responsable.ticket }}</b></div>
+                    <div>Créé le {{ responsable.createAt | date('d/m/Y \\à H\\hi')}}</div>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <div class="item">
+                    <div id="resendTicket" data-id={{ responsable.id }}></div>
+                </div>
+            </div>
+
+        </div>    
+        
+        <div>
+            Elève(s) attaché(s) à ce responsable:
+            <ul>
+                {% for prospect in responsable.prospects %}
+                    <li>{{ prospect.numAdh ~ ' - '}} {{ prospect.civility }}. {{ prospect.firstname }} {{ prospect.lastname }} ({{ prospect.age }}) - {{ prospect.birthday | date('d/m/Y') }}</li>
+                {% endfor %}
+            </ul> 
+        </div>
+
+        <div id="editResp" data-resp="{{ resp | json_encode() }}"></div>
+    </section>
+{% endblock %}

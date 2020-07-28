@@ -10,6 +10,7 @@ import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import fr from 'date-fns/locale/fr';
 registerLocale('fr', fr)
 import "react-datepicker/dist/react-datepicker.css";
+import {ResendTicket} from './Responsable.jsx';
 
 function getSelectionChecked(selection){
     let oneChecked = false;
@@ -93,8 +94,6 @@ export class Details extends Component {
         this.handleOpenEdit = this.handleOpenEdit.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleEditProspect = this.handleEditProspect.bind(this);
-
-        this.handleSendTicket = this.handleSendTicket.bind(this);
     }
 
     handleChange (e) {
@@ -350,35 +349,9 @@ export class Details extends Component {
         });
     }
 
-    handleSendTicket (e) {
-        const {responsableIdEdit} = this.state;
-
-        Swal.fire({
-            title: 'Souhaitez-vous renvoyer le ticket ?',
-            text: "Le ticket sera envoyé à l\'adresse email du responsable.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Confirmer',
-            cancelButtonText: "Non",
-          }).then((result) => {
-            if (result.value) {
-                AjaxSend.loader(true);
-                axios({ 
-                    method: 'post', 
-                    url: Routing.generate('admin_ticket_send', {'id': responsableIdEdit}),
-                }).then(function (response) {
-                    AjaxSend.loader(false);
-                    Swal.fire('Ticket envoyé!', '', 'success' )
-                });
-            }
-          })
-    }
-
     render () {
         const {dayId} = this.props;
-        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit, errorEdit} = this.state;
+        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit, errorEdit, responsableIdEdit} = this.state;
 
         let items = prospects.map((elem, index) => {
             return <div className="item" key={elem.id}>
@@ -401,7 +374,7 @@ export class Details extends Component {
                 </div>
                 <div className="col-3">
                     <div className="adresse">
-                        <div>{elem.responsable.civility}. {elem.responsable.firstname} {elem.responsable.lastname}</div>
+                        <a href={Routing.generate('admin_responsable_edit', {'responsable': elem.responsable.id})}>{elem.responsable.civility}. {elem.responsable.firstname} {elem.responsable.lastname}</a>
                         {/* {elem.numAdh != null ? 
                         <div className="haveNumAdh">
                             <div className="haveNumAdh-status">
@@ -483,7 +456,7 @@ export class Details extends Component {
                 </div>
             </div>
             
-            {openEdit == 'active' ? <AsideProspect error={errorEdit} openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} onEdit={this.handleEditProspect} onSend={this.handleSendTicket} /> : null}
+            {openEdit == 'active' ? <AsideProspect error={errorEdit} openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} onEdit={this.handleEditProspect} responsableIdEdit={responsableIdEdit} /> : null}
             
         </>
     }
@@ -550,7 +523,7 @@ export class AsideProspect extends Component {
 
 
     render () {
-        const {openEdit, onClose, prospect, error, onSend} = this.props;
+        const {openEdit, onClose, prospect, error, responsableIdEdit} = this.props;
         const {civility, firstname, lastname, birthday, numAdh, email, phoneMobile} = this.state;
 
         return <div className="prospect-aside">
@@ -574,9 +547,7 @@ export class AsideProspect extends Component {
                             <li>{prospect.responsable.adresseString}</li>
                         </ul>
                     </div>
-                    <div>
-                        <button className="btn btn-secondary" onClick={onSend}>Renvoyer le ticket</button>
-                    </div>
+                    <ResendTicket responsableId={responsableIdEdit}/>
                 </div>
 
                 <hr/>

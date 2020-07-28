@@ -320,10 +320,9 @@ class TicketController extends AbstractController
         $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
         $barcode = base64_encode($img);
         $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaireString, 'day' => $day, 'responsable' => $responsable, 'prospects' => $prospects];
-        $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $day->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
         // Send mail     
-        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file ) != true){
+        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file, $responsable ) != true){
             return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
         }
 
