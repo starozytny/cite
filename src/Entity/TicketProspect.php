@@ -108,7 +108,7 @@ class TicketProspect
     private $age;
 
     /**
-     * @ORM\ManyToOne(targetEntity=CiAdherent::class, inversedBy="prospects")
+     * @ORM\OneToOne(targetEntity=CiAdherent::class, cascade={"persist", "remove"})
      */
     private $adherent;
 

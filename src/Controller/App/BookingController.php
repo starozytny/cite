@@ -253,14 +253,21 @@ class BookingController extends AbstractController
             $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
             $numAdh = $item->numAdh == "" ? null : $item->numAdh;
 
-            $existe = $em->getRepository(TicketProspect::class)->findOneBy(array(
-                'civility' => $item->civility,
-                'firstname' => $item->firstname,
-                'lastname' => $item->lastname,
-                'email' => $item->email != "" ? $item->email : $responsable->email,
-                'birthday' => new DateTime($birthday),
-                'numAdh' => $numAdh
-            ));
+            if($numAdh == null){
+                $existe = $em->getRepository(TicketProspect::class)->findOneBy(array(
+                    'civility' => $item->civility,
+                    'firstname' => $item->firstname,
+                    'lastname' => $item->lastname,
+                    'email' => $item->email != "" ? $item->email : $responsable->email,
+                    'birthday' => new DateTime($birthday),
+                    'numAdh' => $numAdh
+                ));
+            }else{
+                $existe = $em->getRepository(TicketProspect::class)->findOneBy(array(
+                    'numAdh' => $numAdh
+                ));
+            }
+            
             if($existe){
                 array_push($alreadyRegistered, $item);
             }

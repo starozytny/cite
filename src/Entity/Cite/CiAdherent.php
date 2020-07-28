@@ -92,16 +92,6 @@ class CiAdherent
      */
     private $city;
 
-    /**
-     * @ORM\OneToMany(targetEntity=TicketProspect::class, mappedBy="adherent")
-     */
-    private $prospects;
-
-    public function __construct()
-    {
-        $this->prospects = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -278,36 +268,5 @@ class CiAdherent
     public function getBirthdayJavascript(){
         date_default_timezone_set('Europe/Paris');
         return $this->getBirthday() != null ? date_format($this->getBirthday(), 'F d, Y 00:00:00') : null;
-    }
-
-    /**
-     * @return Collection|TicketProspect[]
-     */
-    public function getProspects(): Collection
-    {
-        return $this->prospects;
-    }
-
-    public function addProspect(TicketProspect $prospect): self
-    {
-        if (!$this->prospects->contains($prospect)) {
-            $this->prospects[] = $prospect;
-            $prospect->setAdherent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProspect(TicketProspect $prospect): self
-    {
-        if ($this->prospects->contains($prospect)) {
-            $this->prospects->removeElement($prospect);
-            // set the owning side to null (unless already changed)
-            if ($prospect->getAdherent() === $this) {
-                $prospect->setAdherent(null);
-            }
-        }
-
-        return $this;
     }
 }
