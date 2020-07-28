@@ -415,7 +415,7 @@ function IsAdh({id, isAdh, dayType, numAdh, onChange, onBlur}) {
                 <label htmlFor={"isAdh-" + id}>Déjà adhérent ?</label>
                 <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} disabled={dis} onChange={onChange} />
             </div>
-            {isAdh.value ? <Input type="text" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error} onBlur={onBlur}>Numéro adhérent</Input> 
+            {isAdh.value ? <Input type="num" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error} onBlur={onBlur}>Numéro adhérent</Input> 
                 : null}
         </div>
     )

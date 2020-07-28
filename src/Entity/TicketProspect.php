@@ -112,10 +112,16 @@ class TicketProspect
      */
     private $adherent;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isDiff;
+
     public function __construct()
     {
         $this->setCreateAt(new DateTime());
         $this->setStatus(self::ST_ATTENTE);
+        $this->setIsDiff(false);
     }
 
     public function getId(): ?int
@@ -362,6 +368,18 @@ class TicketProspect
     public function setAdherent(?CiAdherent $adherent): self
     {
         $this->adherent = $adherent;
+
+        return $this;
+    }
+
+    public function getIsDiff(): ?bool
+    {
+        return $this->isDiff;
+    }
+
+    public function setIsDiff(bool $isDiff): self
+    {
+        $this->isDiff = $isDiff;
 
         return $this;
     }

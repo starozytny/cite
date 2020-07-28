@@ -38,7 +38,7 @@ class CiAdherent
     private $isAncien;
 
     /**
-     * @ORM\ManyToOne(targetEntity=CiPersonne::class, inversedBy="adherents")
+     * @ORM\ManyToOne(targetEntity=CiPersonne::class, fetch="EAGER", inversedBy="adherents")
      */
     private $personne;
 

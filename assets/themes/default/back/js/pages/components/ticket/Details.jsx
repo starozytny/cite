@@ -389,11 +389,6 @@ export class Details extends Component {
                     {elem.numAdh != null ? 
                         <div className="haveNumAdh">
                             <div className="numAdh">{elem.numAdh}</div>
-                            
-                            <div className="haveNumAdh-status">
-                                {/* <span className="icon-warning"></span> */}
-                                {elem.adherent == null ? <span className="icon-question-mark"></span> : null}
-                            </div>
                         </div>
                         : null}
                     <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. {elem.firstname} <span>{elem.lastname}</span></div>
@@ -407,8 +402,13 @@ export class Details extends Component {
                 <div className="col-3">
                     <div className="adresse">
                         <div>{elem.responsable.civility}. {elem.responsable.firstname} {elem.responsable.lastname}</div>
-                        {/* <div>{elem.adr}, </div>
-                        <div>{elem.cp} {elem.city}</div> */}
+                        {/* {elem.numAdh != null ? 
+                        <div className="haveNumAdh">
+                            <div className="haveNumAdh-status">
+                                {elem.isDiff ? <span className="icon-warning"></span> : null}
+                            </div>
+                        </div>
+                        : null} */}
                     </div>
                 </div>
                 <div className="col-4">

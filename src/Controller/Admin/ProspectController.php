@@ -137,7 +137,7 @@ class ProspectController extends AbstractController
 
         $prospect = $serializer->serialize($id, 'json', ['attributes' => [
             'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'birthdayString', 'birthdayJavascript', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
-            'numAdh', 'status', 'statusString', 
+            'numAdh', 'status', 'statusString', 'adherent' => ['id'], 'isDiff',
             'responsable' => ['id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket'], 
             'creneau' => ['id', 'horaireString']
         ]]);

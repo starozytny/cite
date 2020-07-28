@@ -8,6 +8,7 @@ use App\Entity\TicketDay;
 use App\Entity\TicketHistory;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
+use App\Service\Differentiel;
 use App\Service\History;
 use App\Service\Mailer;
 use App\Service\OpenDay;
@@ -137,7 +138,7 @@ class BookingController extends AbstractController
     /**
      * @Route("/confirmed/book/{id}/add", options={"expose"=true}, name="confirmed_book_add")
      */
-    public function book(TicketDay $id, TicketGenerator $ticketGenerator, Mailer $mailer, Request $request)
+    public function book(TicketDay $id, TicketGenerator $ticketGenerator, Mailer $mailer, Request $request, Differentiel $differentiel)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -147,7 +148,7 @@ class BookingController extends AbstractController
         $prospects = $data->prospects;
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
-        $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau, $id);
+        $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau, $id, $differentiel);
         if($responsable != false){
             $prospects = $em->getRepository(TicketProspect::class)->findBy(array('responsable' => $responsableId));
             do{
@@ -220,29 +221,6 @@ class BookingController extends AbstractController
         return new JsonResponse(['code' => 0]);
     }
 
-    /**
-     * Create Responsable and Prospects and check if At least one prospect is not exist else
-     * decrease remaining creneau and day 
-     */
-    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, $day, $waiting=false)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $responsable = $this->responsableService->updateResponsable($responsableId, $resp, $waiting);
-        if($responsable == false){
-            return false;
-        }
-        $em->persist($responsable);
-
-        foreach($prospects as $item){
-            $prospect = $this->createProspect($item, $day, $creneau, $responsable, $waiting);
-            $em->persist($prospect);
-        }     
-
-        $em->flush();
-        return $responsable;
-    }
-
     public function alreadyRegistered($prospects, $responsable)
     {
         $em = $this->getDoctrine()->getManager();
@@ -274,12 +252,34 @@ class BookingController extends AbstractController
         }
         return $alreadyRegistered;
     }
-   
+
+    /**
+     * Create Responsable and Prospects and check if At least one prospect is not exist else
+     * decrease remaining creneau and day 
+     */
+    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, $day, $differentiel, $waiting=false)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $responsable = $this->responsableService->updateResponsable($responsableId, $resp, $waiting);
+        if($responsable == false){
+            return false;
+        }
+        $em->persist($responsable);
+
+        foreach($prospects as $item){
+            $prospect = $this->createProspect($item, $day, $creneau, $responsable, $differentiel, $waiting);
+            $em->persist($prospect);
+        }     
+
+        $em->flush();
+        return $responsable;
+    }   
 
     /**
      * Create Ticket Prospect
      */
-    private function createProspect($item, $day, $creneau, $responsable, $waiting=false)
+    private function createProspect($item, $day, $creneau, $responsable, $differentiel, $waiting=false)
     {
         $em = $this->getDoctrine()->getManager();
         $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
@@ -313,6 +313,11 @@ class BookingController extends AbstractController
         if($waiting){
             $pro->setStatus(TicketProspect::ST_WAITING);
         }
+
+        if($item->numAdh != ""){
+            $pro->setIsDiff($differentiel->diff($pro, $adh));
+        }
+       
         return $pro;
     }
 
