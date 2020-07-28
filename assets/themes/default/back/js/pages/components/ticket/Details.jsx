@@ -388,11 +388,12 @@ export class Details extends Component {
                 <div className="col-1">
                     {elem.numAdh != null ? 
                         <div className="haveNumAdh">
-                            <div className="numAdh">#{elem.numAdh}</div>
-                            {/* <div className="haveNumAdh-status">
-                                <span className="icon-warning"></span>
-                                <span className="icon-question-mark"></span>
-                            </div> */}
+                            <div className="numAdh">{elem.numAdh}</div>
+                            
+                            <div className="haveNumAdh-status">
+                                {/* <span className="icon-warning"></span> */}
+                                {elem.adherent == null ? <span className="icon-question-mark"></span> : null}
+                            </div>
                         </div>
                         : null}
                     <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. {elem.firstname} <span>{elem.lastname}</span></div>

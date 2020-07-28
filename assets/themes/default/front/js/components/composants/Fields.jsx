@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 
-export function Input({type, auto="on", identifiant, value, onChange, error, placeholder="", onBlur=null, children}) {
+export function Input({type, auto="on", identifiant, value, onChange, error, placeholder="", onBlur=null, children, disabled=null}) {
     return (
         <div className={'form-group' + (error ? " form-group-error" : "")}>
             <label htmlFor={identifiant}>{children}</label>
-            <input type={type} autoComplete={auto} name={identifiant} id={identifiant} value={value} placeholder={placeholder} onChange={onChange} onBlur={onBlur}/>
+            <input type={type} autoComplete={auto} disabled={disabled} name={identifiant} id={identifiant} value={value} placeholder={placeholder} onChange={onChange} onBlur={onBlur}/>
             <div className='error'>{error ? error : null}</div>
         </div>
     );

@@ -176,7 +176,8 @@ class Prospect extends Component {
             city: {value: '', error: ''},
             isAdh: {value: this.props.dayType == 0 ? true : false, error: ''},
             numAdh: {value: '', error: ''},
-            birthday: {value: '', error: '', inputVal: null}
+            birthday: {value: '', error: '', inputVal: null},
+            disabledInput: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -252,10 +253,13 @@ class Prospect extends Component {
                         birthday: {
                             error: '', 
                             value: item.birthday != null ? new Date(item.birthdayJavascript).toLocaleDateString() : "", 
-                            inputVal: item.birthdayJavascript != null ? new Date(item.birthdayJavascript) : null}
+                            inputVal: item.birthdayJavascript != null ? new Date(item.birthdayJavascript) : null},
+                        disabledInput: true
                     })
                 }            
             });
+        }else{
+            self.setState({disabledInput: false})
         }
     }
 
@@ -299,19 +303,19 @@ class Prospect extends Component {
     }
 
     render () {
-        const {firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh, renderCompo, valide} = this.state;
+        const {firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh, renderCompo, valide, disabledInput} = this.state;
         const {id, registered, dayType} = this.props;
 
         return <>
             {renderCompo ? <ProspectCard id={id} dayType={dayType} registered={registered} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
-                            birthday={birthday} phoneMobile={phoneMobile} email={email} isAdh={isAdh} numAdh={numAdh}
+                            birthday={birthday} phoneMobile={phoneMobile} email={email} isAdh={isAdh} numAdh={numAdh} disabledInput={disabledInput}
                             onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit} onChangeDate={this.handleDate} onBlur={this.handleBlur}/> 
                         : null}
         </>
     }
 } 
 
-function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh,
+function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh, disabledInput,
                         onChange, onDelete, onClickEdit, onChangeDate, onBlur}) 
     {
 
@@ -319,8 +323,8 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
         <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange} onBlur={onBlur}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
         <div className="line line-2">
-            <Input type="text" identifiant={"firstname-" + id} value={firstname.value} onChange={onChange} error={firstname.error}>Prénom</Input>
-            <Input type="text" identifiant={"lastname-" + id} value={lastname.value} onChange={onChange} error={lastname.error}>Nom</Input>
+            <Input type="text" disabled={disabledInput ? "disabled" : null} identifiant={"firstname-" + id} value={firstname.value} onChange={onChange} error={firstname.error}>Prénom</Input>
+            <Input type="text" disabled={disabledInput ? "disabled" : null} identifiant={"lastname-" + id} value={lastname.value} onChange={onChange} error={lastname.error}>Nom</Input>
         </div>
         <div className="line line-2">
             <div className={'form-group-date form-group' + (birthday.error ? " form-group-error" : "")}>
