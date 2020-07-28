@@ -119,7 +119,6 @@ class BookingController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $day = $id;
         $data = json_decode($request->getContent());
         $prospects = $data->prospects;
 
