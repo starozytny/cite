@@ -4,16 +4,24 @@ import {Step} from './Step';
 
 function formattedPhone(elem){
     if(elem != "" && elem != undefined){
-        let a = elem.substr(0,2);
-        let b = elem.substr(2,2);
-        let c = elem.substr(4,2);
-        let d = elem.substr(6,2);
-        let e = elem.substr(8,2);
-
-        elem = a + " " + b + " " + c + " " + d + " " + e;
+        let arr = elem.match(/[0-9]/g);
+        if(arr != null){
+            elem = arr.join('');
+            if(!(/^((\+)33|0)[1-9](\d{2}){4}$/.test(elem))){
+                return "";
+            }else{
+                let a = elem.substr(0,2);
+                let b = elem.substr(2,2);
+                let c = elem.substr(4,2);
+                let d = elem.substr(6,2);
+                let e = elem.substr(8,2);
+        
+                return a + " " + b + " " + c + " " + d + " " + e;
+            }
+        }
+    }else{
+        return "";
     }
-
-    return elem;
 }
 
 export class StepReview extends Component {
@@ -29,7 +37,7 @@ export class StepReview extends Component {
 
             return (
                 <div className={elem.registered ? 'review-card registered' : 'review-card' } key={index}>
-                    {elem.numAdh != "" ? <div>#{elem.numAdh}</div> : null}
+                    {elem.numAdh != "" ? <div>{elem.numAdh}</div> : null}
                     <div>{elem.civility}. {elem.lastname} {elem.firstname}</div>
                     <div className="review-card-email">{elem.email}</div>
                     <div className="txt-discret">{elem.birthday}</div>
@@ -42,13 +50,6 @@ export class StepReview extends Component {
 
         let body = <>
             <div className="review">
-                <div className="review-prospects">
-                    <div className="title">Liste des personnes souhaitant s'inscrire : </div>
-                    <div className="review-cards">
-                        {itemsProspects}
-                    </div>
-                </div>
-
                 <div className="review-responsable">
                     <div className="title">Responsable : </div>
                     <div className="review-cards">
@@ -60,6 +61,13 @@ export class StepReview extends Component {
                         </div>
                     </div>
                 </div>
+
+                <div className="review-prospects">
+                    <div className="title">Liste des personnes souhaitant s'inscrire : </div>
+                    <div className="review-cards">
+                        {itemsProspects}
+                    </div>
+                </div>                
             </div>
         </>
 

@@ -4,20 +4,23 @@
 namespace App\Service;
 
 
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 
 class Mailer
 {
     private $mailer;
+    private $barcodeDirectory;
+    private $publicDirectory;
 
-    public function __construct(MailerInterface $mailer)
+    public function __construct($barcodeDirectory, $publicDirectory, MailerInterface $mailer)
     {
         $this->mailer = $mailer;
+        $this->barcodeDirectory = $barcodeDirectory;
+        $this->publicDirectory = $publicDirectory;
     }
 
-    public function sendMail($title, $text, $html, $params, $email,  $file = null, $from = 'chanbora@logilink.fr')
+    public function sendMail($title, $text, $html, $params, $email,  $file = null, $responsable=null, $from = 'chanbora@logilink.fr')
     {
         $email = (new TemplatedEmail())
             ->from($from)
@@ -30,6 +33,8 @@ class Mailer
 
         if($file != null){
             $email->attachFromPath($file);
+            $email->embed(fopen($this->getBarcodeDirectory() . '/' .$responsable->getId() . '-barcode.jpg', 'r'), 'barcode.jpg');
+            $email->embed(fopen($this->getPublicDirectory() . '/public/logo-ca-little.png', 'r'), 'logo.png');
         }
 
         if($this->mailer->send($email)){
@@ -37,5 +42,15 @@ class Mailer
         } else {
             return 'Le message n\'a pas pu être délivré. Veuillez contacter le support.';
         }
+    }
+
+    public function getBarcodeDirectory()
+    {
+        return $this->barcodeDirectory;
+    }
+
+    public function getPublicDirectory()
+    {
+        return $this->publicDirectory;
     }
 }
