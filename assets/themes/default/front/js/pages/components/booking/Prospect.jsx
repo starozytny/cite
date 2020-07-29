@@ -305,7 +305,7 @@ class Prospect extends Component {
         }
 
         // -------
-        if(!validate.code || numAdh.error != undefined){
+        if(!validate.code || (isAdh.value && numAdh.error != undefined)){
             this.setState(validate.errors);
             return {code: 0};
         }else{
