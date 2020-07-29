@@ -360,6 +360,10 @@ class TicketProspect
         return date_format($this->getBirthday(), 'F d, Y 00:00:00');
     }
 
+    public function getAdresseString(){
+        return $this->getAdr() . ', ' . $this->getCp() . " " . $this->getCity();
+    }
+
     public function getAdherent(): ?CiAdherent
     {
         return $this->adherent;
