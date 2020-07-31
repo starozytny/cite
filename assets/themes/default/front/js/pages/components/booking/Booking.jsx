@@ -52,6 +52,15 @@ export class Booking extends Component {
         this.handleToStep4 = this.handleToStep4.bind(this);        
     }
 
+    componentDidMount (e) {
+        window.onbeforeunload = confirmExit;
+        
+        function confirmExit()
+        {
+            return "En quittant cette page, les modifications apportées ne seront pas sauvegardées.";
+        }
+    }
+
     tick(){
         const {min, second, responsableId} = this.state;
         
