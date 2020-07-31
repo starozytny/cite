@@ -3,6 +3,7 @@
 namespace App\Controller\App;
 
 use App\Entity\Cite\CiAdherent;
+use App\Entity\Data\DataCodePostaux;
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketHistory;
@@ -55,11 +56,15 @@ class BookingController extends AbstractController
             return $this->render('root/app/pages/booking/index.html.twig');
         }
 
+        $cps = $em->getRepository(DataCodePostaux::class)->findAll();
+
         $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen', 'remaining', 'fullDateString']]);
+        $cps = $serializer->serialize($cps, 'json', ['attributes' => ['codePostal', 'nomCommune']]);
 
         return $this->render('root/app/pages/booking/index.html.twig', [
             'day' => $day,
-            'days' => $days
+            'days' => $days,
+            'cps' => $cps
         ]);
     }
 

@@ -16,6 +16,7 @@ export class Booking extends Component {
             day: this.props.day,
             dayId: this.props.dayId,
             dayType: this.props.dayType,
+            cps: JSON.parse(JSON.parse(this.props.cps)),
             creneauId: null,
             classDot: '',
             classStart: '',
@@ -221,7 +222,7 @@ export class Booking extends Component {
     render () {
         const {day, days, dayType, dayRemaining, dayTypeString} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
-            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print} = this.state;
+            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print, cps} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -231,7 +232,7 @@ export class Booking extends Component {
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
                 <div className="steps">
-                    <StepResponsable classStep={classStep1} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
+                    <StepResponsable classStep={classStep1} cps={cps} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
                     <StepProspects classStep={classStep2} dayType={dayType} prospects={prospects} onClickPrev={this.handleBackStep1} onStep3={this.handleToStep3} onAnnulation={this.handleAnnulation}/>
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.handleBackStep2} 
                                 timeExpired={timeExpired} code={code} onToStep4={this.handleToStep4} onAnnulation={this.handleAnnulation}/>
