@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Data\DataCodePostaux;
 use App\Entity\TicketResponsable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,13 +20,18 @@ class ResponsableController extends AbstractController
      */
     public function edit(TicketResponsable $responsable, SerializerInterface $serializer)
     {
+        $em = $this->getDoctrine()->getManager();
+        $cps = $em->getRepository(DataCodePostaux::class)->findAll();
+
+        $cps = $serializer->serialize($cps, 'json', ['attributes' => ['codePostal', 'nomCommune']]);
         $resp = $serializer->serialize($responsable, 'json', ['attributes' => [
             'id', 'firstname', 'lastname', 'civility', 'email', 'phoneDomicile', 'phoneMobile', 'adr', 'complement', 'cp', 'city'
         ]]);
 
         return $this->render('root/admin/pages/ticket/responsable.html.twig', [
             'responsable' => $responsable,
-            'resp' => $resp
+            'resp' => $resp,
+            'cps' => $cps
         ]);
     }
 /**

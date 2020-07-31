@@ -41,7 +41,7 @@ if(ouvertureNouveau){
 let editResp = document.getElementById('editResp');
 if(editResp){
     ReactDOM.render(
-        <EditResponsable resp={editResp.dataset.resp}/>,
+        <EditResponsable cps={editResp.dataset.cps} resp={editResp.dataset.resp}/>,
         editResp
     )
 }
