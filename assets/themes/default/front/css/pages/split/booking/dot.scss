@@ -49,14 +49,17 @@
     .item{
         position: relative;
         @include flex(column, center, center);
+        color: $color7;
 
         &.active{
+            color: $color3;
             .circle{
                 background-color: $color0;
             }
         }
 
         &.item-4.active, &.full{
+            color: $color3;
             &:before, .circle{
                 background-color: $color0;
             }

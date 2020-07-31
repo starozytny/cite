@@ -6,11 +6,17 @@
     
     a{
         color: $color6;
+        &:hover{
+            color: $color0;
+        }
     }
 
     .active{
         a{
             color: $color3;
+            &:hover{
+                color: $color0;
+            }
         }
     }
 
