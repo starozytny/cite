@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Cite\CiAdherent;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
 use App\Entity\Windev\WindevAdherent;
@@ -45,16 +46,20 @@ class AdminSyncDataCommand extends Command
         $responsables = $em->getRepository(TicketResponsable::class)->findAll();
         $personnes = $em->getRepository(WindevPersonne::class)->findBy(array(), array('id' => 'ASC'));
         $adherents = $em->getRepository(WindevAdherent::class)->findBy(array(), array('id' => 'ASC'));
+        $adhsAndAnciens = $em->getRepository(CiAdherent::class)->findBy(array(), array('oldId' => 'ASC'));
         
         $data = array();
         $data2 = array();
         $dataAdd = array();
         $dataAdd2 = array();
         $constOldId = $personnes[count($personnes)-1]->getId();
+        $constOldIdAdh = $adhsAndAnciens[count($adhsAndAnciens)-1]->getOldId();
+        dump($constOldIdAdh);
 
         $io->title("Données originaux [PERSONNE]");
         $progressBar = new ProgressBar($output, count($personnes));
         $progressBar->setFormat("%current%/%max% [%bar%] %percent:3s%%  🏁");
+
         //DATA ORIGINAUX
         $progressBar->start();
         foreach ($personnes as $pers){
@@ -85,41 +90,59 @@ class AdminSyncDataCommand extends Command
 
                 $registered = false;
                 $dataPers = null; $tmp2 = null;
-                if($prospects[0]->getAdherent()){ // if existe
-                    $dataPers = $prospects[0]->getAdherent()->getPersonne();
-                    if(count($prospects) >= 1){ 
-                        foreach ($prospects as $prospect){
-                            if($prospect->getStatus() == TicketProspect::ST_REGISTERED){
-                                $registered = true;
-                                if($prospect->getAdherent()){
-                                    if($dataPers != $prospect->getAdherent()->getPersonne()){
-                                        $dataPers = null;
-                                    }
-                                    if($prospect->getAdherent()->getIsAncien() == false){
-                                        $adh = $em->getRepository(WindevAdherent::class)->findOneBy(array('id' => $prospect->getAdherent()->getOldId()));
-                                        $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 0, 1);
-                                        $dataAdd2[array_search($prospect->getAdherent()->getOldId(), array_column($data2, 0))] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
-                                    }else{
-                                        $adh = $em->getRepository(WindevAncien::class)->findOneBy(array('id' => $prospect->getAdherent()->getOldId()));
-                                        $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 1, 1);
-                                        $lastkeyArrayAdherent = $lastkeyArrayAdherent+1;
-                                        $dataAdd2[$lastkeyArrayAdherent] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
-                                    }
-                                    
-                                }
-                            }
-                           
-                        }
+                if(count($prospects) >= 1){ 
+
+                    if($prospects[0]->getAdherent()){
+                        $dataPers = $prospects[0]->getAdherent()->getPersonne();
                     }
-                    
-                    //IF PERSONNE EXISTE = UPDATE
-                    if($dataPers != null){
-                        $registered = true;
-                        $personne = $em->getRepository(WindevPersonne::class)->find($dataPers->getOldId());
-                        $oldId = $personne->getId();
-                        $tmp = $this->getTmpPers($personne, $responsable, $oldId, 1);
+
+                    foreach ($prospects as $prospect){
+                        if($prospect->getStatus() == TicketProspect::ST_REGISTERED){
+                            $registered = true;
+                            if($prospect->getAdherent()){
+                                if($dataPers != $prospect->getAdherent()->getPersonne()){
+                                    $dataPers = null;
+                                }
+                                if($prospect->getAdherent()->getIsAncien() == false){
+                                    $adh = $em->getRepository(WindevAdherent::class)->findOneBy(array('id' => $prospect->getAdherent()->getOldId()));
+                                    $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 0, 1);
+                                    $dataAdd2[array_search($prospect->getAdherent()->getOldId(), array_column($data2, 0))] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
+                                }else{
+                                    $adh = $em->getRepository(WindevAncien::class)->findOneBy(array('id' => $prospect->getAdherent()->getOldId()));
+                                    $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 1, 1);
+                                    $lastkeyArrayAdherent = $lastkeyArrayAdherent+1;
+                                    $dataAdd2[$lastkeyArrayAdherent] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
+                                }
+                            }else{
+                                $constOldIdAdh = $constOldIdAdh + 1;
+                                $idAdh = $constOldIdAdh;
+                                $phone2 = $this->formatPhone($prospect->getPhoneMobile());
+                                $phone1 = $this->formatPhone($prospect->getPhoneDomicile());
+                                $name1 = $phone1 != "" ? 'domicile' : '';
+                                $name2 = $phone2 != "" ? 'mobile' : '';
+                                $tmp2 = array(
+                                    $idAdh,  $constOldId+1, null, null, $prospect->getLastname() , $prospect->getFirstname(), $this->getCivility($prospect->getCivility()), 
+                                    intval(date_format($prospect->getBirthday(), 'Ymd')), $this->getSexe($prospect->getCivility()), 2, 
+                                    0, intval(date_format(new DateTime(), 'Ymd')), null, null, null, null, 0, null, 0, intval(date_format(new DateTime(), 'Ymd')), 
+                                    intval(date_format(new DateTime(), 'Ymd')), 0, 0, 0, 0, $phone1, $name1, $phone2, $name2, $prospect->getEmail(), 
+                                    $prospect->getAdresseString(), 0, 0, 0, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                                );
+                                $lastkeyArrayAdherent = $lastkeyArrayAdherent+1;
+                                $dataAdd2[$lastkeyArrayAdherent] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
+                            }
+                        }
+                       
                     }
                 }
+                    
+                //IF PERSONNE EXISTE = UPDATE
+                if($dataPers != null){
+                    $registered = true;
+                    $personne = $em->getRepository(WindevPersonne::class)->find($dataPers->getOldId());
+                    $oldId = $personne->getId();
+                    $tmp = $this->getTmpPers($personne, $responsable, $oldId, 1);
+                }
+                
 
                 if($registered) {
                     if($dataPers == null){ // IF PERSONNE NOT EXISTE = NEW -> ADD LAST KEY INDEX 
@@ -133,7 +156,7 @@ class AdminSyncDataCommand extends Command
                             $oldId, 0, $responsable->getLastname(), $responsable->getFirstname(), $this->getCivility($responsable->getCivility()),
                             $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), $responsable->getCity(),
                             $phoneMobile, $nameMobile, $phoneDomicile, $nameDomicile,
-                            null,0,null,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
+                            null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
                         );
     
                         if(!in_array($tmp, $dataAdd)){
@@ -288,7 +311,7 @@ class AdminSyncDataCommand extends Command
         $tmp = array(
             $id, $personneId, $numFiche, $adh->getNumFamille(), $nom , $prenom, $civility, $naissance, $sexe, $adh->getCarteadherent(), 
             intval($adh->getTycleunik()), $adh->getInscription(), $adh->getAdhesion(), $adh->getRenouvellement(), $adh->getSortie(), $adh->getNocompta(), $adh->getCecleunik(), $adh->getComment(), $adh->getNotarif(), $adh->getDatecreation(), 
-            $dateMaj, $adh->getNorappel(), intval($adh->getLienprofesseur()), intval($adh->getDispsolfege()), $adh->getMtrappel(), $phone1, $name1, $phone2, $name2, $email, 
+            $dateMaj, $adh->getNorappel(), intval($adh->getLienprofesseur()), intval($adh->getDispsolfege()), intval($adh->getMtrappel()), $phone1, $name1, $phone2, $name2, $email, 
             $adr, $facturer, $mr, $nbEch, $dom1, $dom2, $cpte, $cdebq, $cdegu, $clerib, $tiret, $mF, $mF2, $mF3, $mA, $mA2, $mA3, $mRe, $mRe2, $mRe3,
             intval($adh->getAssopartenaire()), intval($adh->getCnrCrr()), $majo, $isAncien, $isExsite
         );
