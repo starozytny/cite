@@ -59,7 +59,7 @@ class AdminSyncDataCommand extends Command
         $progressBar->start();
         foreach ($personnes as $pers){
             $progressBar->advance();
-            $tmp = $this->getTmpPers($pers);
+            $tmp = $this->getTmpPers($pers,null,null, 1);
             if(!in_array($tmp, $data)){
                 array_push($data, $tmp);
             }   
@@ -69,7 +69,7 @@ class AdminSyncDataCommand extends Command
         $progressBar = new ProgressBar($output, count($adherents));
         foreach ($adherents as $adh){
             $progressBar->advance();
-            $tmp =  $this->getTmpAdh($adh, $adh->getPecleunik());
+            $tmp =  $this->getTmpAdh($adh, $adh->getPecleunik(), null, 0, 1);
             if(!in_array($tmp, $data2)){
                 array_push($data2, $tmp);
             }   
@@ -85,9 +85,9 @@ class AdminSyncDataCommand extends Command
 
                 $registered = false;
                 $dataPers = null; $tmp2 = null;
-                if($prospects[0]->getAdherent()){
+                if($prospects[0]->getAdherent()){ // if existe
                     $dataPers = $prospects[0]->getAdherent()->getPersonne();
-                    if(count($prospects) >= 1){
+                    if(count($prospects) >= 1){ 
                         foreach ($prospects as $prospect){
                             if($prospect->getStatus() == TicketProspect::ST_REGISTERED){
                                 $registered = true;
@@ -97,11 +97,11 @@ class AdminSyncDataCommand extends Command
                                     }
                                     if($prospect->getAdherent()->getIsAncien() == false){
                                         $adh = $em->getRepository(WindevAdherent::class)->findOneBy(array('id' => $prospect->getAdherent()->getOldId()));
-                                        $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 0);
+                                        $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 0, 1);
                                         $dataAdd2[array_search($prospect->getAdherent()->getOldId(), array_column($data2, 0))] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
                                     }else{
                                         $adh = $em->getRepository(WindevAncien::class)->findOneBy(array('id' => $prospect->getAdherent()->getOldId()));
-                                        $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 1);
+                                        $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 1, 1);
                                         $lastkeyArrayAdherent = $lastkeyArrayAdherent+1;
                                         $dataAdd2[$lastkeyArrayAdherent] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
                                     }
@@ -117,7 +117,7 @@ class AdminSyncDataCommand extends Command
                         $registered = true;
                         $personne = $em->getRepository(WindevPersonne::class)->find($dataPers->getOldId());
                         $oldId = $personne->getId();
-                        $tmp = $this->getTmpPers($personne, $responsable, $oldId);
+                        $tmp = $this->getTmpPers($personne, $responsable, $oldId, 1);
                     }
                 }
 
@@ -133,7 +133,7 @@ class AdminSyncDataCommand extends Command
                             $oldId, 0, $responsable->getLastname(), $responsable->getFirstname(), $this->getCivility($responsable->getCivility()),
                             $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), $responsable->getCity(),
                             $phoneMobile, $nameMobile, $phoneDomicile, $nameDomicile,
-                            null,0,null,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail()
+                            null,0,null,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
                         );
     
                         if(!in_array($tmp, $dataAdd)){
@@ -157,20 +157,20 @@ class AdminSyncDataCommand extends Command
         $fileName = 'PERSONNE.csv';
         $header = array(array('PECLEUNIK', 'TYCLEUNIK', 'NOM', 'PRENOM', 'TICLEUNIK', 'ADRESSE1', 'ADRESSE2', 'CDE_POSTAL', 'VILLE', 'TELEPHONE1', 'INFO_TEL1', 'TELEPHONE2', 'INFO_TEL2',
                               'NOCOMPTA', 'SFCLEUNIK', 'NAISSANCE', 'CACLEUNIK', 'PROFESSION', 'ADRESSE_TRAV', 'TEL_TRAV', 'COMMENT', 'MRCLEUNIK', 'NB_ECH', 'BQ_DOM1', 'BQ_DOM2',
-                              'BQ_CPTE', 'BQ_CDBEDQ', 'BQ_CDEGU', 'BQ_CLERIB', 'TIRET', 'INFO_TEL_TRA', 'TELEPHONE3', 'INFO_TEL3', 'TELEPHONE4', 'INFO_TEL4', 'TELEPHONE5', 'INFO_TEL5', 'EMAIL_PERS'));
-        $json = $export->createFile('csv', 'PERSONNE', $fileName , $header, $data, 38, null, 'synchro/');
+                              'BQ_CPTE', 'BQ_CDBEDQ', 'BQ_CDEGU', 'BQ_CLERIB', 'TIRET', 'INFO_TEL_TRA', 'TELEPHONE3', 'INFO_TEL3', 'TELEPHONE4', 'INFO_TEL4', 'TELEPHONE5', 'INFO_TEL5', 'EMAIL_PERS', 'IS_EXISTE'));
+        $json = $export->createFile('csv', 'PERSONNE', $fileName , $header, $data, 39, null, 'synchro/');
         $fileName = 'ADHERENT.csv';
         $header = array(array('ADCLEUNIK', 'PECLEUNIK', 'NUM_FICHE', 'NUM_FAMILLE', 'NOM', 'PRENOM', 'TICLEUNIK', 'NAISSANCE', 'SEXE', 'CARTEADHERENT', 
                               'TYCLEUNIK', 'INSCRIPTION', 'ADHESION', 'RENOUVELLEMENT', 'SORTIE', 'NOCOMPTA', 'CECLEUNIK', 'COMMENT', 'NOTARIF', 'DATECREATION', 
                               'DATEMAJ', 'NORAPPEL', 'LIENPROFESSEUR', 'DISPSOLFEGE', 'MTRAPPEL', 'TELEPHONE1', 'INFO_TEL1', 'TELEPHONE2', 'INFO_TEL2', 'EMAIL_ADH', 
                               'ADRESSE_ADH', 'FACTURER_ADR_PERSO', 'MRCLEUNIK', 'NB_ECH', 'BQ_DOM1', 'BQ_DOM2', 'BQ_CPTE', 'BQ_CDBEDQ', 'BQ_CDEGU', 'BQ_CLERIB', 
                               'TIRET', 'MoyenEnvoiFacture', 'MoyenEnvoiFacture_2', 'MoyenEnvoiFacture_3', 'MoyenEnvoiAbsence', 'MoyenEnvoiAbsence_2', 'MoyenEnvoiAbsence_3', 'MoyenEnvoiRelance', 'MoyenEnvoiRelance_2', 
-                              'MoyenEnvoiRelance_3', 'AssoPartenaire', 'CNR_CRR', 'MajorationHM', 'IS_ANCIEN'));
-        $json = $export->createFile('csv', 'ADHERENT', $fileName , $header, $data2, 54, null, 'synchro/');
+                              'MoyenEnvoiRelance_3', 'AssoPartenaire', 'CNR_CRR', 'MajorationHM', 'IS_ANCIEN', 'IS_EXISTE'));
+        $json = $export->createFile('csv', 'ADHERENT', $fileName , $header, $data2, 55, null, 'synchro/');
         return 0;
     }
 
-    private function getTmpPers($pers, $responsable=null, $oldId=null){
+    private function getTmpPers($pers, $responsable=null, $oldId=null, $isExsite=0){
         $id=$pers->getId();
         $lastname = $pers->getNom();
         $firstname = $pers->getPrenom();
@@ -209,13 +209,13 @@ class AdminSyncDataCommand extends Command
             $id, intval($pers->getTycleunik()), $lastname, $firstname, $civility, $adr, $complement, $cp, $city, $phone1, 
             $name_phone1 , $phone2, $name_phone2, $pers->getNocompta(),intval($pers->getSfcleunik()),$pers->getNaissance(),intval($pers->getCacleunik()),$pers->getProfession(), $pers->getAdresseTrav(),$pers->getTelTrav(),
             $pers->getComment(),$pers->getMrcleunik(),$pers->getNbEch(), $pers->getBqDom1(),$pers->getBqDom2(),$pers->getBqCpte(),$pers->getBqCdebq(),$pers->getBqCdegu(),$pers->getBqClerib(),$pers->getTiret(),
-            $pers->getInfoTelTra(),$pers->getTelephone3(),$pers->getInfoTel3(),$pers->getTelephone4(),$pers->getInfoTel4(),$pers->getTelephone5(),$pers->getInfoTel5(),$email
+            $pers->getInfoTelTra(),$pers->getTelephone3(),$pers->getInfoTel3(),$pers->getTelephone4(),$pers->getInfoTel4(),$pers->getTelephone5(),$pers->getInfoTel5(),$email, $isExsite
         );
 
         return $tmp;
     }
 
-    private function getTmpAdh($adh, $personneId, $pro=null, $isAncien=0){
+    private function getTmpAdh($adh, $personneId, $pro=null, $isAncien=0, $isExsite=0){
         date_default_timezone_set('Europe/Paris');
         
         $id = $adh->getId();
@@ -290,7 +290,7 @@ class AdminSyncDataCommand extends Command
             intval($adh->getTycleunik()), $adh->getInscription(), $adh->getAdhesion(), $adh->getRenouvellement(), $adh->getSortie(), $adh->getNocompta(), $adh->getCecleunik(), $adh->getComment(), $adh->getNotarif(), $adh->getDatecreation(), 
             $dateMaj, $adh->getNorappel(), intval($adh->getLienprofesseur()), intval($adh->getDispsolfege()), $adh->getMtrappel(), $phone1, $name1, $phone2, $name2, $email, 
             $adr, $facturer, $mr, $nbEch, $dom1, $dom2, $cpte, $cdebq, $cdegu, $clerib, $tiret, $mF, $mF2, $mF3, $mA, $mA2, $mA3, $mRe, $mRe2, $mRe3,
-            intval($adh->getAssopartenaire()), intval($adh->getCnrCrr()), $majo, $isAncien
+            intval($adh->getAssopartenaire()), intval($adh->getCnrCrr()), $majo, $isAncien, $isExsite
         );
 
         return $tmp;
