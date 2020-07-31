@@ -107,11 +107,11 @@ export class Booking extends Component {
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }),
         }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            let data = response.data; let code = data.code;
             if(code === 1){
                 self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
                                creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
-                               timer: setInterval(() => self.tick(), 1000), min: 2, second: 5});
+                               timer: setInterval(() => self.tick(), 1000), min: 4, second: 60});
                 let input0 = document.querySelector('.ext-responsable #firstname');
                 input0.focus();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -307,20 +307,25 @@ function Infos({day, dayTypeString}) {
 function Starter({onClick, days, dayRemaining}) {
 
     let items = JSON.parse(days).map((elem, index) => {
-        return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
+        if(elem.isOpen){
+            return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
             <span> {elem.fullDateString} </span>
             <span className="txt-discret">
                  - Journée des {elem.typeString}
             </span>
         </div>
+        }else{
+            return null;
+        }
+        
     });
 
     return (
         <div className="starter">
             <div className="starter-card">
                 <div className="starter-infos">
-                    <p> Planning des journées d'inscriptions : </p>
+                    <p> Réservation pour le : </p>
 
                     <div className="starter-dates">{items} </div>
 
