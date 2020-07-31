@@ -85,12 +85,14 @@ export class Booking extends Component {
             
             let self = this;
             AjaxSend.loader(false);
+            let loader = document.querySelector('#loader');
+            console.log(loader)
             axios({ 
                 method: 'post', 
                 url: Routing.generate('app_booking_reset_timer', {'responsableId': responsableId})
             }).then(function (response) {
                 AjaxSend.loader(false);
-                self.setState({ min: 4, second: 60, timeExpired: false });
+                self.setState({ min: 2, second: 6, timeExpired: false });
             });
         }
         
@@ -100,7 +102,6 @@ export class Booking extends Component {
     * Fonction pour commencer le processus de demande de ticket.
     */
     handleClickStart (e) {
-        AjaxSend.loader(true);
         let self = this;
         axios({ 
             method: 'post', 
@@ -110,7 +111,7 @@ export class Booking extends Component {
             if(code === 1){
                 self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
                                creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
-                               timer: setInterval(() => self.tick(), 1000), min: 4, second: 60});
+                               timer: setInterval(() => self.tick(), 1000), min: 2, second: 5});
                 let input0 = document.querySelector('.ext-responsable #firstname');
                 input0.focus();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
