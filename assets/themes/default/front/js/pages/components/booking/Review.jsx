@@ -83,7 +83,7 @@ export class StepReview extends Component {
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>
                 {ReactHtmlParser(messageInfo)}
-                { code == 1 ? <div> <br/>Attention ! <b>Si vous fermez ou rafraichissez cette page</b>, vous devrez attendre 5 minutes pour réitérer la demande.</div> : null }
+                { code == 1 ? <div> <br/>Attention ! <b>Si vous fermez ou rafraichissez cette page</b> la réservation sera perdue, vous devrez attendre 5 minutes pour refaire une demande de ticket.</div> : null }
             </div>
             
             <div className="annulation">

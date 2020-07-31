@@ -340,9 +340,6 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
     let minDateBirthday = new Date("January 1, " + maxYear);
     let maxDateBirthday = new Date("December 31, " + minYear);
 
-    console.log(minDateBirthday)
-    console.log(maxDateBirthday)
-
     return <div className={"step-card step-prospect-"+ id +" step-prospect " +  registered}>
         <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange} onBlur={onBlur}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
