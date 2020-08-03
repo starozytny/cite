@@ -391,6 +391,9 @@ export class Details extends Component {
                     <div className={"status status-" + elem.status} data-id={elem.id} onClick={elem.status == 1 || elem.status == 2 ? this.handleChangeStatus : null}>{elem.statusString}</div>
                 </div>
                 <div className="col-6">
+                    <button className="btn-edit" onClick={this.handleOpenEdit} data-id={elem.id}>
+                        <span className="icon-edit"></span>
+                    </button>
                     <button className="btn-delete" data-id={elem.id} onClick={this.handleDelete}>
                         <span className="icon-trash"></span>
                     </button>
@@ -547,13 +550,14 @@ export class AsideProspect extends Component {
                             <li>{prospect.responsable.adresseString}</li>
                         </ul>
                     </div>
+                    <a href={Routing.generate('admin_responsable_edit', {'responsable': prospect.responsable.id})} className="edit-resp">Modifier le responsable</a>
                     <ResendTicket responsableId={responsableIdEdit}/>
                 </div>
 
                 <hr/>
                 
                 <form onSubmit={this.handleSubmit}>
-                    <h3>Edition de l'élève</h3>
+                    <h3>Modifier l'élève</h3>
 
                     {error != "" ? <div className="alert alert-danger">{error}</div> : null}
 

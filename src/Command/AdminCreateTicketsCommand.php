@@ -49,27 +49,27 @@ class AdminCreateTicketsCommand extends Command
         $days = array(
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-07-27'),
+                'day' => new DateTime('2020-08-04'),
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-07-28'),
+                'day' => new DateTime('2020-08-05'),
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-07-29'),
+                'day' => new DateTime('2020-08-06'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-07-30'),
+                'day' => new DateTime('2020-08-07'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-07-31'),
+                'day' => new DateTime('2020-08-08'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-07-1'),
+                'day' => new DateTime('2020-08-09'),
             ]
         );
 

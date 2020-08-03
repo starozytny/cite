@@ -75,11 +75,19 @@ class TicketController extends AbstractController
     public function history(TicketDay $ticketDay)
     {
         $em = $this->getDoctrine()->getManager();
-        $histories = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay), array('createAt' => 'ASC'));
+        $histories = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay), array('createAt' => 'DESC'));
+        $step0 = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay, 'step' => 0));
+        $step1 = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay, 'step' => 1));
+        $step2 = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay, 'step' => 2));
+        $step3 = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay, 'step' => 3));
 
         return $this->render('root/admin/pages/ticket/history.html.twig', [
             'day' => $ticketDay,
-            'histories' => $histories
+            'histories' => $histories,
+            'step0' => $step0,
+            'step1' => $step1,
+            'step2' => $step2,
+            'step3' => $step3,
         ]);
     }
 

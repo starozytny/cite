@@ -282,7 +282,7 @@ class TicketProspect
                 return "Attente";
                 break;
             case self::ST_CONFIRMED:
-                return "Validé";
+                return "Attente";
                 break;
             case self::ST_REGISTERED:
                 return "Inscrit";
