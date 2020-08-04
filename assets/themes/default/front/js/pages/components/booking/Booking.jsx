@@ -18,6 +18,7 @@ export class Booking extends Component {
             dayType: this.props.dayType,
             cps: JSON.parse(JSON.parse(this.props.cps)),
             creneauId: null,
+            disabledStart: '',
             classDot: '',
             classStart: '',
             classStep1: '',
@@ -110,6 +111,7 @@ export class Booking extends Component {
     * Fonction pour commencer le processus de demande de ticket.
     */
     handleClickStart (e) {
+        this.setState({disabledStart: 'disabled'})
         let self = this;
         axios({ 
             method: 'post', 
@@ -245,12 +247,12 @@ export class Booking extends Component {
     render () {
         const {day, days, dayType, dayRemaining, dayTypeString} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
-            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print, cps} = this.state;
+            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print, cps, disabledStart} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
                 <Infos day={day} dayTypeString={dayTypeString}/>
-                <Starter onClick={this.handleClickStart} days={days} dayRemaining={dayRemaining}/>
+                <Starter onClick={this.handleClickStart} days={days} dayRemaining={dayRemaining} disabledStart={disabledStart} />
             </section>
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
@@ -317,7 +319,7 @@ function Infos({day, dayTypeString}) {
     )
 }
 
-function Starter({onClick, days, dayRemaining}) {
+function Starter({onClick, days, dayRemaining, disabledStart}) {
 
     let items = JSON.parse(days).map((elem, index) => {
         if(elem.isOpen){
@@ -354,7 +356,7 @@ function Starter({onClick, days, dayRemaining}) {
                     {dayRemaining ? null : <div className="alert"> Il n'y a plus de place. </div>}
                 </div>
                 <div className="starter-btn">
-                    <button className="btn btn-primary" onClick={dayRemaining > 0 ? onClick : null}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
+                    <button className="btn btn-primary" disabled={disabledStart} onClick={dayRemaining > 0 ? onClick : null}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
                 </div>
             </div>
         </div>
