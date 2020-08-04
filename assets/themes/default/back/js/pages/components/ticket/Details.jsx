@@ -61,20 +61,16 @@ export class Details extends Component {
         creneaux = creneaux.filter((thing, index, self) =>
             index === self.findIndex((t) => ( t.value === thing.value  ))
         )
-
-        let oriProspects = JSON.parse(JSON.parse(this.props.prospects));
-        let horaireProspects = oriProspects.filter(function(elem){
-            if(elem.creneau.id == creneaux[0].value){ return elem; }                
-        });    
-        let resps = JSON.parse(JSON.parse(this.props.responsables)).filter(function(elem){
+ 
+        let oriResponsables = JSON.parse(JSON.parse(this.props.responsables))
+        let resps = oriResponsables.filter(function(elem){
             if(elem.creneau.id == creneaux[0].value){ return elem; }                
         }); 
 
         this.state = {
             responsables: resps,
-            prospects: horaireProspects,
-            saveProspects: oriProspects,
-            horaireProspects: horaireProspects,
+            saveResponsables: oriResponsables,
+            horaireResponsables: resps,
             saveCreneaux: creneaux,
             searched: {value: '', error: ''},
             selectHoraire: {value: creneaux[0] != undefined ? creneaux[0].value : '', error: ''},
@@ -110,7 +106,7 @@ export class Details extends Component {
 
         if(name === 'searched') {
             allCheck.forEach((el => el.checked = false))
-            this.setState({ [name]: {value: value}, error: '', prospects: this.handleSearch(value), selection: [] });
+            this.setState({ [name]: {value: value}, error: '', responsables: this.handleSearch(value), selection: [] });
         }else if(name === 'check-prospect') {
             let tmp = [{ id: value, check: e.target.checked }]
             let arr = selection;
@@ -131,15 +127,15 @@ export class Details extends Component {
             
         }else{
             allCheck.forEach((el => el.checked = false))
-            let newP = this.handleSelectHoraire(value);
-            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, prospects: newP, horaireProspects: newP, selection: [] });
+            let newR = this.handleSelectHoraire(value);
+            this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, responsables: newR, horaireResponsables: newR, selection: [] });
         }
     }
 
     handleSearch (value) {
-        const {horaireProspects} = this.state;
+        const {horaireResponsables} = this.state;
         if(value != ""){
-            return horaireProspects.filter(function(elem){
+            return horaireResponsables.filter(function(elem){
                 let val = value.toLowerCase();
                 let firstname = elem.firstname.toLowerCase();
                 let lastname = elem.lastname.toLowerCase();
@@ -152,8 +148,8 @@ export class Details extends Component {
     }
 
     handleSelectHoraire (value) {
-        const {saveProspects} = this.state;
-        return saveProspects.filter(function(elem){
+        const {saveResponsables} = this.state;
+        return saveResponsables.filter(function(elem){
             if(elem.creneau.id == value){ return elem; }                
         });        
     }
@@ -178,13 +174,8 @@ export class Details extends Component {
                     method: 'post', 
                     url: Routing.generate('admin_prospect_delete', { 'id' : id })
                 }).then(function (response) {
-                    let data = response.data; let code = data.code; AjaxSend.loader(false);
-                    
-                    let arr = self.state.prospects.filter((elem, index) => {
-                        return parseInt(elem.id) != parseInt(id)
-                    })
-
-                    self.setState({prospects: arr});
+                    let data = response.data; let code = data.code;
+                    location.reload();
                 });
             }
           })
@@ -202,7 +193,7 @@ export class Details extends Component {
             let data = response.data; let code = data.code; AjaxSend.loader(false);
             
             let arrResp = [];
-            this.state.responsables.forEach((element) => {
+            self.state.responsables.forEach((element) => {
                 let arr = [];
                 element.prospects.forEach((elem) => {
                     if(parseInt(elem.id) === parseInt(id)){
@@ -265,7 +256,6 @@ export class Details extends Component {
 
             if(arr != false){
 
-
                 Swal.fire({
                     title: 'Etes-vous sur ?',
                     text: "La suppression des élèves sélectionnés est irréversible.",
@@ -285,17 +275,8 @@ export class Details extends Component {
                             url: Routing.generate('admin_prospect_delete_selection'),
                             data: { selection: arr }
                         }).then(function (response) {
-                            let data = response.data; let code = data.code; AjaxSend.loader(false);
-                            let newArr = self.state.prospects;
-                            arr.forEach((element) => {
-                                newArr.forEach((elem, index) => {
-                                    if(elem.id == parseInt(element)){
-                                        newArr.splice(index,1)
-                                    }
-                                })
-                            })
-        
-                            self.setState({prospects: newArr});
+                            let data = response.data; let code = data.code;
+                            location.reload();
                         });
                     }
                   })
@@ -440,7 +421,7 @@ export class Details extends Component {
                     </div>
                     <div className="toolbar-right">
                         <div className="item item-search">
-                            <Input type="text" identifiant="searched" value={searched.value} onChange={this.handleChange} error={searched.error} placeholder="Recherche"></Input>
+                            <Input type="text" identifiant="searched" value={searched.value} onChange={this.handleChange} error={searched.error} placeholder="Recherche responsable"></Input>
                         </div>
                     </div>
                 </div>

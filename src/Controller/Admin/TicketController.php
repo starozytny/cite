@@ -51,16 +51,9 @@ class TicketController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $slots = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $ticketDay), array('horaire' => 'ASC'));
-        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('creneau' => $slots));
-        $responsables = $em->getRepository(TicketResponsable::class)->findBy(array('creneau' => $slots, 'status' => TicketResponsable::ST_CONFIRMED));
+        $responsables = $em->getRepository(TicketResponsable::class)->findBy(array('creneau' => $slots, 'status' => TicketResponsable::ST_CONFIRMED), array('firstname' => 'ASC'));
 
         $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'max', 'remaining']]);
-        $prospects = $serializer->serialize($prospects, 'json', ['attributes' => [
-            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
-            'numAdh', 'status', 'statusString', 'adherent' => ['id'], 'isDiff',
-            'responsable' => ['id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket'], 
-            'creneau' => ['id', 'horaireString']
-        ]]);
 
         $responsables = $serializer->serialize($responsables, 'json', ['attributes' => [
             'id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket', 
@@ -72,7 +65,6 @@ class TicketController extends AbstractController
         return $this->render('root/admin/pages/ticket/show.html.twig', [
             'day' => $ticketDay,
             'slots' => $slots,
-            'prospects' => $prospects,
             'responsables' => $responsables
         ]);
     }
