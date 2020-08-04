@@ -234,6 +234,8 @@ export class Booking extends Component {
 
             if(code === 1){
                 self.setState({ code: 1, finalMessage: data.message, ticket: data.ticket, barcode: data.barcode, print: data.print})
+                window.removeEventListener('beforeunload', self.handleConfirmeExit);
+                window.removeEventListener('unload', self.handleUnload);
             }else{
                 self.setState({ code: 0, finalMessage: data.message })
             }
