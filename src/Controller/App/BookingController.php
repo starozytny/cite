@@ -137,7 +137,8 @@ class BookingController extends AbstractController
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $horaire = date_format($creneau->getHoraire(), 'H\hi');
         $this->history->updateResp($data->historyId, $data->responsable);
-        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage : <b>' . $horaire . '</b>' ]);
+        // return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage : <b>' . $horaire . '</b>' ]);
+        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage communiqué une fois que vous aurez cliqué sur le bouton : Obtenir mon ticket' ]);
     }
 
     /**

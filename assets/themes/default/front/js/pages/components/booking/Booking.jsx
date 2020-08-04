@@ -270,7 +270,7 @@ function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
     let items = [
         { active: classStep1, text: 'Responsable'},
         { active: classStep2, text: 'Elève(s) à inscrire'},
-        { active: classStep3, text: 'Récapitulatif'},
+        { active: classStep3, text: 'Vérification'},
         { active: classStep4, text: 'Ticket'}
     ];
     let liste = items.map((elem, index) => {

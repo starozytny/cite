@@ -78,7 +78,7 @@ export class StepReview extends Component {
             nextText = "Indisponible"
         }
 
-        return <Step id="3" classStep={classStep} title="Récapitulatif" onClickPrev={onClickPrev} onClickNext={onToStep4} body={body} 
+        return <Step id="3" classStep={classStep} title="Vérification" onClickPrev={onClickPrev} onClickNext={onToStep4} body={body} 
         nextText={nextText} expired={timeExpired} code={code}>
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>
