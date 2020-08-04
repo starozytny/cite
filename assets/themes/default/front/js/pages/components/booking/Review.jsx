@@ -4,11 +4,11 @@ import {Step} from './Step';
 
 function formattedPhone(elem){
     if(elem != "" && elem != undefined){
-        let arr = elem.match(/[0-9]/g);
+        let arr = elem.match(/[0-9-+]/g);
         if(arr != null){
             elem = arr.join('');
             if(!(/^((\+)33|0)[1-9](\d{2}){4}$/.test(elem))){
-                return "";
+                return elem;
             }else{
                 let a = elem.substr(0,2);
                 let b = elem.substr(2,2);

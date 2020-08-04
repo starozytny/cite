@@ -5,16 +5,8 @@ function validateCustomPhone($value) {
             'message': 'Au moins 1 téléphone doit être renseigné.'
         };
     }
-    let arr = $value.match(/[0-9]/g);
-    if(arr != null){
-        $value = arr.join('');
-        if (!(/^((\+)33|0)[1-9](\d{2}){4}$/.test($value))){
-            return {
-                'code': false,
-                'message': 'Ce numéro n\'est pas valide.'
-            };
-        }
-    }else{
+    let arr = $value.match(/[0-9-+]/g);
+    if(arr == null){
         return {
             'code': false,
             'message': 'Ce numéro n\'est pas valide.'
