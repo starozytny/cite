@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Entity\TicketDay;
+use App\Service\OpenDay;
 use App\Service\ResponsableService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -34,7 +36,11 @@ class CiteRefreshBookCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->responsableService->deleteNonConfirmed();
+        $day = $this->em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
+        if($day) {
+            $io->title('Delete non confirmed');
+            $this->responsableService->deleteNonConfirmed();
+        }
 
         $io->text('[FINISH]');
 
