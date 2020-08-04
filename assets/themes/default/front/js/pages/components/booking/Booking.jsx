@@ -169,6 +169,16 @@ export class Booking extends Component {
 
     handleToStep2 (data) {
         this.setState({responsable: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active', min: 4, second: 60});
+
+        const {historyId} = this.state;
+
+        AjaxSend.loader(false);
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_tmp_history_two', { 'id' : historyId }),
+            data: { responsable: data },
+        }).then(function (response) {AjaxSend.loader(false);});
+
         let input0 = document.querySelector('.step-prospect-0 #numAdh-0');
         let input1 = document.querySelector('.step-prospect-0 #firstname-0');
         setTimeout(() => {

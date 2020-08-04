@@ -118,6 +118,16 @@ class BookingController extends AbstractController
         return new JsonResponse([ 'code' => 1 ]);
     }
 
+/**
+     * @Route("/tmp/book/{id}/history/two", options={"expose"=true}, name="tmp_history_two")
+     */
+    public function historyTwo(TicketHistory $id, Request $request)
+    {
+        $data = json_decode($request->getContent());
+        $this->history->updateResp($id->getId(),  $data->responsable);
+    
+        return new JsonResponse([ 'code' => 1 ]);
+    }
     /**
      * @Route("/tmp/book/{id}/duplicate", options={"expose"=true}, name="tmp_book_duplicate")
      */
@@ -136,7 +146,6 @@ class BookingController extends AbstractController
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $horaire = date_format($creneau->getHoraire(), 'H\hi');
-        $this->history->updateResp($data->historyId, $data->responsable);
         // return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage : <b>' . $horaire . '</b>' ]);
         return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage communiqué une fois que vous aurez cliqué sur le bouton : Obtenir mon ticket' ]);
     }
