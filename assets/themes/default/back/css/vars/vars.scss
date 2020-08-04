@@ -16,12 +16,7 @@
 }
 
 @mixin boxsh(){
-  box-shadow:
-    0 4.2px 4.3px rgba(0, 0, 0, 0.018),
-    0 11.5px 11.8px rgba(0, 0, 0, 0.02),
-    0 27.7px 28.3px rgba(0, 0, 0, 0.022),
-    0 92px 94px rgba(0, 0, 0, 0.05)
-  ;
+  box-shadow: 0 0 10px transparentize($color: $color3, $amount: .9);
 }
 
 @mixin margin1280() {

@@ -1,5 +1,14 @@
 @import "../../../vars/vars.scss";
 
+.displayByResp{
+    display: block;
+    margin-bottom: 25px;
+    &{
+        color: $color0;
+        text-decoration: underline;
+    }
+}
+
 .prospects-header{
     display: none;
 }
@@ -9,13 +18,29 @@
         width: 100%;
         @include flex(row, flex-start, space-between);
     }
-    & > .item{
-        position: relative;
+    .line-resp{
+        margin-bottom: 30px;
         @include boxsh();
+    }
+    .item-resp{
+        border-radius: 5px 5px 0 0;
         background-color: $alpha;
         padding: 15px 10px;
-        border-radius: 5px;
-        margin-bottom: 10px;
+        border-bottom: 1px solid #DFDDDD;
+
+        a{
+            color: $info;
+
+            &:hover{
+                color: $color0;
+            }
+        }
+    }
+    & > .line-resp > .item{
+        position: relative;
+        background-color: $alpha;
+        padding: 15px 10px;
+        border-radius: 0 0 5px 5px;
 
         .name{
             @include fontSemibold();
@@ -330,9 +355,8 @@ h3{
         }
     }
     .prospects-body{
-        & > .item{
+        & > .line-resp > .item{
             @include flex(row, flex-start, flex-start);
-            margin-bottom: 15px;
 
             & > *:not(:last-child){
                 margin-right: 10px;
@@ -431,13 +455,10 @@ h3{
 @media (min-width: 1024px) {
     .prospects{
         .col-1{
-            width: 22%;
+            width: 35%;
         }
         .col-2{
-            width: 22%;
-        }
-        .col-3{
-            width: 16%;
+            width: 25%;
         }
         .col-4{
             display: block;
@@ -450,24 +471,8 @@ h3{
             width: 12%;
         }
     }
-    .prospects-header{
-        .col-3{
-            display: block;
-        }
-    }
     .prospects-body{
-        & > .item{
-            .adresse{
-                display: block;
-                font-size: 14px;
-                a{
-                    color: $color3;
-
-                    &:hover{
-                        color: $info;
-                    }
-                }
-            }
+        & > .line-resp > .item{
             .status{
                 &.status-2{
                     &:after{

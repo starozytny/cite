@@ -9,7 +9,7 @@ import {EditResponsable, ResendTicket} from './components/ticket/Responsable.jsx
 let details = document.getElementById("details");
 if(details){
     ReactDOM.render(
-        <Details prospects={details.dataset.prospects} dayId={details.dataset.dayId} />,
+        <Details prospects={details.dataset.prospects} responsables={details.dataset.responsables} dayId={details.dataset.dayId} />,
         details
     )
 }

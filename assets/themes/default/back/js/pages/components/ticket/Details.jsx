@@ -52,7 +52,7 @@ export class Details extends Component {
         super(props)
 
         let creneaux = [];
-        JSON.parse(JSON.parse(this.props.prospects)).forEach((elem, index) => {
+        JSON.parse(JSON.parse(this.props.responsables)).forEach((elem, index) => {
             creneaux.push({
                 'value': elem.creneau.id,
                 'libelle': elem.creneau.horaireString
@@ -65,9 +65,13 @@ export class Details extends Component {
         let oriProspects = JSON.parse(JSON.parse(this.props.prospects));
         let horaireProspects = oriProspects.filter(function(elem){
             if(elem.creneau.id == creneaux[0].value){ return elem; }                
-        });     
-        
+        });    
+        let resps = JSON.parse(JSON.parse(this.props.responsables)).filter(function(elem){
+            if(elem.creneau.id == creneaux[0].value){ return elem; }                
+        }); 
+
         this.state = {
+            responsables: resps,
             prospects: horaireProspects,
             saveProspects: oriProspects,
             horaireProspects: horaireProspects,
@@ -154,30 +158,6 @@ export class Details extends Component {
         });        
     }
 
-    handleChangeStatus (e) {
-        let id = parseInt(e.currentTarget.dataset.id);
-
-        AjaxSend.loader(true);
-        let self = this;
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('admin_prospect_update_status', { 'id' : id })
-        }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
-            
-            let arr = [];
-            self.state.prospects.forEach((elem) => {
-                if(parseInt(elem.id) === parseInt(id)){
-                    elem.status = data.status;
-                    elem.statusString = data.statusString;
-                }
-                arr.push(elem);
-            })
-
-            self.setState({prospects: arr});
-        });
-    }
-
     handleDelete (e) {
         let id = e.currentTarget.dataset.id;
 
@@ -209,6 +189,35 @@ export class Details extends Component {
             }
           })
     }
+    
+    handleChangeStatus (e) {
+        let id = parseInt(e.currentTarget.dataset.id);
+
+        AjaxSend.loader(true);
+        let self = this;
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('admin_prospect_update_status', { 'id' : id })
+        }).then(function (response) {
+            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            
+            let arrResp = [];
+            this.state.responsables.forEach((element) => {
+                let arr = [];
+                element.prospects.forEach((elem) => {
+                    if(parseInt(elem.id) === parseInt(id)){
+                        elem.status = data.status;
+                        elem.statusString = data.statusString;
+                    }
+                    arr.push(elem);
+                })
+                element.prospects = arr;
+                arrResp.push(element)
+            })
+
+            self.setState({responsables: arrResp})
+        });
+    }
 
     handleChangeStatusSelection (e) {
         const {selection} = this.state;
@@ -226,17 +235,23 @@ export class Details extends Component {
                 }).then(function (response) {
                     let data = response.data; let code = data.code; AjaxSend.loader(false);
 
-                    let arr = [];
-                    self.state.prospects.forEach((elem) => {
-                        data.prospects.forEach((element) => {
-                            if(parseInt(elem.id) === parseInt(element.id)){
-                                elem.status = element.status;
-                                elem.statusString = element.statusString;
-                            }
+                    let arrResp = [];
+                    self.state.responsables.forEach((element) => {
+                        let arr = [];
+                        element.prospects.forEach((elem) => {
+                            data.prospects.forEach((dataElement) => {
+                                if(parseInt(elem.id) === parseInt(dataElement.id)){
+                                    elem.status = dataElement.status;
+                                    elem.statusString = dataElement.statusString;
+                                }
+                            })
+                            arr.push(elem);
                         })
-                        arr.push(elem);
+                        element.prospects = arr;
+                        arrResp.push(element)
                     })
-                    self.setState({prospects: arr});
+            
+                    self.setState({responsables: arrResp});
                 });
             }
         }
@@ -351,54 +366,53 @@ export class Details extends Component {
 
     render () {
         const {dayId} = this.props;
-        const {prospects, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit, errorEdit, responsableIdEdit} = this.state;
+        const {responsables, searched, selectHoraire, saveCreneaux, openEdit, prospectEdit, errorEdit, responsableIdEdit} = this.state;
 
-        let items = prospects.map((elem, index) => {
-            return <div className="item" key={elem.id}>
-                <div className="col-0">
-                    <input type="checkbox" name="check-prospect" value={elem.id} onChange={this.handleChange} />
-                </div>
-                <div className="col-1">
-                    {elem.numAdh != null ? 
-                        <div className="haveNumAdh">
-                            <div className="numAdh">{elem.numAdh}</div>
-                        </div>
-                        : null}
-                    <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. {elem.firstname} <span>{elem.lastname}</span></div>
-                    <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
-                </div>
-                <div className="col-2">
-                    <div className="email">{elem.email}</div>
-                    <div className="telephone">{formattedPhone(elem.phoneDomicile)}</div>
-                    <div className="telephone">{formattedPhone(elem.phoneMobile)}</div>
-                </div>
-                <div className="col-3">
-                    <div className="adresse">
-                        <a href={Routing.generate('admin_responsable_edit', {'responsable': elem.responsable.id})}>{elem.responsable.civility}. {elem.responsable.firstname} {elem.responsable.lastname}</a>
-                        {/* {elem.numAdh != null ? 
-                        <div className="haveNumAdh">
-                            <div className="haveNumAdh-status">
-                                {elem.isDiff ? <span className="icon-warning"></span> : null}
+        let items = responsables.map((element, index) => {
+
+            let eleves = element.prospects.map((elem, index) => {
+                return <div className="item" key={elem.id}>
+                    <div className="col-0">
+                        <input type="checkbox" name="check-prospect" value={elem.id} onChange={this.handleChange} />
+                    </div>
+                    <div className="col-1">
+                        {elem.numAdh != null ? 
+                            <div className="haveNumAdh">
+                                <div className="numAdh">{elem.numAdh}</div>
                             </div>
-                        </div>
-                        : null} */}
+                            : null}
+                        <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. {elem.firstname} <span>{elem.lastname}</span></div>
+                        <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
+                    </div>
+                    <div className="col-2">
+                        <div className="email">{elem.email}</div>
+                        <div className="telephone">{formattedPhone(elem.phoneDomicile)}</div>
+                        <div className="telephone">{formattedPhone(elem.phoneMobile)}</div>
+                    </div>
+                    <div className="col-4">
+                        <div className="horaire">{element.creneau.horaireString}</div>
+                    </div>
+                    <div className="col-5">
+                        <div className={"status status-" + elem.status} data-id={elem.id} onClick={elem.status == 1 || elem.status == 2 ? this.handleChangeStatus : null}>{elem.statusString}</div>
+                    </div>
+                    <div className="col-6">
+                        <button className="btn-edit" onClick={this.handleOpenEdit} data-id={elem.id}>
+                            <span className="icon-edit"></span>
+                        </button>
+                        <button className="btn-delete" data-id={elem.id} onClick={this.handleDelete}>
+                            <span className="icon-trash"></span>
+                        </button>
                     </div>
                 </div>
-                <div className="col-4">
-                    <div className="horaire">{elem.creneau.horaireString}</div>
+            })
+
+            return <div className="line-resp" key={element.id}>
+                <div className="item-resp">
+                    <a href={Routing.generate('admin_responsable_edit', {'responsable': element.id})}>{element.civility}. {element.firstname} {element.lastname}</a>
                 </div>
-                <div className="col-5">
-                    <div className={"status status-" + elem.status} data-id={elem.id} onClick={elem.status == 1 || elem.status == 2 ? this.handleChangeStatus : null}>{elem.statusString}</div>
-                </div>
-                <div className="col-6">
-                    <button className="btn-edit" onClick={this.handleOpenEdit} data-id={elem.id}>
-                        <span className="icon-edit"></span>
-                    </button>
-                    <button className="btn-delete" data-id={elem.id} onClick={this.handleDelete}>
-                        <span className="icon-trash"></span>
-                    </button>
-                </div>
-            </div>
+                {eleves}
+            </div>;
+            
         })
         
         return <>
@@ -436,7 +450,6 @@ export class Details extends Component {
                     <div className="col-0"><input type="checkbox" name="check-prospect-all" onChange={this.handleChange} /></div>
                     <div className="col-1">Identifiant</div>
                     <div className="col-2">Contact</div>
-                    <div className="col-3">Responsable</div>
                     <div className="col-4">Horaire</div>
                     <div className="col-5">Status</div>
                     <div className="col-6"></div>

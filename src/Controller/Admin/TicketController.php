@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -46,13 +45,14 @@ class TicketController extends AbstractController
     }
 
     /**
-    * @Route("/jour/{ticketDay}/details", name="show")
+    * @Route("/jour/{ticketDay}/details/eleves", name="show")
     */
     public function show(TicketDay $ticketDay, SerializerInterface $serializer)
     {
         $em = $this->getDoctrine()->getManager();
         $slots = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $ticketDay), array('horaire' => 'ASC'));
         $prospects = $em->getRepository(TicketProspect::class)->findBy(array('creneau' => $slots));
+        $responsables = $em->getRepository(TicketResponsable::class)->findBy(array('creneau' => $slots, 'status' => TicketResponsable::ST_CONFIRMED));
 
         $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'max', 'remaining']]);
         $prospects = $serializer->serialize($prospects, 'json', ['attributes' => [
@@ -62,10 +62,18 @@ class TicketController extends AbstractController
             'creneau' => ['id', 'horaireString']
         ]]);
 
+        $responsables = $serializer->serialize($responsables, 'json', ['attributes' => [
+            'id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket', 
+            'prospects' => ['id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 'adherent' => ['id'], 'isDiff'], 
+            'creneau' => ['id', 'horaireString']
+        ]]);
+
         return $this->render('root/admin/pages/ticket/show.html.twig', [
             'day' => $ticketDay,
             'slots' => $slots,
-            'prospects' => $prospects
+            'prospects' => $prospects,
+            'responsables' => $responsables
         ]);
     }
 
