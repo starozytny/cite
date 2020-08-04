@@ -65,9 +65,17 @@ export class Booking extends Component {
     handleUnload () {
         const {responsableId} = this.state;
 
-        var fd = new FormData();
-	    fd.append('responsableId', responsableId);
-        navigator.sendBeacon(Routing.generate('app_booking_tmp_book_unload', { 'id' : this.props.dayId }), fd);
+        let url = Routing.generate('app_booking_tmp_book_unload', { 'id' : this.props.dayId });
+        let fd = new FormData();
+        fd.append('responsableId', responsableId);
+        if(navigator.sendBeacon){
+            navigator.sendBeacon(url, fd);
+        }else{
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, false);
+            xhr.send(fd);
+        }
+        
     }
 
     tick(){
