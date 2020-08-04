@@ -170,7 +170,7 @@ class BookingController extends AbstractController
             $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
             $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
             $barcode = base64_encode($img);
-            $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
+            $params =  ['ticket' => $ticket, 'barcode' => $barcode  , 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
             $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
     
             // Send mail     
@@ -184,6 +184,20 @@ class BookingController extends AbstractController
         }else{
             return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
         }
+    }
+
+    /**
+     * @Route("/tmp/book/{id}/unload", options={"expose"=true}, name="tmp_book_unload")
+     */
+    public function unload(TicketDay $id, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $responsableId = $request->get('responsableId');
+        $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
+        $this->responsableService->deleteResponsable($responsable);
+        $em->flush();
+
+        return new JsonResponse(['code' => 1]);
     }
 
     /**

@@ -49,16 +49,24 @@ export class Booking extends Component {
         this.handleToStep3 = this.handleToStep3.bind(this);
 
         this.handleBackStep2 = this.handleBackStep2.bind(this);
-        this.handleToStep4 = this.handleToStep4.bind(this);        
+        this.handleToStep4 = this.handleToStep4.bind(this);   
+        
+        this.handleUnload = this.handleUnload.bind(this);
+        this.handleConfirmeExit = this.handleConfirmeExit.bind(this);
+
     }
 
-    componentDidMount (e) {
-        window.onbeforeunload = confirmExit;
-        
-        function confirmExit()
-        {
-            return "En quittant cette page, les modifications apportées ne seront pas sauvegardées.";
-        }
+    handleConfirmeExit (e) {
+        e.preventDefault();
+        e.returnValue = "En quittant cette page, les modifications apportées ne seront pas sauvegardées.";
+    }
+
+    handleUnload () {
+        const {responsableId} = this.state;
+
+        var fd = new FormData();
+	    fd.append('responsableId', responsableId);
+        navigator.sendBeacon(Routing.generate('app_booking_tmp_book_unload', { 'id' : this.props.dayId }), fd);
     }
 
     tick(){
@@ -115,6 +123,9 @@ export class Booking extends Component {
                 let input0 = document.querySelector('.ext-responsable #firstname');
                 input0.focus();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                window.addEventListener("beforeunload", self.handleConfirmeExit);
+                window.addEventListener('unload', self.handleUnload);
             }            
         });
     }
