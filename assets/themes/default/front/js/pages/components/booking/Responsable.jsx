@@ -41,9 +41,16 @@ export class StepResponsable extends Component {
         }
 
         if(name === "cp"){
-            let mars = ['13000', '13001', '13002', '13003', '13004', '13005', '13006', '13007', '13008', '13009', '13010', '13011', '13012', '13013', '13014', '13015', '13016']
-            if(mars.includes(value)){
-                this.setState({ city: {value: 'Marseille', error: ''} });
+            if(value === ""){
+                this.setState({ city: {value: '', error: ''} });
+            }else{
+                if(value.length >= 5){
+                    let ville = this.props.cps.filter(obj => Object.keys(obj).some(key => obj[key].includes(value)));        
+
+                    if(ville.length > 0){
+                        this.setState({ city: {value: ville[0].nomCommune, error: ''} });
+                    }
+                }
             }
         }
     }
@@ -163,13 +170,15 @@ export class StepResponsable extends Component {
 function RadioCivility({civility, onChange}) {
     return (
         <div className="form-group form-group-radio">
-            <div>
-                <input type="radio" autoComplete="off" id="civility-mr" name="civility" value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
-                <label htmlFor="civility-mr">Mr</label>
-            </div>
-            <div>
-                <input type="radio" autoComplete="off" id="civility-mme" name="civility" value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
-                <label htmlFor="civility-mme">Mme</label>
+            <div className="radio-choices">
+                <div>
+                    <input type="radio" autoComplete="off" id="civility-mr" name="civility" value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
+                    <label htmlFor="civility-mr">Mr</label>
+                </div>
+                <div>
+                    <input type="radio" autoComplete="off" id="civility-mme" name="civility" value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
+                    <label htmlFor="civility-mme">Mme</label>
+                </div>
             </div>
         </div>
     )

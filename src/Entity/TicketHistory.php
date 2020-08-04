@@ -12,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 class TicketHistory
 {
     const STEP_START = 0;
-    const STEP_FAMILLE = 1;
-    const STEP_RESP = 2;
+    const STEP_RESP = 1;
+    const STEP_FAMILLE = 2;
     const STEP_TICKET = 3;
 
     const STATE_TMP = 0;

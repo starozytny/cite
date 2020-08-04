@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -46,26 +45,27 @@ class TicketController extends AbstractController
     }
 
     /**
-    * @Route("/jour/{ticketDay}/details", name="show")
+    * @Route("/jour/{ticketDay}/details/eleves", name="show")
     */
     public function show(TicketDay $ticketDay, SerializerInterface $serializer)
     {
         $em = $this->getDoctrine()->getManager();
         $slots = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $ticketDay), array('horaire' => 'ASC'));
-        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('creneau' => $slots));
+        $responsables = $em->getRepository(TicketResponsable::class)->findBy(array('creneau' => $slots, 'status' => TicketResponsable::ST_CONFIRMED), array('firstname' => 'ASC'));
 
         $slots = $serializer->serialize($slots, 'json', ['attributes' => ['id', 'horaire', 'max', 'remaining']]);
-        $prospects = $serializer->serialize($prospects, 'json', ['attributes' => [
-            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
-            'numAdh', 'status', 'statusString', 
-            'responsable' => ['id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket'], 
+
+        $responsables = $serializer->serialize($responsables, 'json', ['attributes' => [
+            'id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket', 
+            'prospects' => ['id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 'adherent' => ['id'], 'isDiff'], 
             'creneau' => ['id', 'horaireString']
         ]]);
 
         return $this->render('root/admin/pages/ticket/show.html.twig', [
             'day' => $ticketDay,
             'slots' => $slots,
-            'prospects' => $prospects
+            'responsables' => $responsables
         ]);
     }
 
@@ -75,11 +75,19 @@ class TicketController extends AbstractController
     public function history(TicketDay $ticketDay)
     {
         $em = $this->getDoctrine()->getManager();
-        $histories = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay), array('createAt' => 'ASC'));
+        $histories = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay), array('createAt' => 'DESC'));
+        $step0 = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay, 'step' => 0));
+        $step1 = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay, 'step' => 1));
+        $step2 = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay, 'step' => 2));
+        $step3 = $em->getRepository(TicketHistory::class)->findBy(array('day' => $ticketDay, 'step' => 3));
 
         return $this->render('root/admin/pages/ticket/history.html.twig', [
             'day' => $ticketDay,
-            'histories' => $histories
+            'histories' => $histories,
+            'step0' => $step0,
+            'step1' => $step1,
+            'step2' => $step2,
+            'step3' => $step3,
         ]);
     }
 
@@ -320,10 +328,9 @@ class TicketController extends AbstractController
         $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
         $barcode = base64_encode($img);
         $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaireString, 'day' => $day, 'responsable' => $responsable, 'prospects' => $prospects];
-        $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $day->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
         // Send mail     
-        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file ) != true){
+        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file, $responsable ) != true){
             return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
         }
 

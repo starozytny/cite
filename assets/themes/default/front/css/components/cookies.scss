@@ -8,22 +8,19 @@
   width: calc(100% - 30px);
   z-index: 5000;
   display: none;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   flex-direction: column;
-  top: 0;
+  bottom: 0;
   font-size: 0.8em;
   @include boxshadow();
-
-  & > *:not(:last-child){
-    margin-right: 50px;
-  }
 
   p > a{
     display: inline-block;
     margin-top: 5px;
-    color: $color5;
+    color: $infoBg;
     transition: all 0.3s ease-in-out;
+    margin-bottom: 15px;
 
     &:hover{
       color: $color1;
@@ -32,6 +29,17 @@
 }
 .param-cookies-actions{
   margin-bottom: 20px;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  button{
+    margin-right: 10px;
+    background-color: $infoBg;
+  }
+  a{
+    color: $color3;
+  }
 }
 .btn-cookies{
   border: 1px solid $color1;
@@ -54,21 +62,21 @@
 .param-cookies.active{
   display: flex;
 }
-//                      __   _ ____  ___   ___    __
-//                     | _| / |___ \( _ ) / _ \  |_ |
-//    _____ _____ _____| |  | | __) / _ \| | | |  | |_____ _____ _____
-//   |_____|_____|_____| |  | |/ __/ (_) | |_| |  | |_____|_____|_____|
-//                     | |  |_|_____\___/ \___/   | |
-//                     |__|                      |__|
-@media (min-width:1280px) {
-  .param-cookies{
-    flex-direction: row;
+.param-cookies-txt{
+  @include flex('row', 'flex-start', 'flex-strat');
+  p{
+    margin-right: 15px;
   }
-  .param-cookies-actions{
-    display: flex;
+  .icon-close{
+    transform: translateY(5px);
+    cursor: pointer;
+  }
+}
 
-    &>:not(:last-child){
-      margin-right: 10px;
-    }
+@media (min-width:768px) {
+  .param-cookies.active{
+    max-width: 300px;
+    bottom: 10px;
+    left: 10px;
   }
 }

@@ -18,13 +18,15 @@
 .error{font-size: 12px;}
 
 .form-group-radio{
-    @include flex(row, center, center);
+    .radio-choices{
+        @include flex(row, center, center);
 
-    & > * {
-        width: 50%;
-    }
-    & > *:not(:last-child){
-        margin-right: 10px;
+        & > * {
+            width: 50%;
+        }
+        & > *:not(:last-child){
+            margin-right: 10px;
+        }
     }
 }
 input[type="radio"]{

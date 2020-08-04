@@ -49,27 +49,27 @@ class AdminCreateTicketsCommand extends Command
         $days = array(
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-07-28'),
+                'day' => new DateTime('2020-08-05'),
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-07-29'),
+                'day' => new DateTime('2020-08-06'),
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-07-30'),
+                'day' => new DateTime('2020-08-07'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-07-31'),
+                'day' => new DateTime('2020-08-08'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-08-1'),
+                'day' => new DateTime('2020-08-09'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-08-2'),
+                'day' => new DateTime('2020-08-10'),
             ]
         );
 
@@ -106,12 +106,12 @@ class AdminCreateTicketsCommand extends Command
 
         $ouvertureAncien = (new TicketOuverture())
             ->setType(TicketOuverture::TYPE_ANCIEN)
-            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('27 July 2020 10:00:00'))))
+            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('02 August 2020 8:00:00'))))
         ;
 
         $ouvertureNouveau = (new TicketOuverture())
             ->setType(TicketOuverture::TYPE_NOUVEAU)
-            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('30 July 2020 16:00:00'))))
+            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('07 August 2020 7:00:00'))))
         ;
         $this->em->persist($ouvertureAncien);$this->em->persist($ouvertureNouveau);
         $this->em->flush();

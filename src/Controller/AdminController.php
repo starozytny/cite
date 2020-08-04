@@ -12,6 +12,7 @@ class AdminController extends AbstractController
      */
     public function index()
     {
-        return $this->render('root/admin/index.html.twig');
+        // return $this->render('root/admin/index.html.twig');
+        return $this->redirectToRoute('admin_ticket_index');
     }
 }

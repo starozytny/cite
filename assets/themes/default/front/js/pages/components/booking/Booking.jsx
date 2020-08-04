@@ -16,7 +16,9 @@ export class Booking extends Component {
             day: this.props.day,
             dayId: this.props.dayId,
             dayType: this.props.dayType,
+            cps: JSON.parse(JSON.parse(this.props.cps)),
             creneauId: null,
+            disabledStart: '',
             classDot: '',
             classStart: '',
             classStep1: '',
@@ -48,7 +50,32 @@ export class Booking extends Component {
         this.handleToStep3 = this.handleToStep3.bind(this);
 
         this.handleBackStep2 = this.handleBackStep2.bind(this);
-        this.handleToStep4 = this.handleToStep4.bind(this);        
+        this.handleToStep4 = this.handleToStep4.bind(this);   
+        
+        this.handleUnload = this.handleUnload.bind(this);
+        this.handleConfirmeExit = this.handleConfirmeExit.bind(this);
+
+    }
+
+    handleConfirmeExit (e) {
+        e.preventDefault();
+        e.returnValue = "En quittant cette page, les modifications apportées ne seront pas sauvegardées.";
+    }
+
+    handleUnload () {
+        const {responsableId} = this.state;
+
+        let url = Routing.generate('app_booking_tmp_book_unload', { 'id' : this.props.dayId });
+        let fd = new FormData();
+        fd.append('responsableId', responsableId);
+        if(navigator.sendBeacon){
+            navigator.sendBeacon(url, fd);
+        }else{
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, false);
+            xhr.send(fd);
+        }
+        
     }
 
     tick(){
@@ -75,12 +102,14 @@ export class Booking extends Component {
             
             let self = this;
             AjaxSend.loader(false);
+            let loader = document.querySelector('#loader');
+            console.log(loader)
             axios({ 
                 method: 'post', 
                 url: Routing.generate('app_booking_reset_timer', {'responsableId': responsableId})
             }).then(function (response) {
                 AjaxSend.loader(false);
-                self.setState({ min: 4, second: 60, timeExpired: false });
+                self.setState({ min: 2, second: 6, timeExpired: false });
             });
         }
         
@@ -90,13 +119,13 @@ export class Booking extends Component {
     * Fonction pour commencer le processus de demande de ticket.
     */
     handleClickStart (e) {
-        AjaxSend.loader(true);
+        this.setState({disabledStart: 'disabled'})
         let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }),
         }).then(function (response) {
-            let data = response.data; let code = data.code; AjaxSend.loader(false);
+            let data = response.data; let code = data.code;
             if(code === 1){
                 self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
                                creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
@@ -104,6 +133,9 @@ export class Booking extends Component {
                 let input0 = document.querySelector('.ext-responsable #firstname');
                 input0.focus();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                window.addEventListener("beforeunload", self.handleConfirmeExit);
+                window.addEventListener('unload', self.handleUnload);
             }            
         });
     }
@@ -145,6 +177,16 @@ export class Booking extends Component {
 
     handleToStep2 (data) {
         this.setState({responsable: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active', min: 4, second: 60});
+
+        const {historyId} = this.state;
+
+        AjaxSend.loader(false);
+        axios({ 
+            method: 'post', 
+            url: Routing.generate('app_booking_tmp_history_two', { 'id' : historyId }),
+            data: { responsable: data },
+        }).then(function (response) {AjaxSend.loader(false);});
+
         let input0 = document.querySelector('.step-prospect-0 #numAdh-0');
         let input1 = document.querySelector('.step-prospect-0 #firstname-0');
         setTimeout(() => {
@@ -212,6 +254,8 @@ export class Booking extends Component {
 
             if(code === 1){
                 self.setState({ code: 1, finalMessage: data.message, ticket: data.ticket, barcode: data.barcode, print: data.print})
+                window.removeEventListener('beforeunload', self.handleConfirmeExit);
+                window.removeEventListener('unload', self.handleUnload);
             }else{
                 self.setState({ code: 0, finalMessage: data.message })
             }
@@ -221,17 +265,17 @@ export class Booking extends Component {
     render () {
         const {day, days, dayType, dayRemaining, dayTypeString} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
-            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print} = this.state;
+            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print, cps, disabledStart} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
                 <Infos day={day} dayTypeString={dayTypeString}/>
-                <Starter onClick={this.handleClickStart} days={days} dayRemaining={dayRemaining}/>
+                <Starter onClick={this.handleClickStart} days={days} dayRemaining={dayRemaining} disabledStart={disabledStart} />
             </section>
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
                 <div className="steps">
-                    <StepResponsable classStep={classStep1} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
+                    <StepResponsable classStep={classStep1} cps={cps} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
                     <StepProspects classStep={classStep2} dayType={dayType} prospects={prospects} onClickPrev={this.handleBackStep1} onStep3={this.handleToStep3} onAnnulation={this.handleAnnulation}/>
                     <StepReview classStep={classStep3} prospects={prospects} responsable={responsable} day={day} messageInfo={messageInfo} onClickPrev={this.handleBackStep2} 
                                 timeExpired={timeExpired} code={code} onToStep4={this.handleToStep4} onAnnulation={this.handleAnnulation}/>
@@ -246,7 +290,7 @@ function StepDot({classDot, classStep1, classStep2, classStep3, classStep4}) {
     let items = [
         { active: classStep1, text: 'Responsable'},
         { active: classStep2, text: 'Elève(s) à inscrire'},
-        { active: classStep3, text: 'Récapitulatif'},
+        { active: classStep3, text: 'Vérification'},
         { active: classStep4, text: 'Ticket'}
     ];
     let liste = items.map((elem, index) => {
@@ -293,23 +337,28 @@ function Infos({day, dayTypeString}) {
     )
 }
 
-function Starter({onClick, days, dayRemaining}) {
+function Starter({onClick, days, dayRemaining, disabledStart}) {
 
     let items = JSON.parse(days).map((elem, index) => {
-        return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
+        if(elem.isOpen){
+            return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
             <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
             <span> {elem.fullDateString} </span>
             <span className="txt-discret">
                  - Journée des {elem.typeString}
             </span>
         </div>
+        }else{
+            return null;
+        }
+        
     });
 
     return (
         <div className="starter">
             <div className="starter-card">
                 <div className="starter-infos">
-                    <p> Planning des journées d'inscriptions : </p>
+                    <p> Réservation pour le : </p>
 
                     <div className="starter-dates">{items} </div>
 
@@ -325,7 +374,7 @@ function Starter({onClick, days, dayRemaining}) {
                     {dayRemaining ? null : <div className="alert"> Il n'y a plus de place. </div>}
                 </div>
                 <div className="starter-btn">
-                    <button className="btn btn-primary" onClick={dayRemaining > 0 ? onClick : null}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
+                    <button className="btn btn-primary" disabled={disabledStart} onClick={dayRemaining > 0 ? onClick : null}>{dayRemaining > 0 ? "Réserver un ticket" : "COMPLET"}</button>
                 </div>
             </div>
         </div>

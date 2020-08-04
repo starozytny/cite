@@ -4,6 +4,29 @@
     display: none;
 }
 
+.history-stat{
+    margin-bottom: 15px;
+}
+
+.history-step{
+    background-color: $color7;
+    border-radius: 3px;
+    display: inline-block;
+    padding: 3px 10px;
+    margin-bottom: 5px;
+    color: $alpha;
+
+    &.history-step-1{
+        background-color: $color0;
+    }
+    &.history-step-2{
+        background-color: $color2;
+    }
+    &.history-step-3{
+        background-color: $color1;
+    }
+}
+
 .history-body{
     & > .item{
         position: relative;
@@ -11,15 +34,6 @@
         background-color: $alpha;
         padding: 15px 10px;
         border-radius: 5px;
-
-        .history-step{
-            background-color: $color7;
-            border-radius: 3px;
-            display: inline-block;
-            padding: 3px 10px;
-            margin-bottom: 5px;
-            color: $alpha;
-        }
 
         .name{
             @include fontSemibold();
@@ -48,7 +62,7 @@
             margin-top: -22px;
 
             &.status-1{
-                color: $color0;
+                color: $color1;
             }
         }
         .horaire{

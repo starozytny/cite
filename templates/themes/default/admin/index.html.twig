@@ -6,4 +6,15 @@
     <section class="title">
         <h1>Dashboard Admin</h1>
     </section>
+
+    <section class="content">
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="item">
+                    {# <a href="{{ path('admin_sync_data') }}" download="PERSONNE.csv" class="btn btn-secondary">Sync</a> #}
+                    <a href="{{ path('admin_sync_data') }}" target="_blank" class="btn btn-secondary">Sync</a>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

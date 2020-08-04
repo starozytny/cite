@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Cite\CiAdherent;
 use App\Repository\TicketProspectRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -106,10 +107,21 @@ class TicketProspect
 
     private $age;
 
+    /**
+     * @ORM\OneToOne(targetEntity=CiAdherent::class, cascade={"persist", "remove"})
+     */
+    private $adherent;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isDiff;
+
     public function __construct()
     {
         $this->setCreateAt(new DateTime());
         $this->setStatus(self::ST_ATTENTE);
+        $this->setIsDiff(false);
     }
 
     public function getId(): ?int
@@ -270,7 +282,7 @@ class TicketProspect
                 return "Attente";
                 break;
             case self::ST_CONFIRMED:
-                return "Validé";
+                return "Attente";
                 break;
             case self::ST_REGISTERED:
                 return "Inscrit";
@@ -346,5 +358,33 @@ class TicketProspect
     public function getBirthdayJavascript(){
         date_default_timezone_set('Europe/Paris');
         return date_format($this->getBirthday(), 'F d, Y 00:00:00');
+    }
+
+    public function getAdresseString(){
+        return $this->getAdr() . ', ' . $this->getCp() . " " . $this->getCity();
+    }
+
+    public function getAdherent(): ?CiAdherent
+    {
+        return $this->adherent;
+    }
+
+    public function setAdherent(?CiAdherent $adherent): self
+    {
+        $this->adherent = $adherent;
+
+        return $this;
+    }
+
+    public function getIsDiff(): ?bool
+    {
+        return $this->isDiff;
+    }
+
+    public function setIsDiff(bool $isDiff): self
+    {
+        $this->isDiff = $isDiff;
+
+        return $this;
     }
 }

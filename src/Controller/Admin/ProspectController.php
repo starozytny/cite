@@ -36,7 +36,7 @@ class ProspectController extends AbstractController
         }else{
             $prospect->setStatus(TicketProspect::ST_CONFIRMED);
             $status = TicketProspect::ST_CONFIRMED;
-            $statusString = "Confirmé";
+            $statusString = "Attente";
         }
 
         $em->persist($prospect);
@@ -61,7 +61,7 @@ class ProspectController extends AbstractController
         $arr = [];
         foreach($prospects as $prospect){
             $st = $prospect->getStatus() == TicketProspect::ST_CONFIRMED ? TicketProspect::ST_REGISTERED : TicketProspect::ST_CONFIRMED;
-            $stString = $st == TicketProspect::ST_CONFIRMED ? "Confirmé" : "Inscrit";
+            $stString = $st == TicketProspect::ST_CONFIRMED ? "Attente" : "Inscrit";
             $prospect->setStatus($st);
             array_push($arr, [
                 'id' => $prospect->getId(),
@@ -137,7 +137,7 @@ class ProspectController extends AbstractController
 
         $prospect = $serializer->serialize($id, 'json', ['attributes' => [
             'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'birthdayString', 'birthdayJavascript', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
-            'numAdh', 'status', 'statusString', 
+            'numAdh', 'status', 'statusString', 'adherent' => ['id'], 'isDiff',
             'responsable' => ['id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket'], 
             'creneau' => ['id', 'horaireString']
         ]]);

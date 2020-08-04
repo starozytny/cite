@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Analytics from '../functions/analytics';
 import Cookies from 'js-cookie/src/js.cookie';
+import Swal from 'sweetalert2';
 
 // Nom cookie pour Google analytics
 const consentGlobal = 'hasConsentGlobalLocal';
@@ -92,11 +93,13 @@ export class ActionCookies extends Component {
     handleClickAccept (e){
         this.setState({accepter: true, refuser: false})
         cookiesClick(this.props.type, 1)
+        Swal.fire('Choix enregistré', 'Votre choix a été enregistré.', 'success');
     }
 
     handleClickRefuse (e){
         this.setState({accepter: false, refuser: true})
         cookiesClick(this.props.type, 0)
+        Swal.fire('Choix enregistré', 'Votre choix a été enregistré.', 'success');
     }
 
     render () {
@@ -127,6 +130,7 @@ export class BulleCookies extends Component {
         }
 
         this.handleClickAccept = this.handleClickAccept.bind(this);
+        this.handleClickRefuse = this.handleClickRefuse.bind(this);
         this.handleClickParametre = this.handleClickParametre.bind(this);
     }
 
@@ -172,6 +176,11 @@ export class BulleCookies extends Component {
         this.setState({hideBanner: true});
     }
 
+    handleClickRefuse (e){
+        cookiesRefuseAll()
+        this.setState({hideBanner: true});
+    }
+
     handleClickParametre (e){
         this.setState({hideBanner: true});
     }
@@ -183,12 +192,16 @@ export class BulleCookies extends Component {
 
         return (
             <div className={className}>
-                <p>
-                    En poursuivant votre navigation sur ce site,  vous nous autorisez à déposer des cookies à des 
-                    fins de mesure d'audience et réaliser des statistiques de visites. <br/>
-                    Un cookie sera déposé afin de mémoriser votre choix. <br/>
-                    <a href={urlPolitique}>En savoir plus sur notre politique de confidentialité</a>
-                </p>
+                <div className="param-cookies-txt">
+                    <p>
+                        En poursuivant votre navigation sur ce site,  vous nous autorisez à déposer des cookies à des 
+                        fins de mesure d'audience et réaliser des statistiques de visites. <br/>
+                        Un cookie sera déposé afin de mémoriser votre choix. <br/>
+                        <a href={urlPolitique}>En savoir plus sur notre politique de confidentialité</a>
+                    </p>
+                    <span className="icon-close" onClick={this.handleClickRefuse}></span>
+                </div>
+                
                 <div className="param-cookies-actions">
                     <button className='btn-cookies' onClick={this.handleClickAccept}>Accepter</button>
                     <a className='btn-cookies' onClick={this.handleClickParametre} href={urlGestion}>Paramétrer les cookies</a>

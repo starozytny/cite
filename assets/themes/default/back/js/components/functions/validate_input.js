@@ -21,7 +21,8 @@ function validatePhone($value) {
             'message': 'Ce numéro n\'est pas valide.'
         };
     }
-    if (!(/^((\+)33|0)[1-9](\d{2}){4}$/.test($value))){
+    let arr = $value.match(/[0-9-+]/g);
+    if(arr == null){
         return {
             'code': false,
             'message': 'Ce numéro n\'est pas valide.'

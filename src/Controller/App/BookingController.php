@@ -2,11 +2,14 @@
 
 namespace App\Controller\App;
 
+use App\Entity\Cite\CiAdherent;
+use App\Entity\Data\DataCodePostaux;
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketHistory;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
+use App\Service\Differentiel;
 use App\Service\History;
 use App\Service\Mailer;
 use App\Service\OpenDay;
@@ -44,7 +47,7 @@ class BookingController extends AbstractController
     {
         // Open day
         // Delete user no confirme register
-        $this->responsableService->deleteNonConfirmed();
+        // $this->responsableService->deleteNonConfirmed();
         $em = $this->getDoctrine()->getManager();
         $days = $em->getRepository(TicketDay::class)->findAll();
         $day = $openDay->open();
@@ -53,11 +56,15 @@ class BookingController extends AbstractController
             return $this->render('root/app/pages/booking/index.html.twig');
         }
 
+        $cps = $em->getRepository(DataCodePostaux::class)->findAll();
+
         $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen', 'remaining', 'fullDateString']]);
+        $cps = $serializer->serialize($cps, 'json', ['attributes' => ['codePostal', 'nomCommune']]);
 
         return $this->render('root/app/pages/booking/index.html.twig', [
             'day' => $day,
-            'days' => $days
+            'days' => $days,
+            'cps' => $cps
         ]);
     }
 
@@ -111,6 +118,16 @@ class BookingController extends AbstractController
         return new JsonResponse([ 'code' => 1 ]);
     }
 
+/**
+     * @Route("/tmp/book/{id}/history/two", options={"expose"=true}, name="tmp_history_two")
+     */
+    public function historyTwo(TicketHistory $id, Request $request)
+    {
+        $data = json_decode($request->getContent());
+        $this->history->updateResp($id->getId(),  $data->responsable);
+    
+        return new JsonResponse([ 'code' => 1 ]);
+    }
     /**
      * @Route("/tmp/book/{id}/duplicate", options={"expose"=true}, name="tmp_book_duplicate")
      */
@@ -118,11 +135,10 @@ class BookingController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $day = $id;
         $data = json_decode($request->getContent());
         $prospects = $data->prospects;
 
-        $alreadyRegistered = $this->alreadyRegistered($prospects, $day->getType());
+        $alreadyRegistered = $this->alreadyRegistered($prospects, $data->responsable);
         if(count($alreadyRegistered) != 0){
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered]);
         }
@@ -130,14 +146,14 @@ class BookingController extends AbstractController
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $horaire = date_format($creneau->getHoraire(), 'H\hi');
-        $this->history->updateResp($data->historyId, $data->responsable);
-        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage : <b>' . $horaire . '</b>' ]);
+        // return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage : <b>' . $horaire . '</b>' ]);
+        return new JsonResponse(['code' => 1, 'horaire' => $horaire, 'message' => 'Horaire de passage communiqué une fois que vous aurez cliqué sur le bouton : Obtenir mon ticket' ]);
     }
 
     /**
      * @Route("/confirmed/book/{id}/add", options={"expose"=true}, name="confirmed_book_add")
      */
-    public function book(TicketDay $id, TicketGenerator $ticketGenerator, Mailer $mailer, Request $request)
+    public function book(TicketDay $id, TicketGenerator $ticketGenerator, Mailer $mailer, Request $request, Differentiel $differentiel)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -147,7 +163,7 @@ class BookingController extends AbstractController
         $prospects = $data->prospects;
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
-        $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau, $id);
+        $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau, $id, $differentiel);
         if($responsable != false){
             $prospects = $em->getRepository(TicketProspect::class)->findBy(array('responsable' => $responsableId));
             do{
@@ -164,7 +180,7 @@ class BookingController extends AbstractController
             $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
             $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
             $barcode = base64_encode($img);
-            $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
+            $params =  ['ticket' => $ticket, 'barcode' => $barcode  , 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
             $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
     
             // Send mail     
@@ -178,6 +194,20 @@ class BookingController extends AbstractController
         }else{
             return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
         }
+    }
+
+    /**
+     * @Route("/tmp/book/{id}/unload", options={"expose"=true}, name="tmp_book_unload")
+     */
+    public function unload(TicketDay $id, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $responsableId = $request->get('responsableId');
+        $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
+        $this->responsableService->deleteResponsable($responsable);
+        $em->flush();
+
+        return new JsonResponse(['code' => 1]);
     }
 
     /**
@@ -198,11 +228,65 @@ class BookingController extends AbstractController
         return new JsonResponse(['code' => 1, 'url' => $url]);
     }
 
+        /**
+     * @Route("/tmp/prospect/preset", options={"expose"=true}, name="tmp_prospect_preset")
+     */
+    public function preset(Request $request, SerializerInterface $serializer)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $data = json_decode($request->getContent());
+        $numAdh = $data->numAdh;
+        $adh = $em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $numAdh));
+
+        $prospect = $serializer->serialize($adh, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'birthdayJavascript', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city'
+        ]]);
+        
+        if($adh){
+            return new JsonResponse(['code' => 1, 'infos' => $prospect]);
+        }
+
+        return new JsonResponse(['code' => 0]);
+    }
+
+    public function alreadyRegistered($prospects, $responsable)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $alreadyRegistered = [];
+
+        foreach($prospects as $item){
+                
+            $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
+            $numAdh = $item->numAdh == "" ? null : $item->numAdh;
+
+            if($numAdh == null){
+                $existe = $em->getRepository(TicketProspect::class)->findOneBy(array(
+                    'civility' => $item->civility,
+                    'firstname' => $item->firstname,
+                    'lastname' => $item->lastname,
+                    'email' => $item->email != "" ? $item->email : $responsable->email,
+                    'birthday' => new DateTime($birthday),
+                    'numAdh' => $numAdh
+                ));
+            }else{
+                $existe = $em->getRepository(TicketProspect::class)->findOneBy(array(
+                    'numAdh' => $numAdh
+                ));
+            }
+
+            if($existe){
+                array_push($alreadyRegistered, $item);
+            }
+        }
+        return $alreadyRegistered;
+    }
+
     /**
      * Create Responsable and Prospects and check if At least one prospect is not exist else
      * decrease remaining creneau and day 
      */
-    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, $day, $waiting=false)
+    private function createResponsableAndProspects($responsableId, $resp, $prospects, ?TicketCreneau $creneau, $day, $differentiel, $waiting=false)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -213,60 +297,29 @@ class BookingController extends AbstractController
         $em->persist($responsable);
 
         foreach($prospects as $item){
-            $prospect = $this->createProspect($item, $day, $creneau, $responsable, $waiting);
+            $prospect = $this->createProspect($item, $day, $creneau, $responsable, $differentiel, $waiting);
             $em->persist($prospect);
         }     
 
         $em->flush();
         return $responsable;
-    }
-
-    public function alreadyRegistered($prospects, $dayType)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $alreadyRegistered = [];
-
-        if($dayType == TicketDay::TYPE_NOUVEAU){
-
-            foreach($prospects as $item){
-                
-                $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
-                $numAdh = $item->numAdh == "" ? null : $item->numAdh;
-
-                if($em->getRepository(TicketProspect::class)->findOneBy(array(
-                    'civility' => $item->civility,
-                    'firstname' => $item->firstname,
-                    'lastname' => $item->lastname,
-                    'email' => $item->email,
-                    'birthday' => new DateTime($birthday),
-                    'numAdh' => $numAdh
-                ))){
-                    array_push($alreadyRegistered, $item);
-                }
-            }
-        }else{
-
-            foreach($prospects as $item){
-                if($em->getRepository(TicketProspect::class)->findOneBy(array( 'numAdh' => $item->numAdh ))){
-                    array_push($alreadyRegistered, $item);
-                } 
-            }
-
-        }
-
-        return $alreadyRegistered;
-    }
-   
+    }   
 
     /**
      * Create Ticket Prospect
      */
-    private function createProspect($item, $day, $creneau, $responsable, $waiting=false)
+    private function createProspect($item, $day, $creneau, $responsable, $differentiel, $waiting=false)
     {
+        $em = $this->getDoctrine()->getManager();
         $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
 
         $phoneMobile = $item->phoneMobile != "" ? $this->setToNullIfEmpty($item->phoneMobile) : $responsable->getPhoneMobile();
         $email = $item->email != "" ? $item->email : $responsable->getEmail();
+
+        $adh = null;
+        if($item->numAdh != ""){
+            $adh = $em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $item->numAdh));
+        }
 
         $pro = (new TicketProspect())
             ->setFirstname($item->firstname)
@@ -284,10 +337,16 @@ class BookingController extends AbstractController
             ->setCreneau($creneau)
             ->setDay($day)
             ->setStatus(TicketProspect::ST_CONFIRMED)
+            ->setAdherent($adh)
         ;
         if($waiting){
             $pro->setStatus(TicketProspect::ST_WAITING);
         }
+
+        if($item->numAdh != ""){
+            $pro->setIsDiff($differentiel->diff($pro, $adh));
+        }
+       
         return $pro;
     }
 

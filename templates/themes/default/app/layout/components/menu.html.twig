@@ -7,7 +7,7 @@
         </div>
         <div class="nav-menu">
             <div class="items">
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                {# {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <a href="{{ path('admin_dashboard') }}" class="item">
                         <span class="icon-user"></span>
                         <span>Espace admin</span>
@@ -17,7 +17,11 @@
                         <span class="icon-user"></span>
                         <span>Se connecter</span>
                     </a>
-                {% endif %}
+                {% endif %} #}
+                <a href="{{ path('app_booking_index') }}" class="item">
+                    <span class="icon-ticket"></span>
+                    <span>Réserver un ticket</span>
+                </a>
             </div>
         </div>
     </div>

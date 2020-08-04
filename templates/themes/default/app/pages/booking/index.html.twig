@@ -17,7 +17,8 @@
     </div>
 
     {% if day is defined %}
-        <div id="booking" data-day="{{ day.fullDateString }}" data-id="{{ day.id }}" data-type="{{ day.type }}" data-type-string="{{ day.typeString }}" data-remaining="{{ day.remaining }}" data-days="{{ days }}"></div>
+        <div id="booking" data-cps="{{ cps | json_encode() }}" data-day="{{ day.fullDateString }}" 
+            data-id="{{ day.id }}" data-type="{{ day.type }}" data-type-string="{{ day.typeString }}" data-remaining="{{ day.remaining }}" data-days="{{ days }}"></div>
     {% else %}
         <div>
             <div class="section-infos">

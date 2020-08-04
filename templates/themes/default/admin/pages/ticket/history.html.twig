@@ -20,6 +20,12 @@
         <div class="history">
             <div class="history">
                 {% if histories | length > 0 %}
+                    <div class="history-stat">
+                        <div><div class="history-step history-step-0">{{step0 != null ? step0 | length : "0"}} - Démarre processus</div></div>
+                        <div><div class="history-step history-step-1">{{step1 != null ? step1 | length : "0"}} - étape responsable</div></div>
+                        <div><div class="history-step history-step-2">{{step2 != null ? step2 | length : "0"}} - étape élève</div></div>
+                        <div><div class="history-step history-step-3">{{step3 != null ? step3 | length : "0"}} - terminé</div></div>
+                    </div>
                     <div class="history-header">
                         <div class="col-1">Etape</div>
                         <div class="col-2">Identifiant</div>
@@ -35,7 +41,7 @@
                     {% for hist in histories %}
                         <div class="item">
                             <div class="col-1">
-                                <div class="history-step">{{ hist.step }}</div>
+                                <div class="history-step history-step-{{hist.step}}">{{ hist.step }}</div>
                             </div>
                             <div class="col-2">
                                 <div class="name">{{ hist.civility }} {{ hist.firstname | capitalize }} {{ hist.lastname | upper }}</div>

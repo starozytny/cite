@@ -277,11 +277,12 @@ header{
 
     header{
         margin-top: -118px;
+        height: calc(100vh + 1px);
     }
 
     @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
         header{
-            padding-top: 250px;
+            padding-top: 50px;
         }
     }
 

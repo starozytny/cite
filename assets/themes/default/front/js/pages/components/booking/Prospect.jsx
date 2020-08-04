@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import axios from 'axios/dist/axios';
+import Routing from '../../../../../../../../public/bundles/fosjsrouting/js/router.min.js';
+import AjaxSend from '../../../components/functions/ajax_classique';
 import {Step} from './Step';
 import {Input} from '../../../components/composants/Fields';
 import Validateur from '../../../components/functions/validate_input';
@@ -173,7 +176,8 @@ class Prospect extends Component {
             city: {value: '', error: ''},
             isAdh: {value: this.props.dayType == 0 ? true : false, error: ''},
             numAdh: {value: '', error: ''},
-            birthday: {value: '', error: '', inputVal: null}
+            birthday: {value: '', error: '', inputVal: null},
+            disabledInput: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -181,6 +185,8 @@ class Prospect extends Component {
         this.handleDelete = this.handleDelete.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleClickEdit = this.handleClickEdit.bind(this);
+
+        this.handleBlur = this.handleBlur.bind(this);
     }
 
     handleDelete (e) {
@@ -204,7 +210,7 @@ class Prospect extends Component {
     }
 
     handleDate (e) {
-        this.setState({ birthday: {inputVal: e, value: new Date(e).toLocaleDateString()} });
+        this.setState({ birthday: {value: new Date(e).toLocaleDateString(), inputVal: e} });
     }
 
     handleChange (e) {
@@ -221,39 +227,70 @@ class Prospect extends Component {
         }
     }
 
+    handleBlur (e) {
+        let value = e.currentTarget.value;
+        let self = this;
+        if(value !== ""){
+            axios({ 
+                method: 'post', 
+                url: Routing.generate('app_booking_tmp_prospect_preset'),
+                data: {numAdh: value}
+            }).then(function (response) {
+                let data = response.data; let code = data.code; AjaxSend.loader(false);
+                if(code === 1){
+                    let item = JSON.parse(data.infos);
+
+                    self.setState({
+                        firstname: {value: setEmptyIfNull(item.firstname), error: ''},
+                        lastname: {value: setEmptyIfNull(item.lastname), error: ''},
+                        civility: {value: setEmptyIfNull(item.civility), error: ''},
+                        phoneDomicile: {value: setEmptyIfNull(item.phoneDomicile), error: ''},
+                        phoneMobile: {value: setEmptyIfNull(item.phoneMobile), error: ''},
+                        email: {value: setEmptyIfNull(item.email), error: ''},
+                        adr: {value: setEmptyIfNull(item.adr), error: ''},
+                        cp: {value: setEmptyIfNull(item.cp), error: ''},
+                        city: {value: setEmptyIfNull(item.city), error: ''},
+                        birthday: {
+                            error: '', 
+                            value: item.birthday != null ? new Date(item.birthdayJavascript).toLocaleDateString() : "", 
+                            inputVal: item.birthdayJavascript != null ? new Date(item.birthdayJavascript) : null},
+                        disabledInput: true
+                    })
+                }else{
+                    self.setState({
+                        firstname: {value: '', error: ''},
+                        lastname: {value: '', error: ''},
+                        civility: {value: '', error: ''},
+                        phoneDomicile: {value: '', error: ''},
+                        phoneMobile: {value: '', error: ''},
+                        email: {value: '', error: ''},
+                        adr: {value: '', error: ''},
+                        cp: {value: '', error: ''},
+                        city: {value: '', error: ''},
+                        numAdh: {value: value, error: 'Ce numéro adhérent n\'existe pas.'},
+                        birthday: {value: '', error: '', inputVal: null},
+                        disabledInput: false
+                    })
+                }
+            });
+        }else{
+            self.setState({disabledInput: false})
+        }
+    }
+
     handleClickEdit (e) {
         this.setState({valide: ''})
     }
 
     handleClick (e) {
-        const {firstname, lastname, email, birthday, phoneMobile, isAdh, numAdh} = this.state;
+        const {firstname, civility, lastname, email, birthday, phoneMobile, isAdh, numAdh} = this.state;
 
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
             {type: "text", id: 'lastname', value: lastname.value},
+            {type: "civility", id: 'civility', value: civility.value},
             {type: "text", id: 'birthday', value: birthday.value},
         ]);
-
-        // phone facultatif
-        // let validatePhone;
-        // if((phoneDomicile.value === "" && phoneMobile.value === "") || (phoneDomicile.value !== "" && phoneMobile.value !== "")){
-        //     validatePhone = Validateur.validateur([
-        //         {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value},
-        //         {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
-        //     ])
-        // }else if(phoneDomicile.value !== "" && phoneMobile.value === ""){
-        //     validatePhone = Validateur.validateur([
-        //         {type: "customPhone", id: 'phoneDomicile', value: phoneDomicile.value}
-        //     ])
-        // }else if(phoneDomicile.value === "" && phoneMobile.value !== ""){
-        //     validatePhone = Validateur.validateur([
-        //         {type: "customPhone", id: 'phoneMobile', value: phoneMobile.value}
-        //     ])
-        // }
-        // if(!validatePhone.code){
-        //     validate.code = false;
-        //     validate.errors = {...validate.errors, ...validatePhone.errors};
-        // }
 
         // if isAdh is checked
         if(isAdh.value){
@@ -268,7 +305,7 @@ class Prospect extends Component {
         }
 
         // -------
-        if(!validate.code){
+        if(!validate.code || (isAdh.value && numAdh.error != undefined)){
             this.setState(validate.errors);
             return {code: 0};
         }else{
@@ -281,28 +318,34 @@ class Prospect extends Component {
     }
 
     render () {
-        const {firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh, renderCompo, valide} = this.state;
+        const {firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh, renderCompo, valide, disabledInput} = this.state;
         const {id, registered, dayType} = this.props;
 
         return <>
             {renderCompo ? <ProspectCard id={id} dayType={dayType} registered={registered} valide={valide} firstname={firstname} lastname={lastname} civility={civility} 
-                            birthday={birthday} phoneMobile={phoneMobile} email={email} isAdh={isAdh} numAdh={numAdh}
-                            onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit} onChangeDate={this.handleDate}/> 
+                            birthday={birthday} phoneMobile={phoneMobile} email={email} isAdh={isAdh} numAdh={numAdh} disabledInput={disabledInput}
+                            onChange={this.handleChange} onDelete={this.handleDelete} onClickEdit={this.handleClickEdit} onChangeDate={this.handleDate} onBlur={this.handleBlur}/> 
                         : null}
         </>
     }
 } 
 
-function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh,
-                        onChange, onDelete, onClickEdit, onChangeDate}) 
+function ProspectCard({id, dayType, registered, valide, firstname, lastname, civility, birthday, phoneMobile, email, isAdh, numAdh, disabledInput,
+                        onChange, onDelete, onClickEdit, onChangeDate, onBlur}) 
     {
 
+    let nowYear = new Date().getFullYear()
+    let minYear = parseInt(nowYear) - 4;
+    let maxYear = parseInt(nowYear) - 100;
+    let minDateBirthday = new Date("January 1, " + maxYear);
+    let maxDateBirthday = new Date("December 31, " + minYear);
+
     return <div className={"step-card step-prospect-"+ id +" step-prospect " +  registered}>
-        <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange}/>
+        <IsAdh id={id} isAdh={isAdh} dayType={dayType} numAdh={numAdh} onChange={onChange} onBlur={onBlur}/>
         <RadioCivility id={id} civility={civility} onChange={onChange}/>
         <div className="line line-2">
-            <Input type="text" identifiant={"firstname-" + id} value={firstname.value} onChange={onChange} error={firstname.error}>Prénom</Input>
-            <Input type="text" identifiant={"lastname-" + id} value={lastname.value} onChange={onChange} error={lastname.error}>Nom</Input>
+            <Input type="text" disabled={disabledInput ? "disabled" : null} identifiant={"firstname-" + id} value={firstname.value} onChange={onChange} error={firstname.error}>Prénom</Input>
+            <Input type="text" disabled={disabledInput ? "disabled" : null} identifiant={"lastname-" + id} value={lastname.value} onChange={onChange} error={lastname.error}>Nom</Input>
         </div>
         <div className="line line-2">
             <div className={'form-group-date form-group' + (birthday.error ? " form-group-error" : "")}>
@@ -317,6 +360,8 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
                     showYearDropdown
                     dropdownMode="select"
                     placeholderText="DD/MM/YYYY"
+                    minDate={minDateBirthday}
+                    maxDate={maxDateBirthday}
                     />
                 <div className='error'>{birthday.error ? birthday.error : null}</div>
             </div>
@@ -354,20 +399,23 @@ function ProspectCard({id, dayType, registered, valide, firstname, lastname, civ
 
 function RadioCivility({id, civility, onChange}) {
     return (
-        <div className="form-group form-group-radio">
-            <div>
-                <input type="radio" id={"civility-mr-" + id} name={"civility-" + id} value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
-                <label htmlFor={"civility-mr-" + id}>Mr</label>
+        <div className={'form-group-radio form-group' + (civility.error ? " form-group-error" : "")}>
+            <div className="radio-choices">
+                <div>
+                    <input type="radio" id={"civility-mr-" + id} name={"civility-" + id} value="Mr" checked={civility.value === 'Mr'} onChange={onChange} />
+                    <label htmlFor={"civility-mr-" + id}>Mr</label>
+                </div>
+                <div>
+                    <input type="radio" id={"civility-mme-" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange}/>
+                    <label htmlFor={"civility-mme-" + id}>Mme</label>
+                </div>
             </div>
-            <div>
-                <input type="radio" id={"civility-mme-" + id} name={"civility-" + id} value="Mme" checked={civility.value === 'Mme'} onChange={onChange} />
-                <label htmlFor={"civility-mme-" + id}>Mme</label>
-            </div>
+            <div className='error'>{civility.error ? civility.error : null}</div>
         </div>
     )
 }
 
-function IsAdh({id, isAdh, dayType, numAdh, onChange}) {
+function IsAdh({id, isAdh, dayType, numAdh, onChange, onBlur}) {
     let dis = dayType == 0 ? "disabled" : "";
     return (
         <div className="line line-2">
@@ -375,8 +423,12 @@ function IsAdh({id, isAdh, dayType, numAdh, onChange}) {
                 <label htmlFor={"isAdh-" + id}>Déjà adhérent ?</label>
                 <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} disabled={dis} onChange={onChange} />
             </div>
-            {isAdh.value ? <Input type="text" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error}>Numéro adhérent</Input> 
+            {isAdh.value ? <Input type="num" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error} onBlur={onBlur}>Numéro adhérent</Input> 
                 : null}
         </div>
     )
+}
+
+function setEmptyIfNull(value){
+    return value != null ? value : "";
 }

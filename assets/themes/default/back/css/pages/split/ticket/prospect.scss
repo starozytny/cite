@@ -1,17 +1,46 @@
 @import "../../../vars/vars.scss";
 
+.displayByResp{
+    display: block;
+    margin-bottom: 25px;
+    &{
+        color: $color0;
+        text-decoration: underline;
+    }
+}
+
 .prospects-header{
     display: none;
 }
 
 .prospects-body{
-    & > .item{
-        position: relative;
+    .col-6{
+        width: 100%;
+        @include flex(row, flex-start, space-between);
+    }
+    .line-resp{
+        margin-bottom: 30px;
         @include boxsh();
+    }
+    .item-resp{
+        border-radius: 5px 5px 0 0;
         background-color: $alpha;
         padding: 15px 10px;
-        border-radius: 5px;
-        margin-bottom: 10px;
+        border-bottom: 1px solid #DFDDDD;
+
+        a{
+            color: $info;
+
+            &:hover{
+                color: $color0;
+            }
+        }
+    }
+    & > .line-resp > .item{
+        position: relative;
+        background-color: $alpha;
+        padding: 15px 10px;
+        border-radius: 0 0 5px 5px;
 
         .name{
             @include fontSemibold();
@@ -71,46 +100,90 @@
             font-size: 14px;
         }
         .status{
-            display: inline-block;
+            @include flex(row, center, space-between);
             background-color: $color7;
             color: $color3;
-            padding: 5px 15px;
-            border-radius: 8px;
+            border-radius: 50px;
             float: right;
             margin-top: -25px;
+            max-width: 82px;
 
-            &:hover{
-                opacity: 0.8;
+            &:before, &:after{
+                content: '';
+                display: inline-block;
+                width: 22px;
+                height: 20px;
+                border-radius: 50px;
+                border: 2px solid $alpha;
             }
 
             &.status-1{
                 background-color: $infoBg;
                 cursor: pointer;
                 transition: all 0.2s ease-in-out;
+                max-width: 87px;
+                padding: 5px 10px 5px 5px;
+
+                &:before{
+                    width: 20px;
+                    background-color: $info;
+                    margin-right: 5px;
+                    transition: all 0.2s ease-in-out;
+                }
+                &:after{
+                    display: none;
+                    transition: all 0.2s ease-in-out;
+                }
+
+                &:hover{
+                    &:before{
+                        background-color: $success;
+                    }
+                }
             }
             &.status-2{
                 background-color: $successBg;
                 cursor: pointer;
                 transition: all 0.2s ease-in-out;
+                padding: 5px 5px 5px 10px;
+
+                &:before{
+                    display: none;
+                }
+                &:after{
+                    background-color: $success;
+                    margin-left: 5px;
+                }
+                &:hover{
+                    &:after{
+                        background-color: $info;
+                    }
+                }
             }
         }
         .horaire{
             margin-top: 20px;
             font-size: 14px;
         }
-        .btn-delete{
-            width: 100%;
+        .btn-delete, .btn-edit{
+            width: 50%;
             margin-top: 30px;
             border: none;
             background-color: transparent;
             padding: 5px 15px;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
+        }
 
+        .btn-delete{
             &:hover{
-                background-color: $errorBg;
-                border-radius: 8px;
-                color: $color5;
+                color: $errorLabel;
+            }
+        }
+
+        .btn-edit{
+            &:hover{
+                color: $success;
             }
         }
     }
@@ -282,9 +355,8 @@ h3{
         }
     }
     .prospects-body{
-        & > .item{
+        & > .line-resp > .item{
             @include flex(row, flex-start, flex-start);
-            margin-bottom: 15px;
 
             & > *:not(:last-child){
                 margin-right: 10px;
@@ -305,7 +377,8 @@ h3{
                 float: none;
                 margin-top: 0;
             }
-            .btn-delete{
+            
+            .btn-delete, .btn-edit{
                 margin-top: 2px;
             }
         }
@@ -382,13 +455,10 @@ h3{
 @media (min-width: 1024px) {
     .prospects{
         .col-1{
-            width: 22%;
+            width: 35%;
         }
         .col-2{
-            width: 22%;
-        }
-        .col-3{
-            width: 16%;
+            width: 25%;
         }
         .col-4{
             display: block;
@@ -401,16 +471,14 @@ h3{
             width: 12%;
         }
     }
-    .prospects-header{
-        .col-3{
-            display: block;
-        }
-    }
     .prospects-body{
-        & > .item{
-            .adresse{
-                display: block;
-                font-size: 14px;
+        & > .line-resp > .item{
+            .status{
+                &.status-2{
+                    &:after{
+                        width: 20px;
+                    }
+                }
             }
         }
     }

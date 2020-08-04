@@ -27,6 +27,13 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
+
+  .icon-ticket:before {
+    content: "\e906";
+  }
+  .icon-close:before {
+    content: "\e907";
+  }
   .icon-load:before {
     content: "\e905";
   }
@@ -45,4 +52,5 @@
   .icon-user:before {
     content: "\e900";
   }
+  
   
