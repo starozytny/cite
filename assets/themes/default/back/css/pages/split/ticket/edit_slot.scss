@@ -1,6 +1,6 @@
 @import "../../../vars/vars.scss";
 
-.prospect-edit-overlay, .days-edit-overlay, .slots-edit-overlay{
+.prospect-edit-overlay, .days-edit-overlay, .days-add-overlay, .slots-edit-overlay{
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
@@ -15,7 +15,7 @@
     }
 }
 
-.prospect-edit, .days-edit, .slots-edit{
+.prospect-edit, .days-edit, .days-add, .slots-edit{
     background: $alpha;
     padding: 15px;
     position: fixed;
@@ -65,7 +65,7 @@
 //                     | |   /_/  \___/ \___/   | |
 //                     |__|                    |__|
 @media (min-width:768px) {
-    .prospect-edit, .days-edit, .slots-edit{
+    .prospect-edit, .days-edit, .day-add, .slots-edit{
         width: 40%;
         padding-bottom: 50px;
     }
@@ -78,7 +78,7 @@
 //                     | |  |_|_____\___/ \___/   | |
 //                     |__|                      |__|
 @media (min-width:1280px) {
-    .prospect-edit, .days-edit,.slots-edit{
+    .prospect-edit, .days-edit, .days-add, .slots-edit{
         width: 30%;
     }
 }

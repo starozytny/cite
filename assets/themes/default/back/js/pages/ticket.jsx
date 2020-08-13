@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import {Details} from './components/ticket/Details.jsx';
 import {Slots} from './components/ticket/Slots.jsx';
 import {Ticket} from './components/ticket/Ticket.jsx';
+import {ToolbarTicket} from './components/ticket/ToolbarTicket.jsx';
 import {EditResponsable, ResendTicket} from './components/ticket/Responsable.jsx';
 
 let details = document.getElementById("details");
@@ -51,5 +52,13 @@ if(resendTicket){
     ReactDOM.render(
         <ResendTicket responsableId={resendTicket.dataset.id}/>,
         resendTicket
+    )
+}
+
+let toolbarCommun = document.getElementById('toolbar-commun');
+if(toolbarCommun){
+    ReactDOM.render(
+        <ToolbarTicket />,
+        toolbarCommun
     )
 }

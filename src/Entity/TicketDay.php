@@ -74,6 +74,8 @@ class TicketDay
         $this->prospects = new ArrayCollection();
         $this->responsables = new ArrayCollection();
         $this->histories = new ArrayCollection();
+        $this->setMax(0);
+        $this->setRemaining(0);
     }
 
     public function getId(): ?int
