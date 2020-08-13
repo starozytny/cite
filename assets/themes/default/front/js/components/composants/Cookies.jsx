@@ -4,8 +4,8 @@ import Cookies from 'js-cookie/src/js.cookie';
 import Swal from 'sweetalert2';
 
 // Nom cookie pour Google analytics
-const consentGlobal = 'hasConsentGlobalLocal';
-const consentAnalytics = 'hasConsentLocal';
+const consentGlobal = 'hasConsentGlobalCiteM';
+const consentAnalytics = 'hasConsentCiteM';
 
 /**
  * Supprimer un cookie
