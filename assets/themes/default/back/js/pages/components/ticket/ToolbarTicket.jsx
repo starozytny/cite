@@ -59,7 +59,7 @@ export class ToolbarTicket extends Component {
 
             axios({ 
                 method: 'post', 
-                url: Routing.generate('admin_ticket_add_day'), 
+                url: Routing.generate('admin_ticket_add'), 
                 data: {dateDay: dateValue, type: type.value} 
             }).then(function (response) {
                 let data = response.data; let code = data.code; 

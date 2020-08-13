@@ -1,11 +1,14 @@
 import '../../css/pages/ticket.scss';
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios/dist/axios';
+import AjaxSend from '../components/functions/ajax_classique';
 import {Details} from './components/ticket/Details.jsx';
 import {Slots} from './components/ticket/Slots.jsx';
 import {Ticket} from './components/ticket/Ticket.jsx';
 import {ToolbarTicket} from './components/ticket/ToolbarTicket.jsx';
 import {EditResponsable, ResendTicket} from './components/ticket/Responsable.jsx';
+import Swal from 'sweetalert2';
 
 let details = document.getElementById("details");
 if(details){
@@ -61,4 +64,35 @@ if(toolbarCommun){
         <ToolbarTicket />,
         toolbarCommun
     )
+}
+
+let deletes = document.querySelectorAll('.btn-delete');
+console.log(deletes)
+if(deletes){
+    deletes.forEach((elem) => {
+        elem.addEventListener('click', function(e){
+            e.preventDefault();
+            let url = e.currentTarget.href
+            Swal.fire({
+                title: 'Etes-vous sur de vouloir supprimer cette journée ?',
+                text: "Cette action est irréversible.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Confirmer',
+                cancelButtonText: 'Annuler'
+              }).then((result) => {
+                if (result.value) {
+                    AjaxSend.loader(true);
+                    axios({ 
+                        method: 'post', 
+                        url: url,
+                    }).then(function (response) {
+                        location.reload()
+                    });
+                }
+              })
+        })
+    })
 }
