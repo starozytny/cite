@@ -336,4 +336,42 @@ class TicketController extends AbstractController
 
         return new JsonResponse(['code' => 1]);
     }
+
+    /**
+    * @Route("/add/jour", options={"expose"=true}, name="add")
+    */
+    public function addDay(Request $request)
+    {
+        date_default_timezone_set('Europe/Paris');
+        $em = $this->getDoctrine()->getManager();
+        $data = json_decode($request->getContent());
+        $dateDay = $data->dateDay;
+        $type = intval($data->type);
+
+        $dateD = new DateTime(date('d-m-Y\\TH:i:s', strtotime($dateDay)));
+
+        $existe = $em->getRepository(TicketDay::class)->findOneBy(['day' => $dateD]);
+        if($existe){
+            return new JsonResponse(['code' => 0, 'message' => 'Cette date est déjà utilisée.']);
+        }
+
+        $day = (new TicketDay())
+            ->setDay($dateD)
+            ->setType($type)
+        ;
+
+        $em->persist($day); $em->flush();
+        return new JsonResponse(['code' => 1]);
+    }
+    /**
+    * @Route("/jour/{ticketDay}/delete", options={"expose"=true}, name="delete")
+    */
+    public function deleteDay(TicketDay $ticketDay)
+    {
+        $em = $this->getDoctrine()->getManager();
+        if($ticketDay->getRemaining() == $ticketDay->getMax()){
+            $em->remove($ticketDay); $em->flush();
+        }
+        return new JsonResponse(['code' => 1]);
+    }
 }

@@ -49,27 +49,23 @@ class AdminCreateTicketsCommand extends Command
         $days = array(
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-08-05'),
+                'day' => new DateTime('2020-09-01'),
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-08-06'),
+                'day' => new DateTime('2020-09-02'),
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-08-07'),
+                'day' => new DateTime('2020-09-03'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-08-08'),
+                'day' => new DateTime('2020-09-07'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-08-09'),
-            ],
-            [
-                'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-08-10'),
+                'day' => new DateTime('2020-09-08'),
             ]
         );
 
@@ -106,12 +102,12 @@ class AdminCreateTicketsCommand extends Command
 
         $ouvertureAncien = (new TicketOuverture())
             ->setType(TicketOuverture::TYPE_ANCIEN)
-            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('02 August 2020 8:00:00'))))
+            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('31 August 2020 20:00:00'))))
         ;
 
         $ouvertureNouveau = (new TicketOuverture())
             ->setType(TicketOuverture::TYPE_NOUVEAU)
-            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('07 August 2020 7:00:00'))))
+            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('05 September 2020 14:00:00'))))
         ;
         $this->em->persist($ouvertureAncien);$this->em->persist($ouvertureNouveau);
         $this->em->flush();

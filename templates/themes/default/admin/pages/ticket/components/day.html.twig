@@ -11,5 +11,8 @@
     <div class="day-card-actions">
         <a href="{{ path('admin_ticket_edit', {'ticketDay': day.id}) }}" class="btn-edit">Modifier</a>
         <a href="{{ path('admin_ticket_show', {'ticketDay': day.id}) }}" class="btn-details">Détails</a>
-    </div>
+        {% if day.remaining == day.max %}
+            <a href="{{ path('admin_ticket_delete', {'ticketDay': day.id}) }}" class="btn-delete">Supprimer</a>
+        {% endif %}
+    </div>   
 </div>
