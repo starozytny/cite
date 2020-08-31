@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
+use App\Entity\TicketFermeture;
 use App\Entity\TicketOuverture;
 use App\Entity\User;
 use DateTime;
@@ -39,6 +40,7 @@ class AdminCreateTicketsCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $io->title('Reset des tables');
+        $this->resetTable($io,'ticket_fermeture');
         $this->resetTable($io,'ticket_ouverture');
         $this->resetTable($io,'ticket_day');
         $this->resetTable($io,'ticket_creneau');
@@ -49,27 +51,27 @@ class AdminCreateTicketsCommand extends Command
         $days = array(
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-08-14'),
+                'day' => new DateTime('2020-09-14'),
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-08-15'),
+                'day' => new DateTime('2020-09-15'),
             ],
             [
                 'type' => TicketDay::TYPE_ANCIEN,
-                'day' => new DateTime('2020-08-16'),
+                'day' => new DateTime('2020-09-16'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-08-17'),
+                'day' => new DateTime('2020-09-17'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-08-18'),
+                'day' => new DateTime('2020-09-18'),
             ],
             [
                 'type' => TicketDay::TYPE_NOUVEAU,
-                'day' => new DateTime('2020-08-19'),
+                'day' => new DateTime('2020-09-19'),
             ]
         );
 
@@ -106,14 +108,19 @@ class AdminCreateTicketsCommand extends Command
 
         $ouvertureAncien = (new TicketOuverture())
             ->setType(TicketOuverture::TYPE_ANCIEN)
-            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('27 July 2020 8:00:00'))))
+            ->setOpen(new DateTime(date('d-m-Y\\TH:i:0', strtotime('31 August 2020 8:00:00'))))
+        ;
+        $fermetureAncien = (new TicketFermeture())
+            ->setType(TicketOuverture::TYPE_ANCIEN)
+            ->setClose(new DateTime(date('d-m-Y\\TH:i:0', strtotime('02 September 2020 12:00:00'))))
+            // ->setClose(new DateTime(date('d-m-Y\\TH:i:0', strtotime('31 August 2020 12:08:00'))))
         ;
 
         $ouvertureNouveau = (new TicketOuverture())
             ->setType(TicketOuverture::TYPE_NOUVEAU)
-            ->setOpen(new DateTime(date('d-m-Y\\TH:0:0', strtotime('29 July 2020 12:00:00'))))
+            ->setOpen(new DateTime(date('d-m-Y\\TH:i:0', strtotime('29 July 2020 12:00:00'))))
         ;
-        $this->em->persist($ouvertureAncien);$this->em->persist($ouvertureNouveau);
+        $this->em->persist($ouvertureAncien);$this->em->persist($fermetureAncien);$this->em->persist($ouvertureNouveau);
         $this->em->flush();
 
         $io->comment('--- [FIN DE LA COMMANDE] ---');
