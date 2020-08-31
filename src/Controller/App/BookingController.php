@@ -179,14 +179,14 @@ class BookingController extends AbstractController
 
             $title = 'Reservation journee des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cite de la musique';
             $html = 'root/app/email/booking/index.html.twig';
-//            $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
+            $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
             $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
             $barcode = base64_encode($img);
             $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
             $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'print' => $print , 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
     
             // Send mail     
-            if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), null, $responsable ) != true){
+            if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file, $responsable ) != true){
                 return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
             }
     
