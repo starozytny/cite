@@ -49,7 +49,8 @@ class BookingController extends AbstractController
         // Delete user no confirme register
         // $this->responsableService->deleteNonConfirmed();
         $em = $this->getDoctrine()->getManager();
-        $days = $em->getRepository(TicketDay::class)->findAll();
+        $days = null;
+//        $days = $em->getRepository(TicketDay::class)->findAll();
         $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
         //$day = $openDay->open();
 
