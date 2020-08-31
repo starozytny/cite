@@ -304,7 +304,7 @@ class TicketController extends AbstractController
 
         $fileName = 'eleves-' . $ticketDay->getId() . '.xlsx';
 
-        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'NUMERO ADHERENT', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
+        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'EST ADHERENT ?', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
         $json = $export->createFile('excel', 'Liste des élèves du ' . $ticketDay->getId(), $fileName , $header, $data, 7, null, 'eleves/');
         
         return new BinaryFileResponse($this->getParameter('export_eleves_directory'). '/' . $fileName);

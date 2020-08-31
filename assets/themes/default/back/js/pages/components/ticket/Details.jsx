@@ -359,7 +359,7 @@ export class Details extends Component {
                     <div className="col-1">
                         {elem.numAdh != null ? 
                             <div className="haveNumAdh">
-                                <div className="numAdh">{elem.numAdh}</div>
+                                <div className="numAdh">{elem.numAdh != null ? 'adhérent' : ''}</div>
                             </div>
                             : null}
                         <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. {elem.firstname} <span>{elem.lastname}</span></div>
