@@ -88,12 +88,12 @@ class BookingController extends AbstractController
                 if($remaining > 0){ // reste de la place dans ce creneau
 
                     $responsable = $this->responsableService->createTmpResponsable($creneau, $day);
-                    $history = $this->history->createHistory($creneau, $day);
+//                    $history = $this->history->createHistory($creneau, $day);
                     $this->remaining->decreaseRemaining($day, $creneau);
+//                    $em->persist($history);
+                    $em->persist($responsable); $em->flush();
 
-                    $em->persist($responsable); $em->persist($history); $em->flush();
-
-                    return new JsonResponse(['code' => 1, 'creneauId' => $creneau->getId(), 'responsableId' => $responsable->getId(), 'historyId' => $history->getId()]);    
+                    return new JsonResponse(['code' => 1, 'creneauId' => $creneau->getId(), 'responsableId' => $responsable->getId(), 'historyId' => 0]);
 
                 }else{
                     if($i == $len - 1) {
@@ -125,8 +125,8 @@ class BookingController extends AbstractController
      */
     public function historyTwo(TicketHistory $id, Request $request)
     {
-        $data = json_decode($request->getContent());
-        $this->history->updateResp($id->getId(),  $data->responsable);
+//        $data = json_decode($request->getContent());
+//        $this->history->updateResp($id->getId(),  $data->responsable);
     
         return new JsonResponse([ 'code' => 1 ]);
     }
@@ -144,7 +144,7 @@ class BookingController extends AbstractController
         if(count($alreadyRegistered) != 0){
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered]);
         }
-        $this->history->updateFamille($data->historyId, count($prospects));
+//        $this->history->updateFamille($data->historyId, count($prospects));
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $horaire = date_format($creneau->getHoraire(), 'H\hi');
@@ -190,7 +190,7 @@ class BookingController extends AbstractController
                 return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
             }
     
-            $this->history->updateTicket($data->historyId);
+//            $this->history->updateTicket($data->historyId);
             $em->persist($responsable); $em->flush();
             return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print, 'message' => $responsable->getEmail()]);
         }else{
