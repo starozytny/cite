@@ -24,6 +24,7 @@ class OpenDay
     {
         date_default_timezone_set('Europe/Paris');
         $dayOpened = null;
+        /*
         $days = $this->em->getRepository(TicketDay::class)->findBy(array(), array('day' => 'ASC'));
 
         $ancien = $this->em->getRepository(TicketOuverture::class)->findOneBy(array('type' => TicketOuverture::TYPE_ANCIEN));
@@ -78,6 +79,7 @@ class OpenDay
         }
 
         $this->em->flush();
+        */
         return $dayOpened;
     }
 }

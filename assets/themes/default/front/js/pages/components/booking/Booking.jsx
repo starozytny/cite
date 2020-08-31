@@ -79,41 +79,6 @@ export class Booking extends Component {
     }
 
     tick(){
-        const {min, second, responsableId} = this.state;
-        
-        let oldMin = parseInt(min);
-        let oldSecond = parseInt(second);
-        let expired = false;
-        let nMin = oldMin
-        let nSecond = oldSecond - 1;
-    
-        if(oldMin == 0 && oldSecond == 0){
-            nMin = 0; nSecond = 0; expired = true;
-        }else{
-            if(nSecond < 0){
-                nSecond = oldMin > 0 ? 60 : 0;
-                nMin = oldMin - 1;       
-            }
-        }
-
-        this.setState({ second: nSecond, min: nMin, timeExpired: expired });
-
-        if(nMin == 1 && nSecond == 60){
-            
-            let self = this;
-            AjaxSend.loader(false);
-            let loader = document.querySelector('#loader');
-            console.log(loader)
-            axios({ 
-                method: 'post', 
-                url: Routing.generate('app_booking_reset_timer', {'responsableId': responsableId})
-            }).then(function (response) {
-                AjaxSend.loader(false);
-                self.setState({ min: 2, second: 6, timeExpired: false });
-            });
-        }
-        
-        
     }
     /**
     * Fonction pour commencer le processus de demande de ticket.
@@ -180,12 +145,12 @@ export class Booking extends Component {
 
         const {historyId} = this.state;
 
-        AjaxSend.loader(false);
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('app_booking_tmp_history_two', { 'id' : historyId }),
-            data: { responsable: data },
-        }).then(function (response) {AjaxSend.loader(false);});
+        // AjaxSend.loader(false);
+        // axios({
+        //     method: 'post',
+        //     url: Routing.generate('app_booking_tmp_history_two', { 'id' : historyId }),
+        //     data: { responsable: data },
+        // }).then(function (response) {AjaxSend.loader(false);});
 
         let input0 = document.querySelector('.step-prospect-0 #numAdh-0');
         let input1 = document.querySelector('.step-prospect-0 #firstname-0');
