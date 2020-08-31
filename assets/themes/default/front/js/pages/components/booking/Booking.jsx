@@ -235,7 +235,7 @@ export class Booking extends Component {
         return <>
             <section className={"section-infos " + classStart}>
                 <Infos day={day} dayTypeString={dayTypeString}/>
-                <Starter onClick={this.handleClickStart} days={days} dayRemaining={dayRemaining} disabledStart={disabledStart} />
+                <Starter onClick={this.handleClickStart} day={day} dayTypeString={dayTypeString} dayRemaining={dayRemaining} disabledStart={disabledStart} />
             </section>
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
@@ -302,22 +302,7 @@ function Infos({day, dayTypeString}) {
     )
 }
 
-function Starter({onClick, days, dayRemaining, disabledStart}) {
-
-    let items = JSON.parse(days).map((elem, index) => {
-        if(elem.isOpen){
-            return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
-            <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
-            <span> {elem.fullDateString} </span>
-            <span className="txt-discret">
-                 - Journée des {elem.typeString}
-            </span>
-        </div>
-        }else{
-            return null;
-        }
-        
-    });
+function Starter({onClick, day, dayTypeString, dayRemaining, disabledStart}) {
 
     return (
         <div className="starter">
@@ -325,7 +310,11 @@ function Starter({onClick, days, dayRemaining, disabledStart}) {
                 <div className="starter-infos">
                     <p> Réservation pour le : </p>
 
-                    <div className="starter-dates">{items} </div>
+                    <div className="starter-dates">
+                        <span className="starter-dates-dot starter-dates-dot-0"></span>
+                        <span> {day} </span>
+                        <span className="txt-discret"> - Journée des {dayTypeString} </span>
+                    </div>
 
                     <div className="alert alert-info">
                         <b>A apporter</b> à la journée d'inscriptions : 
