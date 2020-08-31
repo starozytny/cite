@@ -19,9 +19,6 @@
     <ul>
         {% for prospect in prospects %}
             <li>
-                {% if prospect.numAdh %}
-                    <span>{{prospect.numAdh}} - </span>
-                {% endif %}
                 <span>{{ prospect.civility }} {{ prospect.firstname | capitalize }} {{ prospect.lastname | upper }} ({{ prospect.age }}) - {{ prospect.birthday | date('d/m/Y') }}</span>
             </li>
         {% endfor %}
