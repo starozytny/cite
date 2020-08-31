@@ -50,21 +50,22 @@ class BookingController extends AbstractController
         // $this->responsableService->deleteNonConfirmed();
         $em = $this->getDoctrine()->getManager();
         $days = $em->getRepository(TicketDay::class)->findAll();
-        $day = $openDay->open();
+        $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
+        //$day = $openDay->open();
 
         if(!$day){
             return $this->render('root/app/pages/booking/index.html.twig');
         }
 
-        $cps = $em->getRepository(DataCodePostaux::class)->findAll();
+        //$cps = $em->getRepository(DataCodePostaux::class)->findAll();
 
         $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen', 'remaining', 'fullDateString']]);
-        $cps = $serializer->serialize($cps, 'json', ['attributes' => ['codePostal', 'nomCommune']]);
+        //$cps = $serializer->serialize($cps, 'json', ['attributes' => ['codePostal', 'nomCommune']]);
 
         return $this->render('root/app/pages/booking/index.html.twig', [
             'day' => $day,
             'days' => $days,
-            'cps' => $cps
+            'cps' => null
         ]);
     }
 
@@ -111,9 +112,9 @@ class BookingController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $responsable = $responsableId;
-        $responsable->setCreateAt(new DateTime());
-        $em->persist($responsable); $em->flush();
+//        $responsable = $responsableId;
+//        $responsable->setCreateAt(new DateTime());
+//        $em->persist($responsable); $em->flush();
     
         return new JsonResponse([ 'code' => 1 ]);
     }
