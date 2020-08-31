@@ -68,7 +68,7 @@ class Export
             $writer = new Xlsx($spreadsheet);
         }else{
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Csv($spreadsheet);
-            $writer->setUseBOM(true);
+            $writer->setUseBOM(false);
             $writer->setDelimiter(';');
             $writer->setEnclosure('');
             $writer->setLineEnding("\r\n");
