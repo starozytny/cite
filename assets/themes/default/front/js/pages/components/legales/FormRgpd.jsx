@@ -85,7 +85,7 @@ class FormRgpd extends React.Component {
                             <Input value={email.value} identifiant="email" onChange={this.handleChange} error={email.error}>Email</Input>
                             <Select value={subject.value} identifiant="subject" onChange={this.handleChange} error={subject.error} items={items}>Objet du message</Select>
                             <TextArea value={message.value} identifiant="message" onChange={this.handleChange} error={message.error}>Message</TextArea>
-                            <ReCAPTCHA ref={this.recaptchaRef} size={"invisible"} sitekey="6LeJXdUUAAAAABW3t8yl9tkJ5PpSFdhKqvOpgGyY" />
+                            <ReCAPTCHA ref={this.recaptchaRef} size={"invisible"} sitekey="6LdMy8UZAAAAAGcM7fx-K2wF4e_bfZSjMR7P9mCn" />
                         </>
                     }
                     btn="Envoyer"
