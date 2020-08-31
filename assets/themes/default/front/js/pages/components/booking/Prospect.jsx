@@ -283,7 +283,7 @@ class Prospect extends Component {
     }
 
     handleClick (e) {
-        const {firstname, civility, lastname, email, birthday, phoneMobile, isAdh, numAdh} = this.state;
+        const {firstname, civility, lastname, birthday, isAdh, numAdh} = this.state;
 
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
@@ -293,19 +293,20 @@ class Prospect extends Component {
         ]);
 
         // if isAdh is checked
-        if(isAdh.value){
-            let validateAdh = Validateur.validateur([
-                {type: "text", id: 'numAdh', value: numAdh.value}
-            ])
+        // if(isAdh.value){
+        //     let validateAdh = Validateur.validateur([
+        //         {type: "text", id: 'numAdh', value: numAdh.value}
+        //     ])
 
-            if(!validateAdh.code){
-                validate.code = false;
-                validate.errors = {...validate.errors, ...validateAdh.errors};
-            }
-        }
+        //     if(!validateAdh.code){
+        //         validate.code = false;
+        //         validate.errors = {...validate.errors, ...validateAdh.errors};
+        //     }
+        // }
 
         // -------
-        if(!validate.code || (isAdh.value && numAdh.error != undefined)){
+        // if(!validate.code || (isAdh.value && numAdh.error != undefined)){
+        if(!validate.code){
             this.setState(validate.errors);
             return {code: 0};
         }else{
@@ -423,7 +424,7 @@ function IsAdh({id, isAdh, dayType, numAdh, onChange, onBlur}) {
                 <label htmlFor={"isAdh-" + id}>Déjà adhérent ?</label>
                 <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} disabled={dis} onChange={onChange} />
             </div>
-            {isAdh.value ? <Input type="num" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error} onBlur={onBlur}>Numéro adhérent</Input> 
+            {isAdh.value ? <Input type="hidden" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error} onBlur={onBlur}>Numéro adhérent</Input> 
                 : null}
         </div>
     )

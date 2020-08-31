@@ -45,8 +45,6 @@ class OpenDay
             $typeOuverture = ($openAncien < $now) ? TicketOuverture::TYPE_ANCIEN : TicketOuverture::TYPE_NOUVEAU;
         }
 
-        dump($closeAncien);
-
         $findOne = false;
         foreach($days as $day){
 
