@@ -113,7 +113,6 @@ class AdminCreateTicketsCommand extends Command
         $fermetureAncien = (new TicketFermeture())
             ->setType(TicketOuverture::TYPE_ANCIEN)
             ->setClose(new DateTime(date('d-m-Y\\TH:i:0', strtotime('02 September 2020 12:00:00'))))
-            // ->setClose(new DateTime(date('d-m-Y\\TH:i:0', strtotime('31 August 2020 12:08:00'))))
         ;
 
         $ouvertureNouveau = (new TicketOuverture())

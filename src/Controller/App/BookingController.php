@@ -270,7 +270,13 @@ class BookingController extends AbstractController
                     'numAdh' => $numAdh
                 ));
             }else{
+                // $existe = $em->getRepository(TicketProspect::class)->findOneBy(array('numAdh' => $numAdh));
                 $existe = $em->getRepository(TicketProspect::class)->findOneBy(array(
+                    'civility' => $item->civility,
+                    'firstname' => $item->firstname,
+                    'lastname' => $item->lastname,
+                    'email' => $item->email != "" ? $item->email : $responsable->email,
+                    'birthday' => new DateTime($birthday),
                     'numAdh' => $numAdh
                 ));
             }
@@ -317,8 +323,15 @@ class BookingController extends AbstractController
         $email = $item->email != "" ? $item->email : $responsable->getEmail();
 
         $adh = null;
-        if($item->numAdh != ""){
-            $adh = $em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $item->numAdh));
+        $numAdh = $this->setToNullIfEmpty($item->numAdh);
+        dump($item->isAdh);
+        if($item->isAdh == true){
+            // $adh = $em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $numAdh));
+            $adh = $em->getRepository(CiAdherent::class)->findOneBy(array(
+                'firstname' => mb_strtoupper($item->lastname),
+                'lastname' => ucfirst(mb_strtolower($item->firstname))
+            ));
+            $numAdh = 1;
         }
 
         $pro = (new TicketProspect())
@@ -332,7 +345,7 @@ class BookingController extends AbstractController
             ->setAdr($responsable->getAdr())
             ->setCp($responsable->getCp())
             ->setCity($responsable->getCity())
-            ->setNumAdh($this->setToNullIfEmpty($item->numAdh))
+            ->setNumAdh($numAdh)
             ->setResponsable($responsable)
             ->setCreneau($creneau)
             ->setDay($day)
