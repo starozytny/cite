@@ -32,7 +32,7 @@ class Mailer
         ;
 
         if($file != null){
-            $email->attachFromPath($file);
+//            $email->attachFromPath($file);
             $email->embed(fopen($this->getBarcodeDirectory() . '/' .$responsable->getId() . '-barcode.jpg', 'r'), 'barcode.jpg');
             $email->embed(fopen($this->getPublicDirectory() . '/public/logo-ca-little.png', 'r'), 'logo.png');
         }
