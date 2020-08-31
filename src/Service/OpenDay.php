@@ -4,6 +4,7 @@
 namespace App\Service;
 
 use App\Entity\TicketDay;
+use App\Entity\TicketFermeture;
 use App\Entity\TicketOuverture;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
@@ -19,23 +20,6 @@ class OpenDay
         $this->em = $em;
     }
 
-    // $now = new DateTime(date('d-m-Y', strtotime('now')));
-        // $tomorrow = new DateTime(date('d-m-Y', strtotime('+1 day')));
-
-        // foreach($days as $day){
-        //     $d = $day->getDay();
-        //     if($d <= $now || $d > $tomorrow){ // <= today OR > tomorrow -> close
-        //         $day->setIsOpen(false);
-        //     }
-
-        //     if($d == $tomorrow){ // for tomorrow -> open
-        //         $day->setIsOpen(true);
-        //         $dayOpened = $day;
-        //     }         
-            
-        //     $this->em->persist($day);
-        // }
-
     public function open()
     {
         date_default_timezone_set('Europe/Paris');
@@ -43,8 +27,10 @@ class OpenDay
         $days = $this->em->getRepository(TicketDay::class)->findBy(array(), array('day' => 'ASC'));
 
         $ancien = $this->em->getRepository(TicketOuverture::class)->findOneBy(array('type' => TicketOuverture::TYPE_ANCIEN));
+        $fermeAncien = $this->em->getRepository(TicketFermeture::class)->findOneBy(array('type' => TicketOuverture::TYPE_ANCIEN));
         $nouveau = $this->em->getRepository(TicketOuverture::class)->findOneBy(array('type' => TicketOuverture::TYPE_NOUVEAU));
         $openAncien = $ancien->getOpen();
+        $closeAncien = $fermeAncien->getClose();
         $openNouveau = $nouveau->getOpen();
         
         $now = new DateTime();
@@ -67,18 +53,22 @@ class OpenDay
                 && $now < $day->getDay()
                 ){ //now est supérieur ou égale à la date/heure d'ouverture + le type demandé et le jour d'inscription parcouru est inférieur a la date de now
 
-                if($day->getRemaining() > 0){
+                if($typeOuverture == 0 && $now > $closeAncien){
+                    $day->setIsOpen(false);
+                }else{
+                    if($day->getRemaining() > 0){
 
-                    if(!$findOne){
-                        $findOne = true;
-                        $day->setIsOpen(true);
-                        $dayOpened = $day;
+                        if(!$findOne){
+                            $findOne = true;
+                            $day->setIsOpen(true);
+                            $dayOpened = $day;
+                        }else{
+                            $day->setIsOpen(false);
+                        }
                     }else{
                         $day->setIsOpen(false);
                     }
-                }else{
-                    $day->setIsOpen(false);
-                }
+                }                
                 
             }else{
                 $day->setIsOpen(false);
