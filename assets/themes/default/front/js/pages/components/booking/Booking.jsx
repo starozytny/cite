@@ -101,6 +101,7 @@ export class Booking extends Component {
 
                 window.addEventListener("beforeunload", self.handleConfirmeExit);
                 window.addEventListener('unload', self.handleUnload);
+                window.addEventListener('pagehide', self.handleUnload);
             }            
         });
     }
