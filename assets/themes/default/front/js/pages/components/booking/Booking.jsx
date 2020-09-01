@@ -30,7 +30,7 @@ export class Booking extends Component {
             messageInfo: '', // for review page
             responsableId: null, // pour delete si go back in review page
             code: 0,
-            min: 4,
+            min: 29,
             second: 60,
             timer: null,
             timeExpired: false,
@@ -122,14 +122,14 @@ export class Booking extends Component {
     */
     handleClickStart (e) {
 
-        var x = window.matchMedia("(max-width: 768px)")
+        // var x = window.matchMedia("(max-width: 768px)")
 
-        if(x.matches){
-            Swal.fire(
-                'Vous êtes sur mobile',
-                'Sur mobile, vous disposez de 30 minutes pour réaliser votre réservation. Passé ce délai, il faudra recommencer. Sur ordinateur, le temps est illimité.'
-              )
-        }
+        // if(x.matches){
+        //     Swal.fire(
+        //         'Vous êtes sur mobile',
+        //         'Sur mobile, vous disposez de 30 minutes pour réaliser votre réservation. Passé ce délai, il faudra recommencer. Sur ordinateur, le temps est illimité.'
+        //       )
+        // }
 
         this.setState({disabledStart: 'disabled'})
         let self = this;
@@ -278,7 +278,7 @@ export class Booking extends Component {
     render () {
         const {day, days, dayType, dayRemaining, dayTypeString} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
-            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print, cps, disabledStart} = this.state;
+            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print, cps, disabledStart, min, second} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -287,6 +287,9 @@ export class Booking extends Component {
             </section>
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
+                {/* <div className="mobile-timer">
+                    <span>{min} : {second}</span>
+                </div> */}
                 <div className="steps">
                     <StepResponsable classStep={classStep1} cps={cps} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
                     <StepProspects classStep={classStep2} dayType={dayType} prospects={prospects} onClickPrev={this.handleBackStep1} onStep3={this.handleToStep3} onAnnulation={this.handleAnnulation}/>
