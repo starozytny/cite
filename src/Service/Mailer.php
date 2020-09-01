@@ -20,7 +20,7 @@ class Mailer
         $this->publicDirectory = $publicDirectory;
     }
 
-    public function sendMail($title, $text, $html, $params, $email,  $file = null, $responsable=null, $from = 'inscriptions@citemusique-marseille.com')
+    public function sendMail($title, $text, $html, $params, $email,  $file = null, $responsable=null, $from = 'no-reply@inscriptions-musique-marseille.com')
     {
         $email = (new TemplatedEmail())
             ->from($from)
