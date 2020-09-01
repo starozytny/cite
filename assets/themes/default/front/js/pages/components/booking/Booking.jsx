@@ -30,7 +30,7 @@ export class Booking extends Component {
             messageInfo: '', // for review page
             responsableId: null, // pour delete si go back in review page
             code: 0,
-            min: 4,
+            min: 29,
             second: 60,
             timer: null,
             timeExpired: false,
@@ -79,22 +79,91 @@ export class Booking extends Component {
     }
 
     tick(){
+        const {min, second, responsableId} = this.state;
+
+        let oldMin = parseInt(min);
+        let oldSecond = parseInt(second);
+        let expired = false;
+        let nMin = oldMin
+        let nSecond = oldSecond - 1;
+
+        if(oldMin == 0 && oldSecond == 0){
+            nMin = 0; nSecond = 0; expired = true;
+        }else{
+            if(nSecond < 0){
+                nSecond = oldMin > 0 ? 60 : 0;
+                nMin = oldMin - 1;       
+            }
+        }
+
+        this.setState({ second: nSecond, min: nMin, timeExpired: expired });
+
+        var x = window.matchMedia("(max-width: 768px)")
+
+        if(x.matches){
+            if(nMin == 1 && nSecond == 60){
+
+            //     let self = this;
+            //     AjaxSend.loader(false);
+            //     let loader = document.querySelector('#loader');
+            //     console.log(loader)
+            //     axios({ 
+            //         method: 'post', 
+            //         url: Routing.generate('app_booking_reset_timer', {'responsableId': responsableId})
+            //     }).then(function (response) {
+            //         AjaxSend.loader(false);
+            //         self.setState({ min: 29, second: 60, timeExpired: false });
+            //     });
+                window.removeEventListener("beforeunload", self.handleConfirmeExit, true);
+                window.removeEventListener('unload', self.handleUnload, true);
+                window.removeEventListener('pagehide', self.handleUnload, true);
+                Swal.fire({
+                    title: 'Votre session a expirée',
+                    text: 'Pour éviter que votre session expire, veuillez passer par un ordinateur.',
+                    icon: 'warning',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Recommencer'
+                    }).then((result) => {
+                    if (result.value) {
+                        location.reload();
+                        self.setState({ min: 2, second: 5, timeExpired: true });
+                    }
+                })
+               
+                
+            }
+        }        
     }
     /**
     * Fonction pour commencer le processus de demande de ticket.
     */
     handleClickStart (e) {
+
+        var x = window.matchMedia("(max-width: 768px)")
+        let isMobile = false;
+
+        if(x.matches){
+            // Swal.fire(
+            //     'Vous êtes sur mobile',
+            //     'Sur mobile, vous disposez de 30 minutes pour réaliser votre réservation. Passé ce délai, il faudra recommencer. Sur ordinateur, le temps est illimité.'
+            // )
+            isMobile = true;
+        }
+
         this.setState({disabledStart: 'disabled'})
         let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }),
+            data: {isMobile: isMobile}
         }).then(function (response) {
             let data = response.data; let code = data.code;
             if(code === 1){
                 self.setState({classDot: 'active-1', classStart: 'hide', classStep1: 'active', 
                                creneauId: data.creneauId, responsableId: data.responsableId, historyId: data.historyId,
-                               timer: setInterval(() => self.tick(), 1000), min: 4, second: 60});
+                               timer: setInterval(() => self.tick(), 1000), min: 29, second: 60});
                 let input0 = document.querySelector('.ext-responsable #firstname');
                 input0.focus();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -141,7 +210,7 @@ export class Booking extends Component {
     }
 
     handleToStep2 (data) {
-        this.setState({responsable: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active', min: 4, second: 60});
+        this.setState({responsable: data, classDot: 'active-2', classStep1: 'full', classStep2: 'active', min: 29, second: 60});
 
         const {historyId} = this.state;
 
@@ -162,7 +231,7 @@ export class Booking extends Component {
     }
 
     handleBackStep1 (e) {
-        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: '', min: 4, second: 60});
+        this.setState({classDot: 'active-1', classStep1: 'active', classStep2: '', min: 29, second: 60});
     }
 
     handleToStep3 (prospectsNoDoublon) {
@@ -194,17 +263,17 @@ export class Booking extends Component {
                     });
                     newProspects.push(newProspect);
                 });
-                self.setState({ code: 2, prospects: newProspects, min: 4, second: 60});
+                self.setState({ code: 2, prospects: newProspects, min: 29, second: 60});
             }
         });
     }
 
     handleBackStep2 (e) {
-        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', min: 4, second: 60});
+        this.setState({classDot: 'active-2', classStep2: 'active', classStep3: '', min: 29, second: 60});
     }
 
     handleToStep4 () {
-        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer), min: 99, second: 99});
+        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer), min: 99999, second: 99});
 
         const {prospects, responsable, responsableId, creneauId} = this.state;
         
@@ -230,7 +299,7 @@ export class Booking extends Component {
     render () {
         const {day, days, dayType, dayRemaining, dayTypeString} = this.props;
         const {classDot, classStart, classStep1, classStep2, classStep3, classStep4, prospects, responsable, 
-            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print, cps, disabledStart} = this.state;
+            horaire, messageInfo, timeExpired, code, finalMessage, ticket, barcode, print, cps, disabledStart, min, second} = this.state;
 
         return <>
             <section className={"section-infos " + classStart}>
@@ -239,6 +308,9 @@ export class Booking extends Component {
             </section>
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
+                {/* <div className="mobile-timer">
+                    <span>{min} : {second}</span>
+                </div> */}
                 <div className="steps">
                     <StepResponsable classStep={classStep1} cps={cps} onClickPrev={this.handleAnnulation} onToStep2={this.handleToStep2} onAnnulation={this.handleAnnulation}/>
                     <StepProspects classStep={classStep2} dayType={dayType} prospects={prospects} onClickPrev={this.handleBackStep1} onStep3={this.handleToStep3} onAnnulation={this.handleAnnulation}/>
