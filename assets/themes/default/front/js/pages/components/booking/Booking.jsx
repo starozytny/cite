@@ -100,13 +100,7 @@ export class Booking extends Component {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 window.addEventListener("beforeunload", self.handleConfirmeExit);
-                window.addEventListener('pagehide', self.handleUnload);
                 window.addEventListener('unload', self.handleUnload);
-                window.addEventListener("visibilitychange", function() {
-                    if (document.visibilityState !== 'visible') {
-                        self.handleUnload
-                    }
-                });
             }            
         });
     }
