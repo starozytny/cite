@@ -79,41 +79,6 @@ export class Booking extends Component {
     }
 
     tick(){
-        const {min, second, responsableId} = this.state;
-        
-        let oldMin = parseInt(min);
-        let oldSecond = parseInt(second);
-        let expired = false;
-        let nMin = oldMin
-        let nSecond = oldSecond - 1;
-    
-        if(oldMin == 0 && oldSecond == 0){
-            nMin = 0; nSecond = 0; expired = true;
-        }else{
-            if(nSecond < 0){
-                nSecond = oldMin > 0 ? 60 : 0;
-                nMin = oldMin - 1;       
-            }
-        }
-
-        this.setState({ second: nSecond, min: nMin, timeExpired: expired });
-
-        if(nMin == 1 && nSecond == 60){
-            
-            let self = this;
-            AjaxSend.loader(false);
-            let loader = document.querySelector('#loader');
-            console.log(loader)
-            axios({ 
-                method: 'post', 
-                url: Routing.generate('app_booking_reset_timer', {'responsableId': responsableId})
-            }).then(function (response) {
-                AjaxSend.loader(false);
-                self.setState({ min: 2, second: 6, timeExpired: false });
-            });
-        }
-        
-        
     }
     /**
     * Fonction pour commencer le processus de demande de ticket.
@@ -136,6 +101,7 @@ export class Booking extends Component {
 
                 window.addEventListener("beforeunload", self.handleConfirmeExit);
                 window.addEventListener('unload', self.handleUnload);
+                window.addEventListener('pagehide', self.handleUnload);
             }            
         });
     }
@@ -180,12 +146,12 @@ export class Booking extends Component {
 
         const {historyId} = this.state;
 
-        AjaxSend.loader(false);
-        axios({ 
-            method: 'post', 
-            url: Routing.generate('app_booking_tmp_history_two', { 'id' : historyId }),
-            data: { responsable: data },
-        }).then(function (response) {AjaxSend.loader(false);});
+        // AjaxSend.loader(false);
+        // axios({
+        //     method: 'post',
+        //     url: Routing.generate('app_booking_tmp_history_two', { 'id' : historyId }),
+        //     data: { responsable: data },
+        // }).then(function (response) {AjaxSend.loader(false);});
 
         let input0 = document.querySelector('.step-prospect-0 #numAdh-0');
         let input1 = document.querySelector('.step-prospect-0 #firstname-0');
@@ -270,7 +236,7 @@ export class Booking extends Component {
         return <>
             <section className={"section-infos " + classStart}>
                 <Infos day={day} dayTypeString={dayTypeString}/>
-                <Starter onClick={this.handleClickStart} days={days} dayRemaining={dayRemaining} disabledStart={disabledStart} />
+                <Starter onClick={this.handleClickStart} day={day} dayTypeString={dayTypeString} dayRemaining={dayRemaining} disabledStart={disabledStart} />
             </section>
             <section className="section-steps">
                 <StepDot classDot={classDot} classStep1={classStep1} classStep2={classStep2} classStep3={classStep3} classStep4={classStep4} />
@@ -337,22 +303,7 @@ function Infos({day, dayTypeString}) {
     )
 }
 
-function Starter({onClick, days, dayRemaining, disabledStart}) {
-
-    let items = JSON.parse(days).map((elem, index) => {
-        if(elem.isOpen){
-            return <div key={index} className={elem.isOpen ? 'item active' : 'item'}>
-            <span className={"starter-dates-dot starter-dates-dot-" + elem.isOpen}></span>
-            <span> {elem.fullDateString} </span>
-            <span className="txt-discret">
-                 - Journée des {elem.typeString}
-            </span>
-        </div>
-        }else{
-            return null;
-        }
-        
-    });
+function Starter({onClick, day, dayTypeString, dayRemaining, disabledStart}) {
 
     return (
         <div className="starter">
@@ -360,7 +311,11 @@ function Starter({onClick, days, dayRemaining, disabledStart}) {
                 <div className="starter-infos">
                     <p> Réservation pour le : </p>
 
-                    <div className="starter-dates">{items} </div>
+                    <div className="starter-dates">
+                        <span className="starter-dates-dot starter-dates-dot-0"></span>
+                        <span> {day} </span>
+                        <span className="txt-discret"> - Journée des {dayTypeString} </span>
+                    </div>
 
                     <div className="alert alert-info">
                         <b>A apporter</b> à la journée d'inscriptions : 

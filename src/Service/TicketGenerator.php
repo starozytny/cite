@@ -37,16 +37,16 @@ class TicketGenerator
         $fileImage = $this->getBarcodeDirectory() . '/' .$responsable->getId() . '-barcode.jpg';
         $generatorr = file_put_contents($fileImage, $generator->getBarcode($ticket, $generator::TYPE_CODE_128));
 
-        $pdfDirectory = $this->getBarcodeDirectory() . '/pdf';
-        if(!is_dir($pdfDirectory)){
-            mkdir($pdfDirectory);
-        }
-
-        $creneau = $responsable->getCreneau();
-        $day = $creneau->getTicketDay();
-        $mpdf = $this->createFileTicket($fileImage, $responsable, $day, $creneau, $prospects, $ticket);
-
-        $mpdf->Output($pdfDirectory . '/' . $ticket . '-ticket.pdf', Destination::FILE);
+//        $pdfDirectory = $this->getBarcodeDirectory() . '/pdf';
+//        if(!is_dir($pdfDirectory)){
+//            mkdir($pdfDirectory);
+//        }
+//
+//        $creneau = $responsable->getCreneau();
+//        $day = $creneau->getTicketDay();
+//        $mpdf = $this->createFileTicket($fileImage, $responsable, $day, $creneau, $prospects, $ticket);
+//
+//        $mpdf->Output($pdfDirectory . '/' . $ticket . '-ticket.pdf', Destination::FILE);
 
         return $ticket;
     }

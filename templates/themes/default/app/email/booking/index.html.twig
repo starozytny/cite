@@ -12,6 +12,9 @@
 
 {% block ticket %}
     <b>{{ ticket }}</b>
+    <div>
+        <a href="{{ print }}" target="_blank">Imprimer le billet</a>
+    </div>
 {% endblock %}
 
 {% block responsable %}{{ responsable.civility }} {{ responsable.firstname | capitalize }} {{ responsable.lastname | upper }}{% endblock %}

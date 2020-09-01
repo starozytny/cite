@@ -49,22 +49,24 @@ class BookingController extends AbstractController
         // Delete user no confirme register
         // $this->responsableService->deleteNonConfirmed();
         $em = $this->getDoctrine()->getManager();
-        $days = $em->getRepository(TicketDay::class)->findAll();
-        $day = $openDay->open();
+        $days = null;
+//        $days = $em->getRepository(TicketDay::class)->findAll();
+        $day = $em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
+        //$day = $openDay->open();
 
         if(!$day){
             return $this->render('root/app/pages/booking/index.html.twig');
         }
 
-        $cps = $em->getRepository(DataCodePostaux::class)->findAll();
+        //$cps = $em->getRepository(DataCodePostaux::class)->findAll();
 
         $days = $serializer->serialize($days, 'json', ['attributes' => ['typeString', 'day', 'isOpen', 'remaining', 'fullDateString']]);
-        $cps = $serializer->serialize($cps, 'json', ['attributes' => ['codePostal', 'nomCommune']]);
+        //$cps = $serializer->serialize($cps, 'json', ['attributes' => ['codePostal', 'nomCommune']]);
 
         return $this->render('root/app/pages/booking/index.html.twig', [
             'day' => $day,
             'days' => $days,
-            'cps' => $cps
+            'cps' => null
         ]);
     }
 
@@ -86,12 +88,12 @@ class BookingController extends AbstractController
                 if($remaining > 0){ // reste de la place dans ce creneau
 
                     $responsable = $this->responsableService->createTmpResponsable($creneau, $day);
-                    $history = $this->history->createHistory($creneau, $day);
+//                    $history = $this->history->createHistory($creneau, $day);
                     $this->remaining->decreaseRemaining($day, $creneau);
+//                    $em->persist($history);
+                    $em->persist($responsable); $em->flush();
 
-                    $em->persist($responsable); $em->persist($history); $em->flush();
-
-                    return new JsonResponse(['code' => 1, 'creneauId' => $creneau->getId(), 'responsableId' => $responsable->getId(), 'historyId' => $history->getId()]);    
+                    return new JsonResponse(['code' => 1, 'creneauId' => $creneau->getId(), 'responsableId' => $responsable->getId(), 'historyId' => 0]);
 
                 }else{
                     if($i == $len - 1) {
@@ -111,9 +113,9 @@ class BookingController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $responsable = $responsableId;
-        $responsable->setCreateAt(new DateTime());
-        $em->persist($responsable); $em->flush();
+//        $responsable = $responsableId;
+//        $responsable->setCreateAt(new DateTime());
+//        $em->persist($responsable); $em->flush();
     
         return new JsonResponse([ 'code' => 1 ]);
     }
@@ -123,8 +125,8 @@ class BookingController extends AbstractController
      */
     public function historyTwo(TicketHistory $id, Request $request)
     {
-        $data = json_decode($request->getContent());
-        $this->history->updateResp($id->getId(),  $data->responsable);
+//        $data = json_decode($request->getContent());
+//        $this->history->updateResp($id->getId(),  $data->responsable);
     
         return new JsonResponse([ 'code' => 1 ]);
     }
@@ -142,7 +144,7 @@ class BookingController extends AbstractController
         if(count($alreadyRegistered) != 0){
             return new JsonResponse(['code' => 2, 'duplicated' => $alreadyRegistered]);
         }
-        $this->history->updateFamille($data->historyId, count($prospects));
+//        $this->history->updateFamille($data->historyId, count($prospects));
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $horaire = date_format($creneau->getHoraire(), 'H\hi');
@@ -164,36 +166,32 @@ class BookingController extends AbstractController
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau, $id, $differentiel);
-        if($responsable != false){
-            $prospects = $em->getRepository(TicketProspect::class)->findBy(array('responsable' => $responsableId));
-            do{
-                $ticket = $ticketGenerator->generate($responsable, $prospects);
-                $existe = $em->getRepository(TicketResponsable::class)->findOneBy(array('ticket' => $ticket));
-            }while($existe);
-    
-            $responsable->setTicket($ticket);
-            $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
-            $horaireString = $responsable->getCreneau()->getHoraireString();
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('responsable' => $responsableId));
+        do{
+            $ticket = $ticketGenerator->generate($responsable, $prospects);
+            $existe = $em->getRepository(TicketResponsable::class)->findOneBy(array('ticket' => $ticket));
+        }while($existe);
 
-            $title = 'Reservation journee des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cite de la musique';
-            $html = 'root/app/email/booking/index.html.twig';
-            $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
-            $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
-            $barcode = base64_encode($img);
-            $params =  ['ticket' => $ticket, 'barcode' => $barcode  , 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
-            $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-    
-            // Send mail     
-            if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file, $responsable ) != true){
-                return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
-            }
-    
-            $this->history->updateTicket($data->historyId);
-            $em->persist($responsable); $em->flush();
-            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print, 'message' => $responsable->getEmail()]);
-        }else{
-            return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
+        $responsable->setTicket($ticket);
+        $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
+        $horaireString = $responsable->getCreneau()->getHoraireString();
+
+        $title = 'Reservation journee des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cite de la musique';
+        $html = 'root/app/email/booking/index.html.twig';
+        $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
+        $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
+        $barcode = base64_encode($img);
+        $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'print' => $print , 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
+
+        // Send mail
+        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file, $responsable ) != true){
+            return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
         }
+
+//            $this->history->updateTicket($data->historyId);
+        $em->persist($responsable); $em->flush();
+        return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print, 'message' => $responsable->getEmail()]);
     }
 
     /**
@@ -324,7 +322,6 @@ class BookingController extends AbstractController
 
         $adh = null;
         $numAdh = $this->setToNullIfEmpty($item->numAdh);
-        dump($item->isAdh);
         if($item->isAdh == true){
             // $adh = $em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $numAdh));
             $adh = $em->getRepository(CiAdherent::class)->findOneBy(array(
