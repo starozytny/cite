@@ -20,7 +20,7 @@ class Mailer
         $this->publicDirectory = $publicDirectory;
     }
 
-    public function sendMail($title, $text, $html, $params, $email,  $file = null, $responsable=null, $from = 'inscriptions@citemusique-marseille.com')
+    public function sendMail($title, $text, $html, $params, $email,  $file = null, $responsable=null, $from = 'no-reply@inscriptions-musique-marseille.com')
     {
         $email = (new TemplatedEmail())
             ->from($from)
@@ -32,7 +32,7 @@ class Mailer
         ;
 
         if($file != null){
-            $email->attachFromPath($file);
+//            $email->attachFromPath($file);
             $email->embed(fopen($this->getBarcodeDirectory() . '/' .$responsable->getId() . '-barcode.jpg', 'r'), 'barcode.jpg');
             $email->embed(fopen($this->getPublicDirectory() . '/public/logo-ca-little.png', 'r'), 'logo.png');
         }

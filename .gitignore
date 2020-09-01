@@ -35,3 +35,5 @@ node_modules
 /bin/traiter/
 /bin/traiter/*.csv
 /bin/original/
+
+/.idea/*
