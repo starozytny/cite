@@ -113,9 +113,9 @@ class BookingController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-//        $responsable = $responsableId;
-//        $responsable->setCreateAt(new DateTime());
-//        $em->persist($responsable); $em->flush();
+       $responsable = $responsableId;
+       $responsable->setCreateAt(new DateTime());
+       $em->persist($responsable); $em->flush();
     
         return new JsonResponse([ 'code' => 1 ]);
     }
