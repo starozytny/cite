@@ -103,17 +103,36 @@ export class Booking extends Component {
         if(x.matches){
             if(nMin == 1 && nSecond == 60){
 
-                let self = this;
-                AjaxSend.loader(false);
-                let loader = document.querySelector('#loader');
-                console.log(loader)
-                axios({ 
-                    method: 'post', 
-                    url: Routing.generate('app_booking_reset_timer', {'responsableId': responsableId})
-                }).then(function (response) {
-                    AjaxSend.loader(false);
-                    self.setState({ min: 29, second: 60, timeExpired: false });
-                });
+            //     let self = this;
+            //     AjaxSend.loader(false);
+            //     let loader = document.querySelector('#loader');
+            //     console.log(loader)
+            //     axios({ 
+            //         method: 'post', 
+            //         url: Routing.generate('app_booking_reset_timer', {'responsableId': responsableId})
+            //     }).then(function (response) {
+            //         AjaxSend.loader(false);
+            //         self.setState({ min: 29, second: 60, timeExpired: false });
+            //     });
+                window.removeEventListener("beforeunload", self.handleConfirmeExit, true);
+                window.removeEventListener('unload', self.handleUnload, true);
+                window.removeEventListener('pagehide', self.handleUnload, true);
+                Swal.fire({
+                    title: 'Votre session a expirée',
+                    text: 'Pour éviter que votre session expire, veuillez passer par un ordinateur.',
+                    icon: 'warning',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Recommencer'
+                    }).then((result) => {
+                    if (result.value) {
+                        location.reload();
+                        self.setState({ min: 2, second: 5, timeExpired: true });
+                    }
+                })
+               
+                
             }
         }        
     }
@@ -129,7 +148,7 @@ export class Booking extends Component {
             // Swal.fire(
             //     'Vous êtes sur mobile',
             //     'Sur mobile, vous disposez de 30 minutes pour réaliser votre réservation. Passé ce délai, il faudra recommencer. Sur ordinateur, le temps est illimité.'
-            //   )
+            // )
             isMobile = true;
         }
 

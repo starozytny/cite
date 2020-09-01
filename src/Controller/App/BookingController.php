@@ -83,7 +83,6 @@ class BookingController extends AbstractController
         $isMobile = $data->isMobile;
         $i = 0; $len = count($creneaux);
 
-        dump($isMobile);
         if($day->getRemaining() > 0 ){ // il reste des tickets
             
             foreach($creneaux as $creneau){
