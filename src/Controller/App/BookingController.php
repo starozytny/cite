@@ -166,36 +166,32 @@ class BookingController extends AbstractController
 
         $creneau = $em->getRepository(TicketCreneau::class)->find($data->creneauId);
         $responsable = $this->createResponsableAndProspects($responsableId, $responsableData, $prospects, $creneau, $id, $differentiel);
-        if($responsable != false){
-            $prospects = $em->getRepository(TicketProspect::class)->findBy(array('responsable' => $responsableId));
-            do{
-                $ticket = $ticketGenerator->generate($responsable, $prospects);
-                $existe = $em->getRepository(TicketResponsable::class)->findOneBy(array('ticket' => $ticket));
-            }while($existe);
-    
-            $responsable->setTicket($ticket);
-            $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
-            $horaireString = $responsable->getCreneau()->getHoraireString();
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('responsable' => $responsableId));
+        do{
+            $ticket = $ticketGenerator->generate($responsable, $prospects);
+            $existe = $em->getRepository(TicketResponsable::class)->findOneBy(array('ticket' => $ticket));
+        }while($existe);
 
-            $title = 'Reservation journee des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cite de la musique';
-            $html = 'root/app/email/booking/index.html.twig';
-            $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
-            $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
-            $barcode = base64_encode($img);
-            $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-            $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'print' => $print , 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
-    
-            // Send mail     
-            if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file, $responsable ) != true){
-                return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
-            }
-    
-//            $this->history->updateTicket($data->historyId);
-            $em->persist($responsable); $em->flush();
-            return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print, 'message' => $responsable->getEmail()]);
-        }else{
-            return new JsonResponse(['code' => 0, 'message' => 'Erreur, la réservation n\'a pas pu aboutir.']);
+        $responsable->setTicket($ticket);
+        $responsable->setStatus(TicketResponsable::ST_CONFIRMED);
+        $horaireString = $responsable->getCreneau()->getHoraireString();
+
+        $title = 'Reservation journee des ' . $id->getTypeString() . ' du ' . date_format($id->getDay(), 'd/m/Y') . '. - Cite de la musique';
+        $html = 'root/app/email/booking/index.html.twig';
+        $file = $this->getParameter('barcode_directory') . '/pdf/' . $ticket . '-ticket.pdf';
+        $img = file_get_contents($this->getParameter('barcode_directory') . '/' . $responsable->getId() . '-barcode.jpg');
+        $barcode = base64_encode($img);
+        $print = $this->generateUrl('app_ticket_get', ['id' => $responsable->getId(), 'ticket' => $ticket, 'ticketDay' => $id->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $params =  ['ticket' => $ticket, 'barcode' => $barcode, 'print' => $print , 'horaire' => $horaireString, 'day' => $id, 'responsable' => $responsable, 'prospects' => $prospects];
+
+        // Send mail
+        if($mailer->sendMail( $title, $title, $html, $params, $responsable->getEmail(), $file, $responsable ) != true){
+            return new JsonResponse([ 'code' => 0, 'errors' => 'Erreur, le service d\'envoie de mail est indisponible.' ]);
         }
+
+//            $this->history->updateTicket($data->historyId);
+        $em->persist($responsable); $em->flush();
+        return new JsonResponse(['code' => 1, 'ticket' => $ticket, 'barcode' => $barcode, 'print' => $print, 'message' => $responsable->getEmail()]);
     }
 
     /**
@@ -326,7 +322,6 @@ class BookingController extends AbstractController
 
         $adh = null;
         $numAdh = $this->setToNullIfEmpty($item->numAdh);
-        dump($item->isAdh);
         if($item->isAdh == true){
             // $adh = $em->getRepository(CiAdherent::class)->findOneBy(array('numAdh' => $numAdh));
             $adh = $em->getRepository(CiAdherent::class)->findOneBy(array(
