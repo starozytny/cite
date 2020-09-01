@@ -26,7 +26,8 @@ class ResponsableService
     {
         $responsables = $this->em->getRepository(TicketResponsable::class)->findBy(array(
             'status' => TicketResponsable::ST_TMP,
-            'isWaiting' => false
+            'isWaiting' => false,
+            'isMobile' => true
         ));
 
         foreach($responsables as $responsable){
@@ -80,7 +81,7 @@ class ResponsableService
     /**
      * Create TMP Responsable
      */
-    public function createTmpResponsable(TicketCreneau $creneau, TicketDay $day)
+    public function createTmpResponsable(TicketCreneau $creneau, TicketDay $day, $isMobile = false)
     {
         return (new TicketResponsable())
             ->setFirstname('')
@@ -95,6 +96,7 @@ class ResponsableService
             ->setCity('')
             ->setCreneau($creneau)
             ->setDay($day)
+            ->setIsMobile($isMobile)
         ;
     }
 

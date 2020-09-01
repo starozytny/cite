@@ -73,21 +73,24 @@ class BookingController extends AbstractController
     /**
      * @Route("/tmp/book/{id}/start", options={"expose"=true}, name="tmp_book_start")
      */
-    public function start(TicketDay $id)
+    public function start(Request $request, TicketDay $id)
     {
         $em = $this->getDoctrine()->getManager();
 
         $day = $id;
         $creneaux = $em->getRepository(TicketCreneau::class)->findBy(array('ticketDay' => $id), array('horaire' => 'ASC'));
-    
+        $data = json_decode($request->getContent());
+        $isMobile = $data->isMobile;
         $i = 0; $len = count($creneaux);
+
+        dump($isMobile);
         if($day->getRemaining() > 0 ){ // il reste des tickets
             
             foreach($creneaux as $creneau){
                 $remaining = $creneau->getRemaining();
                 if($remaining > 0){ // reste de la place dans ce creneau
 
-                    $responsable = $this->responsableService->createTmpResponsable($creneau, $day);
+                    $responsable = $this->responsableService->createTmpResponsable($creneau, $day, $isMobile);
 //                    $history = $this->history->createHistory($creneau, $day);
                     $this->remaining->decreaseRemaining($day, $creneau);
 //                    $em->persist($history);

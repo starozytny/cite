@@ -108,6 +108,11 @@ class TicketResponsable
      */
     private $day;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isMobile;
+
     public function __construct()
     {
         $this->prospects = new ArrayCollection();
@@ -351,5 +356,17 @@ class TicketResponsable
 
     public function getAdresseString(){
         return $this->getAdr() . ', ' . $this->getCp() . " " . $this->getCity();
+    }
+
+    public function getIsMobile(): ?bool
+    {
+        return $this->isMobile;
+    }
+
+    public function setIsMobile(bool $isMobile): self
+    {
+        $this->isMobile = $isMobile;
+
+        return $this;
     }
 }

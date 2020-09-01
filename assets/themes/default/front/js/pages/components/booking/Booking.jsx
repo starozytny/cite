@@ -122,20 +122,23 @@ export class Booking extends Component {
     */
     handleClickStart (e) {
 
-        // var x = window.matchMedia("(max-width: 768px)")
+        var x = window.matchMedia("(max-width: 768px)")
+        let isMobile = false;
 
-        // if(x.matches){
-        //     Swal.fire(
-        //         'Vous êtes sur mobile',
-        //         'Sur mobile, vous disposez de 30 minutes pour réaliser votre réservation. Passé ce délai, il faudra recommencer. Sur ordinateur, le temps est illimité.'
-        //       )
-        // }
+        if(x.matches){
+            // Swal.fire(
+            //     'Vous êtes sur mobile',
+            //     'Sur mobile, vous disposez de 30 minutes pour réaliser votre réservation. Passé ce délai, il faudra recommencer. Sur ordinateur, le temps est illimité.'
+            //   )
+            isMobile = true;
+        }
 
         this.setState({disabledStart: 'disabled'})
         let self = this;
         axios({ 
             method: 'post', 
             url: Routing.generate('app_booking_tmp_book_start', { 'id' : this.props.dayId }),
+            data: {isMobile: isMobile}
         }).then(function (response) {
             let data = response.data; let code = data.code;
             if(code === 1){
@@ -252,7 +255,7 @@ export class Booking extends Component {
     }
 
     handleToStep4 () {
-        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer), min: 999, second: 99});
+        this.setState({ classDot: 'active-4', classStep3: 'full', classStep4: 'active', timer: clearInterval(this.state.timer), min: 99999, second: 99});
 
         const {prospects, responsable, responsableId, creneauId} = this.state;
         
