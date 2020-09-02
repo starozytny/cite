@@ -265,7 +265,6 @@ class BookingController extends AbstractController
                     'civility' => $item->civility,
                     'firstname' => $item->firstname,
                     'lastname' => $item->lastname,
-                    'email' => $item->email != "" ? $item->email : $responsable->email,
                     'birthday' => new DateTime($birthday),
                     'numAdh' => $numAdh
                 ));
@@ -275,7 +274,6 @@ class BookingController extends AbstractController
                     'civility' => $item->civility,
                     'firstname' => $item->firstname,
                     'lastname' => $item->lastname,
-                    'email' => $item->email != "" ? $item->email : $responsable->email,
                     'birthday' => new DateTime($birthday),
                     'numAdh' => $numAdh
                 ));

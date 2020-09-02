@@ -67,7 +67,6 @@ if(toolbarCommun){
 }
 
 let deletes = document.querySelectorAll('.btn-delete');
-console.log(deletes)
 if(deletes){
     deletes.forEach((elem) => {
         elem.addEventListener('click', function(e){
