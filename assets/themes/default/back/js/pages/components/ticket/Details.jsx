@@ -47,6 +47,19 @@ function formattedPhone(elem){
     }
 }
 
+function compareLibelle(a,b){
+    const bandA = a.libelle;
+    const bandB = b.libelle;
+
+    let comparison = 0;
+    if (bandA > bandB) {
+        comparison = 1;
+    } else if (bandA < bandB) {
+        comparison = -1;
+    }
+    return comparison;
+}
+
 export class Details extends Component {
     constructor(props){
         super(props)
@@ -61,6 +74,7 @@ export class Details extends Component {
         creneaux = creneaux.filter((thing, index, self) =>
             index === self.findIndex((t) => ( t.value === thing.value  ))
         )
+        creneaux = creneaux.sort(compareLibelle)
  
         let oriResponsables = JSON.parse(JSON.parse(this.props.responsables))
         let resps = oriResponsables.filter(function(elem){
