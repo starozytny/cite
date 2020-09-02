@@ -58,7 +58,7 @@ class TicketController extends AbstractController
         $responsables = $serializer->serialize($responsables, 'json', ['attributes' => [
             'id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket', 
             'prospects' => ['id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
-            'numAdh', 'status', 'statusString', 'adherent' => ['id'], 'isDiff'], 
+            'numAdh', 'status', 'statusString', 'adherent' => ['id', 'numAdh'], 'isDiff'], 
             'creneau' => ['id', 'horaireString']
         ]]);
 
