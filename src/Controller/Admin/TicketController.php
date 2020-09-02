@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Cite\CiAdherent;
 use App\Entity\TicketCreneau;
 use App\Entity\TicketDay;
 use App\Entity\TicketHistory;
@@ -289,6 +290,17 @@ class TicketController extends AbstractController
                     $num = null;
                     if($prospect->getAdherent()){
                         $num = $prospect->getAdherent()->getNumAdh();
+                    }else{
+                        $existe = $em->getRepository(CiAdherent::class)->findBy(array(
+                            'firstname' => ucfirst(mb_strtolower($prospect->getFirstname())),
+                            'lastname' => mb_strtoupper($prospect->getLastname())
+                        ));
+
+                        if(count($existe) == 1){
+                            $prospect->setAdherent($existe[0]);
+                            $em->persist($prospect);
+                            $num = $existe[0]->getNumAdh();
+                        }
                     }
                     $tmp = array(
                         $prospect->getCreneau()->getHoraireString(),
@@ -309,7 +321,7 @@ class TicketController extends AbstractController
 
         $fileName = 'eleves-' . $ticketDay->getId() . '.xlsx';
 
-        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'EST ADHERENT', 'NUMERO POTENTIEL', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
+        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'EST ADHERENT', 'NUMERO ADHERENT', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
         $json = $export->createFile('excel', 'Liste des élèves du ' . $ticketDay->getId(), $fileName , $header, $data, 7, null, 'eleves/');
         
         return new BinaryFileResponse($this->getParameter('export_eleves_directory'). '/' . $fileName);
