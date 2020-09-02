@@ -292,8 +292,8 @@ class TicketController extends AbstractController
                     }
                     $tmp = array(
                         $prospect->getCreneau()->getHoraireString(),
-                        $prospect->getLastname(),
-                        $prospect->getFirstname(),
+                        mb_strtoupper($prospect->getLastname()),
+                        ucfirst(mb_strtolower($prospect->getFirstname())),
                         $prospect->getNumAdh(),
                         $num,
                         $prospect->getBirthdayString(),
