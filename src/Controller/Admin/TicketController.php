@@ -286,11 +286,16 @@ class TicketController extends AbstractController
             $prospects = $responsable->getProspects();
             if(count($prospects) > 0 && $responsable->getStatus() != TicketResponsable::ST_TMP){
                 foreach ($prospects as $prospect){
+                    $num = null;
+                    if($prospect->getAdherent()){
+                        $num = $prospect->getAdherent()->getNumAdh();
+                    }
                     $tmp = array(
                         $prospect->getCreneau()->getHoraireString(),
                         $prospect->getLastname(),
                         $prospect->getFirstname(),
                         $prospect->getNumAdh(),
+                        $num,
                         $prospect->getBirthdayString(),
                         $prospect->getEmail(),
                         $prospect->getPhoneMobile(),
@@ -304,7 +309,7 @@ class TicketController extends AbstractController
 
         $fileName = 'eleves-' . $ticketDay->getId() . '.xlsx';
 
-        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'NUMERO ADHERENT', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
+        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'EST ADHERENT', 'NUMERO POTENTIEL', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
         $json = $export->createFile('excel', 'Liste des élèves du ' . $ticketDay->getId(), $fileName , $header, $data, 7, null, 'eleves/');
         
         return new BinaryFileResponse($this->getParameter('export_eleves_directory'). '/' . $fileName);
