@@ -113,6 +113,11 @@ class TicketResponsable
      */
     private $isMobile;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $browser;
+
     public function __construct()
     {
         $this->prospects = new ArrayCollection();
@@ -366,6 +371,18 @@ class TicketResponsable
     public function setIsMobile(bool $isMobile): self
     {
         $this->isMobile = $isMobile;
+
+        return $this;
+    }
+
+    public function getBrowser(): ?string
+    {
+        return $this->browser;
+    }
+
+    public function setBrowser(?string $browser): self
+    {
+        $this->browser = $browser;
 
         return $this;
     }

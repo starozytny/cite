@@ -58,7 +58,6 @@ class ResponsableService
      */
     public function updateResponsable($responsableId, $resp, $waiting)
     {
-
         $responsable = $this->em->getRepository(TicketResponsable::class)->find($responsableId);
 
         if(!$responsable){
@@ -76,6 +75,7 @@ class ResponsableService
         $responsable->setCp($resp->cp);
         $responsable->setCity($resp->city);
         $responsable->setIsWaiting($waiting);
+        $responsable->setBrowser($_SERVER['HTTP_USER_AGENT']);
 
         return $responsable;
     }
