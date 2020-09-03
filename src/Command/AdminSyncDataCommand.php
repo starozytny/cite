@@ -23,6 +23,7 @@ class AdminSyncDataCommand extends Command
     protected static $defaultName = 'admin:sync:data';
     private $em;
     private $export;
+    const STATUS = TicketProspect::ST_CONFIRMED;
 
     public function __construct(EntityManagerInterface $entityManager, Export $export)
     {
@@ -43,19 +44,17 @@ class AdminSyncDataCommand extends Command
     {
         date_default_timezone_set('Europe/Paris');
         $io = new SymfonyStyle($input, $output);
-        $em = $this->em;
          
-        // $io->title("Données originaux [PERSONNES]");
-        // $dataResponsables = $this->getDataOriPersonnes();
-        $dataResponsables = array();
+        $io->title("Données originaux [PERSONNES]");
+        $dataResponsables = $this->getDataOriPersonnes();
 
         $io->title("Données nouveaux [PERSONNES]");
         $dataNouveauxResponsables = $this->getDataNouveauxPersonnes();
+        $dataResponsables = array_merge($dataResponsables, $dataNouveauxResponsables);
 
-        // $io->title("Données update [PERSONNES]");
-        // $dataNouveauxResponsables = $this->getDataUpdatePersonnes();
-
-        $dataResponsables = array_replace($dataResponsables, $dataNouveauxResponsables);
+        $io->title("Données update [PERSONNES]");
+        $dataUpdateResponsables = $this->getDataUpdatePersonnes($dataResponsables);
+        $dataResponsables = array_replace($dataResponsables, $dataUpdateResponsables);
 
         $io->title("Création du fichier [PERSONNE]");
         $this->createFilePersonnes($dataResponsables);
@@ -66,14 +65,50 @@ class AdminSyncDataCommand extends Command
         return 0;
     }
 
-    private function getDataUpdatePersonnes(){
+    private function getDataUpdatePersonnes($dataResponsables){
+        $em = $this->em;
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('status' => self::STATUS), array('id' => 'ASC'));
 
+        $data = array();
+        foreach ($prospects as $prospect){
+
+            $passe = false;
+            // RESPONSABLE saisie via le website
+            $responsable = $prospect->getResponsable();
+
+            if($prospect->getAdherent()){ // Si c'est un adhérent il a surement une PERSONNE
+                if($prospect->getAdherent()->getPersonne()){ // Il a une PERSONNE on va update cette PERSONNE
+                    $oldId = $prospect->getAdherent()->getPersonne()->getOldId();
+                    $passe = true;
+                }
+            }else{
+                $existe = $em->getRepository(CiAdherent::class)->findOneBy(array( // Cette année obligé car il y a peu etre des doublons vu qu'il n'y a pas de numAdh 
+                    'firstname' => ucfirst(mb_strtolower($prospect->getFirstname())),
+                    'lastname' => mb_strtoupper($prospect->getLastname())
+                ));
+    
+                if($existe){
+                    if($existe->getPersonne()){
+                        $oldId = $existe->getPersonne()->getOldId();
+                        $passe = true;
+                    }
+                }
+            }
+
+            if($passe){
+                $personne = $em->getRepository(WindevPersonne::class)->find($oldId); // Get value Personne Windev
+                $tmp = $this->getTmpPers($personne, $responsable, $personne->getId(), 1);
+                $data[array_search($personne->getId(), array_column($dataResponsables, 0))] = $tmp; // ADD KEY INDEX FOR UPDATE DATARESPONSABLES
+            }
+        }
+
+        return $data;
     }
 
     private function getDataNouveauxPersonnes(){
         $em = $this->em;
         $personnes = $em->getRepository(WindevPersonne::class)->findBy(array(), array('id' => 'ASC'));
-        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('status' => TicketProspect::ST_CONFIRMED), array('id' => 'ASC'));
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('status' => self::STATUS), array('id' => 'ASC'));
 
         // le dernier id de la table PERSONNE
         $lastID = $personnes[count($personnes)-1]->getId();
@@ -83,13 +118,24 @@ class AdminSyncDataCommand extends Command
         foreach ($prospects as $prospect){
 
             $passe = true;
-            if($prospect->getAdherent()){ // Si c'est un adhérent mais qu'il n'a pas de personne (ex : peu etre un prof qui inscrit ses enfants)
-                if(!$prospect->getAdherent()->getPersonne()){
+            if($prospect->getAdherent()){ // Si c'est un adhérent et qu'il a une personne il ne passe pas
+                if($prospect->getAdherent()->getPersonne()){
                     $passe = false;
                 }
+            }else{
+                $existe = $em->getRepository(CiAdherent::class)->findOneBy(array( // Cette année obligé car il y a peu etre des doublons vu qu'il n'y a pas de numAdh 
+                    'firstname' => ucfirst(mb_strtolower($prospect->getFirstname())),
+                    'lastname' => mb_strtoupper($prospect->getLastname())
+                ));
+
+                if($existe){
+                    if($existe->getPersonne()){
+                        $passe = false;
+                    }
+                }                
             }
 
-            if($passe){ // S'il n'est pas adhérent = check si une PERSONNE existe sinon le RESPONSABLE sera la PERSONNE
+            if($passe){ // S'il n'est pas adhérent ou adherent sans responsable(personne) = check si une PERSONNE existe est donc le RESPONSABLE sera la PERSONNE
 
                 // RESPONSABLE saisie via le website
                 $responsable = $prospect->getResponsable();
@@ -146,7 +192,7 @@ class AdminSyncDataCommand extends Command
     {
         date_default_timezone_set('Europe/Paris');
 
-        $id=$pers->getId();
+        $id = $pers->getId();
         $lastname = $pers->getNom();
         $firstname = $pers->getPrenom();
         $civility = intval($pers->getTicleunik());

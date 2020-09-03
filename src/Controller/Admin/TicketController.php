@@ -298,7 +298,6 @@ class TicketController extends AbstractController
 
                         if(count($existe) == 1){
                             $prospect->setAdherent($existe[0]);
-                            $em->persist($prospect);
                             $num = $existe[0]->getNumAdh();
                         }
                     }
