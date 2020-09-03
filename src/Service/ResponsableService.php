@@ -58,6 +58,7 @@ class ResponsableService
      */
     public function updateResponsable($responsableId, $resp, $waiting)
     {
+        date_default_timezone_set('Europe/Paris');
         $responsable = $this->em->getRepository(TicketResponsable::class)->find($responsableId);
 
         if(!$responsable){
@@ -85,6 +86,7 @@ class ResponsableService
      */
     public function createTmpResponsable(TicketCreneau $creneau, TicketDay $day, $isMobile = false)
     {
+        date_default_timezone_set('Europe/Paris');
         return (new TicketResponsable())
             ->setFirstname('')
             ->setLastname('')
