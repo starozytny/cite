@@ -75,18 +75,18 @@ class AdminSyncDataCommand extends Command
         $dataResponsables = array();
         $dataAdherents = array();
         foreach ($responsables as $responsable){
+            $prospects = $responsable->getProspects();
 
-            // Check s'il existe une PERSONNE correspondant aux donnée du RESPONSABLE
-            $personnesExistent = $em->getRepository(CiPersonne::class)->findBy(array(
-                'firstname' => mb_strtoupper($responsable->getLastname()),
-                'lastname' => ucfirst(mb_strtolower($responsable->getFirstname()))
-            ));
+            $registered = false;
+            foreach($prospects as $prospect){
+                if($prospect->getStatus() == self::STATUS_PROSPECT){
+                    $registered = true;
+                }
+            }
 
-            if(count($personnesExistent) == 0 || count($personnesExistent) > 1){ // S'il n'existe pas ou qu'il y a > 1 de résultats de PERSONNE => on créé ce nouveau PERSONNE
-
-                $prospects = $responsable->getProspects();
+            if($registered){
                 $totalProspects = count($prospects);
-                
+            
                 $personne = null;
 
                 // POSSIBILITE : 
