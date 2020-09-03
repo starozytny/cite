@@ -119,6 +119,7 @@ class TicketProspect
 
     public function __construct()
     {
+        date_default_timezone_set('Europe/Paris');
         $this->setCreateAt(new DateTime());
         $this->setStatus(self::ST_ATTENTE);
         $this->setIsDiff(false);

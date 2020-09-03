@@ -312,6 +312,7 @@ class BookingController extends AbstractController
      */
     private function createProspect($item, $day, $creneau, $responsable, $differentiel, $waiting=false)
     {
+        date_default_timezone_set('Europe/Paris');
         $em = $this->getDoctrine()->getManager();
         $birthday = date("Y-m-d", strtotime(str_replace('/', '-', $item->birthday)));
 

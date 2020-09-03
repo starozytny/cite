@@ -120,6 +120,7 @@ class TicketResponsable
 
     public function __construct()
     {
+        date_default_timezone_set('Europe/Paris');
         $this->prospects = new ArrayCollection();
         $this->setCreateAt(new DateTime());
         $this->setIsWaiting(false);
