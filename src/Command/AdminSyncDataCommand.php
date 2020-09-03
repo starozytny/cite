@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Cite\CiAdherent;
+use App\Entity\Cite\CiPersonne;
 use App\Entity\TicketProspect;
 use App\Entity\TicketResponsable;
 use App\Entity\Windev\WindevAdherent;
@@ -40,159 +41,111 @@ class AdminSyncDataCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        date_default_timezone_set('Europe/Paris');
         $io = new SymfonyStyle($input, $output);
         $em = $this->em;
-        $export = $this->export;
-        $responsables = $em->getRepository(TicketResponsable::class)->findAll();
+         
+        // $io->title("Données originaux [PERSONNES]");
+        // $dataResponsables = $this->getDataOriPersonnes();
+        $dataResponsables = array();
+
+        $io->title("Données nouveaux [PERSONNES]");
+        $dataNouveauxResponsables = $this->getDataNouveauxPersonnes();
+
+        // $io->title("Données update [PERSONNES]");
+        // $dataNouveauxResponsables = $this->getDataUpdatePersonnes();
+
+        $dataResponsables = array_replace($dataResponsables, $dataNouveauxResponsables);
+
+        $io->title("Création du fichier [PERSONNE]");
+        $this->createFilePersonnes($dataResponsables);
+
+        $io->newLine(2);
+        $io->text('------- Completed !');
+
+        return 0;
+    }
+
+    private function getDataUpdatePersonnes(){
+
+    }
+
+    private function getDataNouveauxPersonnes(){
+        $em = $this->em;
         $personnes = $em->getRepository(WindevPersonne::class)->findBy(array(), array('id' => 'ASC'));
-        $adherents = $em->getRepository(WindevAdherent::class)->findBy(array(), array('id' => 'ASC'));
-        $adhsAndAnciens = $em->getRepository(CiAdherent::class)->findBy(array(), array('oldId' => 'ASC'));
+        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('status' => TicketProspect::ST_CONFIRMED), array('id' => 'ASC'));
+
+        // le dernier id de la table PERSONNE
+        $lastID = $personnes[count($personnes)-1]->getId();
+
+        $data = array();
+        $noDoublon = array();
+        foreach ($prospects as $prospect){
+
+            $passe = true;
+            if($prospect->getAdherent()){ // Si c'est un adhérent mais qu'il n'a pas de personne (ex : peu etre un prof qui inscrit ses enfants)
+                if(!$prospect->getAdherent()->getPersonne()){
+                    $passe = false;
+                }
+            }
+
+            if($passe){ // S'il n'est pas adhérent = check si une PERSONNE existe sinon le RESPONSABLE sera la PERSONNE
+
+                // RESPONSABLE saisie via le website
+                $responsable = $prospect->getResponsable();
+
+                // Check s'il existe une PERSONNE correspondant aux donnée du RESPONSABLE
+                $personnesExistent = $em->getRepository(CiPersonne::class)->findBy(array(
+                    'firstname' => mb_strtoupper($responsable->getLastname()),
+                    'lastname' => ucfirst(mb_strtolower($responsable->getFirstname()))
+                ));
+                if(count($personnesExistent) != 1){ // S'il n'existe pas ou qu'il y a > 1 de résultats de PERSONNE => on créé ce nouveau PERSONNE
+                    $phoneMobile = $this->formatPhone($responsable->getPhoneMobile());
+                    $phoneDomicile = $this->formatPhone($responsable->getPhoneDomicile());
+
+                    $lastID = $lastID + 1;
+
+                    $tmp = array(
+                        $lastID, 0, mb_strtoupper($responsable->getLastname()), ucfirst(mb_strtolower($responsable->getFirstname())), $this->getCivility($responsable->getCivility()),
+                        $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), mb_strtoupper($responsable->getCity()),
+                        $phoneMobile, $phoneMobile != "" ? 'mobile' : '', $phoneDomicile, $phoneDomicile != "" ? 'domicile' : '',
+                        null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
+                    );
+
+                    $tmpNoId = $tmp;
+                    array_shift($tmpNoId);
+
+                    if(!in_array($tmpNoId, $noDoublon)){
+                        array_push($data, $tmp);
+                        array_push($noDoublon, $tmpNoId);
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    private function getDataOriPersonnes()
+    {
+        $em = $this->em;
+        $windevPersonnes = $em->getRepository(WindevPersonne::class)->findBy(array(), array('id' => 'ASC'));
         
         $data = array();
-        $data2 = array();
-        $dataAdd = array();
-        $dataAdd2 = array();
-        $constOldId = $personnes[count($personnes)-1]->getId();
-        $constOldIdAdh = $adhsAndAnciens[count($adhsAndAnciens)-1]->getOldId();
-
-        $io->title("Données originaux [PERSONNE]");
-        $progressBar = new ProgressBar($output, count($personnes));
-        $progressBar->setFormat("%current%/%max% [%bar%] %percent:3s%%  🏁");
-
-        //DATA ORIGINAUX
-        $progressBar->start();
-        foreach ($personnes as $pers){
-            $progressBar->advance();
+        foreach ($windevPersonnes as $pers){
             $tmp = $this->getTmpPers($pers,null,null, 1);
             if(!in_array($tmp, $data)){
                 array_push($data, $tmp);
             }   
         }
-        $io->newLine(2);
-        $io->title("Données originaux [ADH]");
-        $progressBar = new ProgressBar($output, count($adherents));
-        foreach ($adherents as $adh){
-            $progressBar->advance();
-            $tmp =  $this->getTmpAdh($adh, $adh->getPecleunik(), null, 0, 1);
-            if(!in_array($tmp, $data2)){
-                array_push($data2, $tmp);
-            }   
-        }
-        $progressBar->finish();
 
-        //UPDATE OR NEW DATA
-        $lastkeyArray = array_key_last($data) + 2;
-        $lastkeyArrayAdherent = array_key_last($data2) + 2;
-        foreach ($responsables as $responsable) {
-            $prospects = $responsable->getProspects();
-            if(count($prospects) > 0 && $responsable->getStatus() != TicketResponsable::ST_TMP){
-
-                $registered = false;
-                $dataPers = null; $tmp2 = null;
-                if(count($prospects) >= 1){ 
-
-                    if($prospects[0]->getAdherent()){
-                        $dataPers = $prospects[0]->getAdherent()->getPersonne();
-                    }
-
-                    foreach ($prospects as $prospect){
-                        if($prospect->getStatus() == TicketProspect::ST_REGISTERED){
-                            $registered = true;
-                            if($prospect->getAdherent()){
-                                if($dataPers != $prospect->getAdherent()->getPersonne()){
-                                    $dataPers = null;
-                                }
-                                if($prospect->getAdherent()->getIsAncien() == false){
-                                    $adh = $em->getRepository(WindevAdherent::class)->findOneBy(array('id' => $prospect->getAdherent()->getOldId()));
-                                    $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 0, 1);
-                                    $dataAdd2[array_search($prospect->getAdherent()->getOldId(), array_column($data2, 0))] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
-                                }else{
-                                    $adh = $em->getRepository(WindevAncien::class)->findOneBy(array('id' => $prospect->getAdherent()->getOldId()));
-                                    $tmp2 = $this->getTmpAdh($adh, $adh->getPecleunik(), $prospect, 1, 1);
-                                    $lastkeyArrayAdherent = $lastkeyArrayAdherent+1;
-                                    $dataAdd2[$lastkeyArrayAdherent] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
-                                }
-                            }else{
-                                $constOldIdAdh = $constOldIdAdh + 1;
-                                $idAdh = $constOldIdAdh;
-                                $phone2 = $this->formatPhone($prospect->getPhoneMobile());
-                                $phone1 = $this->formatPhone($prospect->getPhoneDomicile());
-                                $name1 = $phone1 != "" ? 'domicile' : '';
-                                $name2 = $phone2 != "" ? 'mobile' : '';
-                                $tmp2 = array(
-                                    $idAdh,  $constOldId+1, null, null, $prospect->getLastname() , $prospect->getFirstname(), $this->getCivility($prospect->getCivility()), 
-                                    intval(date_format($prospect->getBirthday(), 'Ymd')), $this->getSexe($prospect->getCivility()), 2, 
-                                    0, intval(date_format(new DateTime(), 'Ymd')), null, null, null, null, 0, null, 0, intval(date_format(new DateTime(), 'Ymd')), 
-                                    intval(date_format(new DateTime(), 'Ymd')), 0, 0, 0, 0, $phone1, $name1, $phone2, $name2, $prospect->getEmail(), 
-                                    $prospect->getAdresseString(), 0, 0, 0, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                                );
-                                $lastkeyArrayAdherent = $lastkeyArrayAdherent+1;
-                                $dataAdd2[$lastkeyArrayAdherent] = $tmp2; // ADD KEY INDEX OF UPDATE DATA
-                            }
-                        }
-                       
-                    }
-                }
-                    
-                //IF PERSONNE EXISTE = UPDATE
-                if($dataPers != null){
-                    $registered = true;
-                    $personne = $em->getRepository(WindevPersonne::class)->find($dataPers->getOldId());
-                    $oldId = $personne->getId();
-                    $tmp = $this->getTmpPers($personne, $responsable, $oldId, 1);
-                }
-                
-
-                if($registered) {
-                    if($dataPers == null){ // IF PERSONNE NOT EXISTE = NEW -> ADD LAST KEY INDEX 
-                        $phoneMobile = $this->formatPhone($responsable->getPhoneMobile());
-                        $phoneDomicile = $this->formatPhone($responsable->getPhoneDomicile());
-                        $nameMobile = $phoneMobile != "" ? 'mobile' : '';
-                        $nameDomicile = $phoneDomicile != "" ? 'domicile' : '';
-                        $constOldId = $constOldId + 1;
-                        $oldId = $constOldId;
-                        $tmp = array(
-                            $oldId, 0, $responsable->getLastname(), $responsable->getFirstname(), $this->getCivility($responsable->getCivility()),
-                            $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), $responsable->getCity(),
-                            $phoneMobile, $nameMobile, $phoneDomicile, $nameDomicile,
-                            null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
-                        );
-    
-                        if(!in_array($tmp, $dataAdd)){
-                            array_push($dataAdd, $tmp);
-                        }
-                        $lastkeyArray = $lastkeyArray+1;
-                        $dataAdd[$lastkeyArray] = $tmp;
-                    }else{
-                        $dataAdd[array_search($oldId, array_column($data, 0))] = $tmp; // ADD KEY INDEX OF UPDATE DATA
-                    }
-                }
-            }
-        }  
-
-        $data = array_replace($data, $dataAdd);
-        $data2 = array_replace($data2, $dataAdd2);
-
-        $io->newLine(2);
-        $io->text('------- Completed !');
-
-        $fileName = 'PERSONNE.csv';
-        $header = array(array('PECLEUNIK', 'TYCLEUNIK', 'NOM', 'PRENOM', 'TICLEUNIK', 'ADRESSE1', 'ADRESSE2', 'CDE_POSTAL', 'VILLE', 'TELEPHONE1', 'INFO_TEL1', 'TELEPHONE2', 'INFO_TEL2',
-                              'NOCOMPTA', 'SFCLEUNIK', 'NAISSANCE', 'CACLEUNIK', 'PROFESSION', 'ADRESSE_TRAV', 'TEL_TRAV', 'COMMENT', 'MRCLEUNIK', 'NB_ECH', 'BQ_DOM1', 'BQ_DOM2',
-                              'BQ_CPTE', 'BQ_CDEBQ', 'BQ_CDEGU', 'BQ_CLERIB', 'TIRET', 'INFO_TEL_TRA', 'TELEPHONE3', 'INFO_TEL3', 'TELEPHONE4', 'INFO_TEL4', 'TELEPHONE5', 'INFO_TEL5', 'EMAIL_PERS', 'IS_EXISTE'));
-        $json = $export->createFile('csv', 'PERSONNE', $fileName , $header, $data, 39, null, 'synchro/');
-        $fileName = 'ADHERENT.csv';
-        $header = array(array('ADCLEUNIK', 'PECLEUNIK', 'NUM_FICHE', 'NUM_FAMILLE', 'NOM', 'PRENOM', 'TICLEUNIK', 'NAISSANCE', 'SEXE', 'CARTEADHERENT', 
-                              'TYCLEUNIK', 'INSCRIPTION', 'ADHESION', 'RENOUVELLEMENT', 'SORTIE', 'NOCOMPTA', 'CECLEUNIK', 'COMMENT', 'NOTARIF', 'DATECREATION', 
-                              'DATEMAJ', 'NORAPPEL', 'LIENPROFESSEUR', 'DISPSOLFEGE', 'MTRAPPEL', 'TELEPHONE1', 'INFO_TEL1', 'TELEPHONE2', 'INFO_TEL2', 'EMAIL_ADH', 
-                              'ADRESSE_ADH', 'FACTURER_ADR_PERSO', 'MRCLEUNIK', 'NB_ECH', 'BQ_DOM1', 'BQ_DOM2', 'BQ_CPTE', 'BQ_CDEBQ', 'BQ_CDEGU', 'BQ_CLERIB', 
-                              'TIRET', 'MoyenEnvoiFacture', 'MoyenEnvoiFacture_2', 'MoyenEnvoiFacture_3', 'MoyenEnvoiAbsence', 'MoyenEnvoiAbsence_2', 'MoyenEnvoiAbsence_3', 'MoyenEnvoiRelance', 'MoyenEnvoiRelance_2', 
-                              'MoyenEnvoiRelance_3', 'AssoPartenaire', 'CNR_CRR', 'MajorationHM', 'IS_ANCIEN', 'IS_EXISTE'));
-        $json = $export->createFile('csv', 'ADHERENT', $fileName , $header, $data2, 55, null, 'synchro/');
-        return 0;
+        return $data;
     }
 
-    private function getTmpPers($pers, $responsable=null, $oldId=null, $isExsite=0){
+    private function getTmpPers($pers, $responsable=null, $oldId=null, $isExsite=0)
+    {
+        date_default_timezone_set('Europe/Paris');
+
         $id=$pers->getId();
         $lastname = $pers->getNom();
         $firstname = $pers->getPrenom();
@@ -237,92 +190,16 @@ class AdminSyncDataCommand extends Command
         return $tmp;
     }
 
-    private function getTmpAdh($adh, $personneId, $pro=null, $isAncien=0, $isExsite=0){
-        date_default_timezone_set('Europe/Paris');
-        
-        $id = $adh->getId();
-        $numFiche = $adh->getNumFiche();
-        $nom = $adh->getNom();
-        $prenom = $adh->getPrenom();
-        $civility = intval($adh->getTicleunik());
-        $naissance = $adh->getNaissance();
-        $sexe = $adh->getSexe();
-        $dateMaj = $adh->getDatemaj();
-        $phone1 = $adh->getTelephone1();
-        $name1 = $adh->getInfoTel1();
-        $phone2 = $adh->getTelephone2();
-        $name2 = $adh->getInfoTel2();
-        $email = $adh->getEmailAdh();
-        $adr = $adh->getAdresseAdh();
-
-        if($isAncien == 0){
-            $facturer = intval($adh->getFacturerAdrPerso());
-            $mr = $adh->getMrcleunik();
-            $nbEch = $adh->getNbEch();
-            $dom1 = $adh->getBqDom1();
-            $dom2 = $adh->getBqDom2();
-            $cpte = $adh->getBqCpte();
-            $cdebq = $adh->getBqCdebq();
-            $cdegu = $adh->getBqCdegu();
-            $clerib = $adh->getBqClerib();
-            $tiret = $adh->getTiret();
-            $mF = intval($adh->getMoyenenvoifacture());
-            $mF2 = intval($adh->getMoyenenvoifacture2());
-            $mF3 = intval($adh->getMoyenenvoifacture3());
-            $mA = intval($adh->getMoyenenvoiabsence());
-            $mA2 = intval($adh->getMoyenenvoiabsence2());
-            $mA3 = intval($adh->getMoyenenvoiabsence3());
-            $mRe =  intval($adh->getMoyenenvoirelance());
-            $mRe2 = intval($adh->getMoyenenvoirelance2());
-            $mRe3 = intval($adh->getMoyenenvoirelance3());
-            $majo = intval($adh->getMajorationhm());
-        }
-        
-
-        if($pro != null){
-            $nom = $pro->getLastname();
-            $prenom = $pro->getFirstname();
-            $civility = $this->getCivility($pro->getCivility());
-            $naissance = intval(date_format($pro->getBirthday(), 'Ymd'));
-            $sexe = $this->getSexe($pro->getCivility());
-            $dateMaj = intval(date_format(new DateTime(), 'Ymd'));
-            
-            $phoneMobile = $this->formatPhone($pro->getPhoneMobile());
-            $phoneDomicile = $this->formatPhone($pro->getPhoneDomicile());
-            $name1 = $phoneDomicile != "" ? 'domicile' : $adh->getInfoTel1();
-            $phone1 = $phoneDomicile != "" ? $phoneDomicile : $adh->getTelephone1();
-            $name2 = $phoneMobile != "" ? 'mobile' : $adh->getInfoTel2();
-            $phone2 = $phoneMobile != "" ? $phoneMobile : $adh->getTelephone2();
-
-            $email = $pro->getEmail();
-            $adr = $pro->getAdresseString();
-
-            if($isAncien == 1){
-                $ancien = $adh;
-                $id = $ancien->getNumFiche();
-                $numFiche = $ancien->getNoCompta();
-
-                $facturer = 0; $mr = 0; $nbEch = 0;
-                $dom1 = ""; $dom2 = ""; $cpte = ""; $cdebq = ""; $cdegu = ""; $clerib = ""; $tiret = "";
-                $mF = 0; $mF2 = 0; $mF3 = 0; $mA = 0; $mA2 = 0; $mA3 = 0; $mRe =  0; $mRe2 = 0; $mRe3 = 0; $majo = 0;
-            }
-        }
-        $tmp = array(
-            $id, $personneId, $numFiche, $adh->getNumFamille(), $nom , $prenom, $civility, $naissance, $sexe, $adh->getCarteadherent(), 
-            intval($adh->getTycleunik()), $adh->getInscription(), $adh->getAdhesion(), $adh->getRenouvellement(), $adh->getSortie(), $adh->getNocompta(), $adh->getCecleunik(), $adh->getComment(), $adh->getNotarif(), $adh->getDatecreation(), 
-            $dateMaj, $adh->getNorappel(), intval($adh->getLienprofesseur()), intval($adh->getDispsolfege()), intval($adh->getMtrappel()), $phone1, $name1, $phone2, $name2, $email, 
-            $adr, $facturer, $mr, $nbEch, $dom1, $dom2, $cpte, $cdebq, $cdegu, $clerib, $tiret, $mF, $mF2, $mF3, $mA, $mA2, $mA3, $mRe, $mRe2, $mRe3,
-            intval($adh->getAssopartenaire()), intval($adh->getCnrCrr()), $majo, $isAncien, $isExsite
-        );
-
-        return $tmp;
+    private function createFilePersonnes($data)
+    {
+        $header = array(array('PECLEUNIK', 'TYCLEUNIK', 'NOM', 'PRENOM', 'TICLEUNIK', 'ADRESSE1', 'ADRESSE2', 'CDE_POSTAL', 'VILLE', 'TELEPHONE1', 'INFO_TEL1', 'TELEPHONE2', 'INFO_TEL2',
+        'NOCOMPTA', 'SFCLEUNIK', 'NAISSANCE', 'CACLEUNIK', 'PROFESSION', 'ADRESSE_TRAV', 'TEL_TRAV', 'COMMENT', 'MRCLEUNIK', 'NB_ECH', 'BQ_DOM1', 'BQ_DOM2',
+        'BQ_CPTE', 'BQ_CDEBQ', 'BQ_CDEGU', 'BQ_CLERIB', 'TIRET', 'INFO_TEL_TRA', 'TELEPHONE3', 'INFO_TEL3', 'TELEPHONE4', 'INFO_TEL4', 'TELEPHONE5', 'INFO_TEL5', 'EMAIL_PERS', 'IS_EXISTE'));
+        $json = $this->export->createFile('csv', 'PERSONNE', 'PERSONNE.csv' , $header, $data, 39, null, 'synchro/');
     }
 
-    private function getSexe($civ){
-        return ($civ == "Mme") ? 2 : 1;
-    }
-
-    private function getCivility($civ){
+    private function getCivility($civ)
+    {
         $civility = 2;
         if($civ == "Mr") {
             $civility = 5;
@@ -333,7 +210,8 @@ class AdminSyncDataCommand extends Command
         return $civility;
     }
 
-    private function formatPhone($value){
+    private function formatPhone($value)
+    {
         if(strlen($value) == 10){
             $a = substr($value, 0, 2);
             $b = substr($value, 2, 2);

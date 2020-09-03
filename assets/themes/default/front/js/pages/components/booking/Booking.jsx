@@ -114,9 +114,6 @@ export class Booking extends Component {
             //         AjaxSend.loader(false);
             //         self.setState({ min: 29, second: 60, timeExpired: false });
             //     });
-                window.removeEventListener("beforeunload", self.handleConfirmeExit, true);
-                window.removeEventListener('unload', self.handleUnload, true);
-                window.removeEventListener('pagehide', self.handleUnload, true);
                 Swal.fire({
                     title: 'Votre session a expirée',
                     text: 'Pour éviter que votre session expire, veuillez passer par un ordinateur.',
@@ -289,6 +286,7 @@ export class Booking extends Component {
             if(code === 1){
                 self.setState({ code: 1, finalMessage: data.message, ticket: data.ticket, barcode: data.barcode, print: data.print})
                 window.removeEventListener('beforeunload', self.handleConfirmeExit);
+                window.removeEventListener('pagehide', self.handleUnload);
                 window.removeEventListener('unload', self.handleUnload);
             }else{
                 self.setState({ code: 0, finalMessage: data.message })
