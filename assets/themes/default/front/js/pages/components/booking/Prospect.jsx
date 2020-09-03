@@ -228,54 +228,54 @@ class Prospect extends Component {
     }
 
     handleBlur (e) {
-        let value = e.currentTarget.value;
-        let self = this;
-        if(value !== ""){
-            axios({ 
-                method: 'post', 
-                url: Routing.generate('app_booking_tmp_prospect_preset'),
-                data: {numAdh: value}
-            }).then(function (response) {
-                let data = response.data; let code = data.code; AjaxSend.loader(false);
-                if(code === 1){
-                    let item = JSON.parse(data.infos);
+        // let value = e.currentTarget.value;
+        // let self = this;
+        // if(value !== ""){
+        //     axios({ 
+        //         method: 'post', 
+        //         url: Routing.generate('app_booking_tmp_prospect_preset'),
+        //         data: {numAdh: value}
+        //     }).then(function (response) {
+        //         let data = response.data; let code = data.code; AjaxSend.loader(false);
+        //         if(code === 1){
+        //             let item = JSON.parse(data.infos);
 
-                    self.setState({
-                        firstname: {value: setEmptyIfNull(item.firstname), error: ''},
-                        lastname: {value: setEmptyIfNull(item.lastname), error: ''},
-                        civility: {value: setEmptyIfNull(item.civility), error: ''},
-                        phoneDomicile: {value: setEmptyIfNull(item.phoneDomicile), error: ''},
-                        phoneMobile: {value: setEmptyIfNull(item.phoneMobile), error: ''},
-                        email: {value: setEmptyIfNull(item.email), error: ''},
-                        adr: {value: setEmptyIfNull(item.adr), error: ''},
-                        cp: {value: setEmptyIfNull(item.cp), error: ''},
-                        city: {value: setEmptyIfNull(item.city), error: ''},
-                        birthday: {
-                            error: '', 
-                            value: item.birthday != null ? new Date(item.birthdayJavascript).toLocaleDateString() : "", 
-                            inputVal: item.birthdayJavascript != null ? new Date(item.birthdayJavascript) : null},
-                        disabledInput: true
-                    })
-                }else{
-                    self.setState({
-                        firstname: {value: '', error: ''},
-                        lastname: {value: '', error: ''},
-                        civility: {value: '', error: ''},
-                        phoneDomicile: {value: '', error: ''},
-                        phoneMobile: {value: '', error: ''},
-                        email: {value: '', error: ''},
-                        adr: {value: '', error: ''},
-                        cp: {value: '', error: ''},
-                        city: {value: '', error: ''},
-                        numAdh: {value: value, error: 'Ce numéro adhérent n\'existe pas.'},
-                        birthday: {value: '', error: '', inputVal: null},
-                        disabledInput: false
-                    })
-                }
-            });
-        }else{
-            self.setState({disabledInput: false})
-        }
+        //             self.setState({
+        //                 firstname: {value: setEmptyIfNull(item.firstname), error: ''},
+        //                 lastname: {value: setEmptyIfNull(item.lastname), error: ''},
+        //                 civility: {value: setEmptyIfNull(item.civility), error: ''},
+        //                 phoneDomicile: {value: setEmptyIfNull(item.phoneDomicile), error: ''},
+        //                 phoneMobile: {value: setEmptyIfNull(item.phoneMobile), error: ''},
+        //                 email: {value: setEmptyIfNull(item.email), error: ''},
+        //                 adr: {value: setEmptyIfNull(item.adr), error: ''},
+        //                 cp: {value: setEmptyIfNull(item.cp), error: ''},
+        //                 city: {value: setEmptyIfNull(item.city), error: ''},
+        //                 birthday: {
+        //                     error: '', 
+        //                     value: item.birthday != null ? new Date(item.birthdayJavascript).toLocaleDateString() : "", 
+        //                     inputVal: item.birthdayJavascript != null ? new Date(item.birthdayJavascript) : null},
+        //                 disabledInput: true
+        //             })
+        //         }else{
+        //             self.setState({
+        //                 firstname: {value: '', error: ''},
+        //                 lastname: {value: '', error: ''},
+        //                 civility: {value: '', error: ''},
+        //                 phoneDomicile: {value: '', error: ''},
+        //                 phoneMobile: {value: '', error: ''},
+        //                 email: {value: '', error: ''},
+        //                 adr: {value: '', error: ''},
+        //                 cp: {value: '', error: ''},
+        //                 city: {value: '', error: ''},
+        //                 numAdh: {value: value, error: 'Ce numéro adhérent n\'existe pas.'},
+        //                 birthday: {value: '', error: '', inputVal: null},
+        //                 disabledInput: false
+        //             })
+        //         }
+        //     });
+        // }else{
+        //     self.setState({disabledInput: false})
+        // }
     }
 
     handleClickEdit (e) {
@@ -283,7 +283,7 @@ class Prospect extends Component {
     }
 
     handleClick (e) {
-        const {firstname, civility, lastname, birthday, isAdh, numAdh} = this.state;
+        const {firstname, civility, lastname, birthday, email, isAdh, numAdh} = this.state;
 
         let validate = Validateur.validateur([
             {type: "text", id: 'firstname', value: firstname.value},
@@ -291,6 +291,17 @@ class Prospect extends Component {
             {type: "civility", id: 'civility', value: civility.value},
             {type: "text", id: 'birthday', value: birthday.value},
         ]);
+
+        if(email.value){
+            let validate2 = Validateur.validateur([
+                {type: "email", id: 'email', value: email.value}
+            ])
+
+            if(!validate2.code){
+                validate.code = false;
+                validate.errors = {...validate.errors, ...validate2.errors};
+            }
+        }
 
         // if isAdh is checked
         // if(isAdh.value){
@@ -420,10 +431,11 @@ function IsAdh({id, isAdh, dayType, numAdh, onChange, onBlur}) {
     let dis = dayType == 0 ? "disabled" : "";
     return (
         <div className="line line-2">
-            <div className={"form-group-checkbox form-group " + dis}>
+            {/* <div className={"form-group-checkbox form-group " + dis}>
                 <label htmlFor={"isAdh-" + id}>Déjà adhérent ?</label>
                 <input type="checkbox" name={"isAdh-" + id} id={"isAdh-" + id} checked={isAdh.value} disabled={dis} onChange={onChange} />
-            </div>
+            </div> */}
+            <input type="hidden" name={"isAdh-" + id} id={"isAdh-" + id} disabled={dis} onChange={onChange} />
             {isAdh.value ? <Input type="hidden" identifiant={"numAdh-" + id} value={numAdh.value} onChange={onChange} error={numAdh.error} onBlur={onBlur}></Input> 
                 : null}
         </div>

@@ -265,8 +265,7 @@ class BookingController extends AbstractController
                     'civility' => $item->civility,
                     'firstname' => $item->firstname,
                     'lastname' => $item->lastname,
-                    'birthday' => new DateTime($birthday),
-                    'numAdh' => $numAdh
+                    'birthday' => new DateTime($birthday)
                 ));
             }else{
                 // $existe = $em->getRepository(TicketProspect::class)->findOneBy(array('numAdh' => $numAdh));
@@ -274,8 +273,7 @@ class BookingController extends AbstractController
                     'civility' => $item->civility,
                     'firstname' => $item->firstname,
                     'lastname' => $item->lastname,
-                    'birthday' => new DateTime($birthday),
-                    'numAdh' => $numAdh
+                    'birthday' => new DateTime($birthday)
                 ));
             }
 
