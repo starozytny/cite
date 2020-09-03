@@ -23,7 +23,8 @@ class AdminSyncDataCommand extends Command
     protected static $defaultName = 'admin:sync:data';
     private $em;
     private $export;
-    const STATUS = TicketProspect::ST_CONFIRMED;
+    const STATUS = TicketResponsable::ST_CONFIRMED;
+    const STATUS_PROSPECT = TicketProspect::ST_CONFIRMED;
 
     public function __construct(EntityManagerInterface $entityManager, Export $export)
     {
@@ -50,18 +51,18 @@ class AdminSyncDataCommand extends Command
         $dataNouveauxResponsables = $dataNouveaux[0];
         $dataNouveauxAdherents = $dataNouveaux[1];
 
-        $io->title("Données existe [PERSONNES - ADHERENTS]");
-        $dataExistes = $this->getDataExiste();
-        $dataExisteResponsables = $dataExistes[0];
-        $dataExisteAdherents = $dataExistes[1];
+        // $io->title("Données existe [PERSONNES - ADHERENTS]");
+        // $dataExistes = $this->getDataExiste();
+        // $dataExisteResponsables = $dataExistes[0];
+        // $dataExisteAdherents = $dataExistes[1];
 
-        $dataResponsables = array_merge($dataExisteResponsables, $dataNouveauxResponsables);
-        $dataAdherents = array_merge($dataExisteAdherents, $dataNouveauxAdherents);
+        // $dataResponsables = array_merge($dataExisteResponsables, $dataNouveauxResponsables);
+        // $dataAdherents = array_merge($dataExisteAdherents, $dataNouveauxAdherents);
 
         $io->title("Création du fichier [PERSONNE]");
-        $this->createFilePersonnes($dataResponsables);
+        $this->createFilePersonnes($dataNouveauxResponsables);
         $io->title("Création du fichier [ADHERENTS]");
-        $this->createFileAdherents($dataAdherents);
+        $this->createFileAdherents($dataNouveauxAdherents);
 
         $io->newLine(2);
         $io->text('------- Completed !');
@@ -136,7 +137,7 @@ class AdminSyncDataCommand extends Command
         $em = $this->em;
         $personnes = $em->getRepository(WindevPersonne::class)->findBy(array(), array('id' => 'ASC'));
         $adherents = $em->getRepository(CiAdherent::class)->findBy(array(), array('oldId' => 'ASC'));
-        $prospects = $em->getRepository(TicketProspect::class)->findBy(array('status' => self::STATUS), array('id' => 'ASC'));
+        $responsables = $em->getRepository(TicketResponsable::class)->findBy(array('status' => self::STATUS), array('id' => 'ASC'));
 
         // le dernier id de la table PERSONNE
         $lastIDResponsables = $personnes[count($personnes)-1]->getId();
@@ -146,7 +147,56 @@ class AdminSyncDataCommand extends Command
         $dataNouveauxAdherents = array();
         $noDoublonResponsables = array();
         $noDoublonAdherents = array();
-        foreach ($prospects as $prospect){
+        foreach ($responsables as $responsable){
+
+            // Check s'il existe une PERSONNE correspondant aux donnée du RESPONSABLE
+            $personnesExistent = $em->getRepository(CiPersonne::class)->findBy(array(
+                'firstname' => mb_strtoupper($responsable->getLastname()),
+                'lastname' => ucfirst(mb_strtolower($responsable->getFirstname()))
+            ));
+
+            if(count($personnesExistent) == 0 || count($personnesExistent) > 1){ // S'il n'existe pas ou qu'il y a > 1 de résultats de PERSONNE => on créé ce nouveau PERSONNE
+        
+                // ID possible du responsable pour ses prospects
+                // si ses prospects sont pas adh = ce responsable
+                // si ses prospects sont adh + qui pointe sur la meme personne = cette personne
+                // si ses prospects sont adh + non adh + adh pointe sur la meme personne = cette personne
+                // si ses prospects sont adh + qui pointe sur != personne = x personne
+                // si ses prospects sont adh + non adh + x adh pointe sur != personne = x personne + responsable for non adh
+                $lastIDResponsables = $lastIDResponsables + 1;
+
+                $totalProspects = count($responsable->getProspects());
+                foreach($responsable->getProspects() as $prospect){
+                    $totalNonAdh = 0;
+                    $totalAdh = 0;
+ 
+                    if($prospect->getAdherent()){
+                        $totalAdh++;
+                    }
+                }
+
+                $phoneMobile = $this->formatPhone($responsable->getPhoneMobile());
+                $phoneDomicile = $this->formatPhone($responsable->getPhoneDomicile());
+
+                $tmp = array(
+                    $lastIDResponsables, 0, mb_strtoupper($responsable->getLastname()), ucfirst(mb_strtolower($responsable->getFirstname())), $this->getCivility($responsable->getCivility()),
+                    $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), mb_strtoupper($responsable->getCity()),
+                    $phoneMobile, $phoneMobile != "" ? 'mobile' : '', $phoneDomicile, $phoneDomicile != "" ? 'domicile' : '',
+                    null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
+                );
+
+                $tmpNoId = $tmp;
+                array_shift($tmpNoId);
+
+                if(!in_array($tmpNoId, $noDoublonResponsables)){
+                    array_push($dataNouveauxResponsables, $tmp);
+                    array_push($noDoublonResponsables, $tmpNoId);
+                }
+
+
+            }
+
+
 
             $passe = true;
             if($prospect->getAdherent()){ // Si c'est un adhérent et qu'il a une personne il ne passe pas
