@@ -40,19 +40,19 @@ export class StepResponsable extends Component {
             this.setState({ phoneMobile: {value: phoneMobile.value, error: ''} });
         }
 
-        if(name === "cp"){
-            if(value === ""){
-                this.setState({ city: {value: '', error: ''} });
-            }else{
-                if(value.length >= 5){
-                    let ville = this.props.cps.filter(obj => Object.keys(obj).some(key => obj[key].includes(value)));        
+        // if(name === "cp"){
+        //     if(value === ""){
+        //         this.setState({ city: {value: '', error: ''} });
+        //     }else{
+        //         if(value.length >= 5){
+        //             let ville = this.props.cps.filter(obj => Object.keys(obj).some(key => obj[key].includes(value)));        
 
-                    if(ville.length > 0){
-                        this.setState({ city: {value: ville[0].nomCommune, error: ''} });
-                    }
-                }
-            }
-        }
+        //             if(ville.length > 0){
+        //                 this.setState({ city: {value: ville[0].nomCommune, error: ''} });
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     handleClickNext (e) {

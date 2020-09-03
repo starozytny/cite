@@ -306,7 +306,6 @@ class TicketController extends AbstractController
                         $prospect->getCreneau()->getHoraireString(),
                         mb_strtoupper($prospect->getLastname()),
                         ucfirst(mb_strtolower($prospect->getFirstname())),
-                        $prospect->getNumAdh(),
                         $num,
                         $prospect->getBirthdayString(),
                         $prospect->getEmail(),
@@ -321,7 +320,7 @@ class TicketController extends AbstractController
 
         $fileName = 'eleves-' . $ticketDay->getId() . '.xlsx';
 
-        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'EST ADHERENT', 'NUMERO ADHERENT', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
+        $header = array(array('HORAIRE', 'NOM', 'PRENOM', 'NUMERO ADHERENT (potentiel)', 'ANNIVERSAIRE', 'E-MAIL', 'TELEPHONE'));
         $json = $export->createFile('excel', 'Liste des élèves du ' . $ticketDay->getId(), $fileName , $header, $data, 7, null, 'eleves/');
         
         return new BinaryFileResponse($this->getParameter('export_eleves_directory'). '/' . $fileName);
