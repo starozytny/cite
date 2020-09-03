@@ -105,24 +105,7 @@ class AdminSyncDataCommand extends Command
             }
 
             if($passe){
-                $personne = $em->getRepository(WindevPersonne::class)->find($oldId); // Get value Personne Windev
-                $tmp = $this->getTmpPers($personne, $responsable, $personne->getId(), 1);
-                if(!in_array($tmp, $dataResponsables)){
-                    array_push($dataResponsables, $tmp);
-                }
-
                 
-                if($adh->getIsAncien() == false){
-                    $adherent = $em->getRepository(WindevAdherent::class)->findOneBy(array('id' => $adh->getOldId()));
-                    $tmp = $this->getTmpAdh($adherent, $adherent->getPecleunik(), $prospect, 0, 1); // pas ancien et existe
-                }else{
-                    $adherent = $em->getRepository(WindevAncien::class)->findOneBy(array('id' => $adh->getOldId()));
-                    $tmp = $this->getTmpAdh($adherent, $adherent->getPecleunik(), $prospect, 1, 1); // ancien et existe
-                }
-
-                if(!in_array($tmp, $dataAdherents)){
-                    array_push($dataAdherents, $tmp);
-                }
 
             }
         }
@@ -145,8 +128,6 @@ class AdminSyncDataCommand extends Command
 
         $dataNouveauxResponsables = array();
         $dataNouveauxAdherents = array();
-        $noDoublonResponsables = array();
-        $noDoublonAdherents = array();
         foreach ($responsables as $responsable){
 
             // Check s'il existe une PERSONNE correspondant aux donnée du RESPONSABLE
@@ -157,116 +138,133 @@ class AdminSyncDataCommand extends Command
 
             if(count($personnesExistent) == 0 || count($personnesExistent) > 1){ // S'il n'existe pas ou qu'il y a > 1 de résultats de PERSONNE => on créé ce nouveau PERSONNE
         
-                // ID possible du responsable pour ses prospects
-                // si ses prospects sont pas adh = ce responsable
-                // si ses prospects sont adh + qui pointe sur la meme personne = cette personne
-                // si ses prospects sont adh + non adh + adh pointe sur la meme personne = cette personne
-                // si ses prospects sont adh + qui pointe sur != personne = x personne
-                // si ses prospects sont adh + non adh + x adh pointe sur != personne = x personne + responsable for non adh
-                $lastIDResponsables = $lastIDResponsables + 1;
-
-                $totalProspects = count($responsable->getProspects());
-                foreach($responsable->getProspects() as $prospect){
-                    $totalNonAdh = 0;
-                    $totalAdh = 0;
- 
-                    if($prospect->getAdherent()){
-                        $totalAdh++;
-                    }
-                }
-
                 $phoneMobile = $this->formatPhone($responsable->getPhoneMobile());
-                $phoneDomicile = $this->formatPhone($responsable->getPhoneDomicile());
+                $phoneDomicile = $this->formatPhone($responsable->getPhoneDomicile());                
 
-                $tmp = array(
-                    $lastIDResponsables, 0, mb_strtoupper($responsable->getLastname()), ucfirst(mb_strtolower($responsable->getFirstname())), $this->getCivility($responsable->getCivility()),
-                    $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), mb_strtoupper($responsable->getCity()),
-                    $phoneMobile, $phoneMobile != "" ? 'mobile' : '', $phoneDomicile, $phoneDomicile != "" ? 'domicile' : '',
-                    null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
-                );
+                $prospects = $responsable->getProspects();
+                $totalProspects = count($prospects);
+                
+                $personne = null; // [1] [3]
+                $isAdh = false;
+                $adherent = null;
+                if($totalProspects == 1){
+                    $prospect = $prospects[0];
 
-                $tmpNoId = $tmp;
-                array_shift($tmpNoId);
+                    // CAS : 
+                    // [1] possède 1 prospect non adh + non pers = new elv + new resp (personne = null)
+                    // [2] possède 1 prospect non adh + 1 pers = new elv + edit personne
+                    // [3] possède 1 prospect adh + non pers = edit adh + new resp (personne = null)
+                    // [4] possède 1 prospect adh + 1 pers = edit adh + edit personne 
 
-                if(!in_array($tmpNoId, $noDoublonResponsables)){
-                    array_push($dataNouveauxResponsables, $tmp);
-                    array_push($noDoublonResponsables, $tmpNoId);
-                }
+                    // --------------------------
+                    // ---- IDENTIFICATION DU CAS
+                    // --------------------------
+                    if($prospect->getAdherent()){
+                        $isAdh = true;
+                        $adherent = $prospect->getAdherent();
+                        if($prospect->getAdherent()->getPersonne()){
+                            $personne = $prospect->getAdherent()->getPersonne(); // [4]
+                        }
+                    }else{
+                        // same que en haut // Cette année obligé car il y a peu etre des doublons vu qu'il n'y a pas de test sur le numAdh 
+                        $existe = $em->getRepository(CiAdherent::class)->findOneBy(array( 
+                            'firstname' => ucfirst(mb_strtolower($prospect->getFirstname())),
+                            'lastname' => mb_strtoupper($prospect->getLastname())
+                        ));
+        
+                        if($existe){
+                            $isAdh = true;
+                            $adherent = $existe;
+                            if($existe->getPersonne()){
+                                $personne = $existe->getPersonne(); // [4]
+                            }
+                        }    
 
+                        // test si ce non adh possede quand meme une personne
+                        $personnesExistent = $em->getRepository(CiPersonne::class)->findBy(array(
+                            'firstname' => mb_strtoupper($responsable->getLastname()),
+                            'lastname' => ucfirst(mb_strtolower($responsable->getFirstname()))
+                        ));
 
-            }
-
-
-
-            $passe = true;
-            if($prospect->getAdherent()){ // Si c'est un adhérent et qu'il a une personne il ne passe pas
-                if($prospect->getAdherent()->getPersonne()){
-                    $passe = false;
-                }
-            }else{
-                $existe = $em->getRepository(CiAdherent::class)->findOneBy(array( // Cette année obligé car il y a peu etre des doublons vu qu'il n'y a pas de numAdh 
-                    'firstname' => ucfirst(mb_strtolower($prospect->getFirstname())),
-                    'lastname' => mb_strtoupper($prospect->getLastname())
-                ));
-
-                if($existe){
-                    if($existe->getPersonne()){
-                        $passe = false;
+                        if(count($personnesExistent) == 1 ){ // S'il existe 1 et 1 seule PERSONNE
+                            $personne = $personnesExistent[0]; // [2]
+                        }
                     }
-                }                
-            }
 
-            if($passe){ // S'il n'est pas adhérent ou adherent sans responsable(personne) = check si une PERSONNE existe est donc le RESPONSABLE sera la PERSONNE
+                    // --------------------------
+                    // ---- CREATION DU PERSONNE en fonction du CAS
+                    // --------------------------
 
-                // RESPONSABLE saisie via le website
-                $responsable = $prospect->getResponsable();
+                    // RESULTAT [1] [3] = create PERSONNE with RESPONSABLE
+                    if($personne == null){ 
 
-                // Check s'il existe une PERSONNE correspondant aux donnée du RESPONSABLE
-                $personnesExistent = $em->getRepository(CiPersonne::class)->findBy(array(
-                    'firstname' => mb_strtoupper($responsable->getLastname()),
-                    'lastname' => ucfirst(mb_strtolower($responsable->getFirstname()))
-                ));
-                if(count($personnesExistent) == 0 || count($personnesExistent) > 1){ // S'il n'existe pas ou qu'il y a > 1 de résultats de PERSONNE => on créé ce nouveau PERSONNE
-                    $phoneMobile = $this->formatPhone($responsable->getPhoneMobile());
-                    $phoneDomicile = $this->formatPhone($responsable->getPhoneDomicile());
+                        $lastIDResponsables = $lastIDResponsables + 1;
+                        $personneID = $lastIDResponsables;
 
-                    $lastIDResponsables = $lastIDResponsables + 1;
+                        $tmp = array(
+                            $lastIDResponsables, 0, mb_strtoupper($responsable->getLastname()), ucfirst(mb_strtolower($responsable->getFirstname())), $this->getCivility($responsable->getCivility()),
+                            $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), mb_strtoupper($responsable->getCity()),
+                            $phoneMobile, $phoneMobile != "" ? 'mobile' : '', $phoneDomicile, $phoneDomicile != "" ? 'domicile' : '',
+                            null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
+                        );
+                       
+                    // RESULTAT [2] [4] = edit PERSONNE
+                    }else{
+                        $personneID = $personne->getOldId();
 
-                    $tmp = array(
-                        $lastIDResponsables, 0, mb_strtoupper($responsable->getLastname()), ucfirst(mb_strtolower($responsable->getFirstname())), $this->getCivility($responsable->getCivility()),
-                        $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), mb_strtoupper($responsable->getCity()),
-                        $phoneMobile, $phoneMobile != "" ? 'mobile' : '', $phoneDomicile, $phoneDomicile != "" ? 'domicile' : '',
-                        null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
-                    );
+                        $personne = $em->getRepository(WindevPersonne::class)->find($personneID); // Get value Personne Windev
+                        $tmp = $this->getTmpPers($personne, $responsable, $personne->getId(), 1);                        
+                    }
 
-                    $tmpNoId = $tmp;
-                    array_shift($tmpNoId);
-
-                    if(!in_array($tmpNoId, $noDoublonResponsables)){
+                    if(!in_array($tmp, $dataNouveauxResponsables)){
                         array_push($dataNouveauxResponsables, $tmp);
-                        array_push($noDoublonResponsables, $tmpNoId);
                     }
 
-                    // ----------- NOUVEAU ADHERENT ----------
-                    $lastIDAdherents = $lastIDAdherents + 1;
+                    // --------------------------
+                    // ---- CREATION ELEVE en fonction du CAS
+                    // --------------------------
+                    // $personneID = l'id du responsable qui dépend du cas 1 - 2 - 3 -4
 
-                    $phone2 = $this->formatPhone($prospect->getPhoneMobile());
-                    $phone1 = $this->formatPhone($prospect->getPhoneDomicile());
-                    $tmp = array(
-                        $lastIDAdherents,  $lastIDResponsables, null, null, mb_strtoupper($prospect->getLastname()), ucfirst(mb_strtolower($prospect->getFirstname())), $this->getCivility($prospect->getCivility()), 
-                        intval(date_format($prospect->getBirthday(), 'Ymd')), $this->getSexe($prospect->getCivility()), 2, 
-                        0, intval(date_format(new DateTime(), 'Ymd')), null, null, null, null, 0, null, 0, intval(date_format(new DateTime(), 'Ymd')), 
-                        intval(date_format(new DateTime(), 'Ymd')), 0, 0, 0, 0, $phone1, $phone1 != "" ? 'domicile' : '', $phone2, $phone2 != "" ? 'mobile' : '', $prospect->getEmail(), 
-                        $prospect->getAdresseString(), 0, 0, 0, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                    );
-                    $tmpNoId = $tmp;
-                    array_shift($tmpNoId);
+                    // NEW ELV
+                    if(!$isAdh){
+                        $lastIDAdherents = $lastIDAdherents + 1;
 
-                    if(!in_array($tmpNoId, $noDoublonAdherents)){
-                        array_push($dataNouveauxAdherents, $tmp);
-                        array_push($noDoublonAdherents, $tmpNoId);
+                        $phone2 = $this->formatPhone($prospect->getPhoneMobile());
+                        $phone1 = $this->formatPhone($prospect->getPhoneDomicile());
+                        $tmp = array(
+                            $lastIDAdherents,  $personneID, null, null, mb_strtoupper($prospect->getLastname()), ucfirst(mb_strtolower($prospect->getFirstname())), $this->getCivility($prospect->getCivility()), 
+                            intval(date_format($prospect->getBirthday(), 'Ymd')), $this->getSexe($prospect->getCivility()), 2, 
+                            0, intval(date_format(new DateTime(), 'Ymd')), null, null, null, null, 0, null, 0, intval(date_format(new DateTime(), 'Ymd')), 
+                            intval(date_format(new DateTime(), 'Ymd')), 0, 0, 0, 0, $phone1, $phone1 != "" ? 'domicile' : '', $phone2, $phone2 != "" ? 'mobile' : '', $prospect->getEmail(), 
+                            $prospect->getAdresseString(), 0, 0, 0, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                        );
+    
+                        if(!in_array($tmp, $dataNouveauxAdherents)){
+                            array_push($dataNouveauxAdherents, $tmp);
+                        }
+
+                    // edit ADH
+                    }else{ 
+                        if($adherent->getIsAncien() == false){
+                            $adherent = $em->getRepository(WindevAdherent::class)->findOneBy(array('id' => $adherent->getOldId()));
+                            $tmp = $this->getTmpAdh($adherent, $personneID, $prospect, 0, 1); // pas ancien et existe
+                        }else{
+                            $adherent = $em->getRepository(WindevAncien::class)->findOneBy(array('id' => $adherent->getOldId()));
+                            $tmp = $this->getTmpAdh($adherent, $personneID, $prospect, 1, 1); // ancien et existe
+                        }
                     }
+
+                    // --------------------------
+                    // ---- FIN CREATION ELEVE
+                    // --------------------------
                 }
+
+
+                // possède x prospect 
+
+                
+
+
             }
         }
 
