@@ -24,7 +24,7 @@ class AdminSyncDataCommand extends Command
     private $em;
     private $export;
     const STATUS = TicketResponsable::ST_CONFIRMED;
-    const STATUS_PROSPECT = TicketProspect::ST_CONFIRMED;
+    const STATUS_PROSPECT = TicketProspect::ST_REGISTERED;
 
     public function __construct(EntityManagerInterface $entityManager, Export $export)
     {
