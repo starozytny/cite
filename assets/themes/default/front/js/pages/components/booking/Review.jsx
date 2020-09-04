@@ -63,7 +63,7 @@ export class StepReview extends Component {
                 </div>
 
                 <div className="review-prospects">
-                    <div className="title">Liste des personnes souhaitant s'inscrire : </div>
+                    <div className="title">Liste des élèves à s'inscrire : </div>
                     <div className="review-cards">
                         {itemsProspects}
                     </div>
@@ -78,7 +78,7 @@ export class StepReview extends Component {
             nextText = "Indisponible"
         }
 
-        return <Step id="3" classStep={classStep} title="Vérification" onClickPrev={onClickPrev} onClickNext={onToStep4} body={body} 
+        return <Step id="3" classStep={classStep} title="Vérification" prevText={"Modifier"} onClickPrev={onClickPrev} onClickNext={onToStep4} body={body} 
         nextText={nextText} expired={timeExpired} code={code}>
             <div className="text-regular">
                 <div>Inscription pour la journée du : <b>{day}</b></div>
