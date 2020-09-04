@@ -226,6 +226,16 @@ class TicketController extends AbstractController
         return new JsonResponse(['code' => 1]);
     }
 
+    private function deleteAccent($string){
+        $string = mb_strtoupper($string);
+        $string = str_replace(
+           array('é', 'è', 'ê', 'ë', 'à', 'â', 'î', 'ï', 'ô', 'ù', 'û', 'É', 'È', 'Ê', 'Ë', 'À', 'Â', 'Î', 'Ï', 'Ô', 'Ù', 'Û'),
+           array('e','e','e','e','a','a','i','i','o','u','u','E','E','E','E','A','A','I','I','O','U','U'),
+           $string
+        );
+        return $string;
+    }
+
     /**
     * @Route("/jour/{ticketDay}/export/weezevent", options={"expose"=true}, name="export_weezevent")
     */
@@ -243,7 +253,7 @@ class TicketController extends AbstractController
                 $i=0;
                 foreach ($prospects as $prospect){
                     $i++;
-                    $commentary .= $prospect->getCivility() . ' ' . $prospect->getFirstName() . " " . $prospect->getLastname();
+                    $commentary .= $prospect->getCivility() . ' ' . $this->deleteAccent($prospect->getFirstname()) . " " . $this->deleteAccent($prospect->getLastname());
                     $commentary .= count($prospects) == $i ? "" : " / ";
                 }
 
@@ -251,8 +261,8 @@ class TicketController extends AbstractController
                     $responsable->getTicket(),
                     "Tarif Gratuit",
                     0,
-                    $responsable->getLastname(),
-                    $responsable->getFirstname(),
+                    $this->deleteAccent($responsable->getLastname()),
+                    $this->deleteAccent($responsable->getFirstname()),
                     $responsable->getEmail(),
                     date_format($responsable->getCreneau()->getHoraire(), 'H\hi'),
                     $commentary
