@@ -238,8 +238,8 @@ class AdminSyncDataCommand extends Command
         }else{
             // same que en haut // Cette année obligé car il y a peu etre des doublons vu qu'il n'y a pas de test sur le numAdh 
             $existe = $em->getRepository(CiAdherent::class)->findOneBy(array( 
-                'firstname' => ucfirst(mb_strtolower($prospect->getFirstname())),
-                'lastname' => mb_strtoupper($prospect->getLastname())
+                'firstname' => ucfirst(mb_strtolower(trim($prospect->getFirstname()))),
+                'lastname' => mb_strtoupper(trim($prospect->getLastname()))
             ));
 
             if($existe){
@@ -255,8 +255,8 @@ class AdminSyncDataCommand extends Command
         $personne = null;
         // test si ce PROSPECT possede une PERSONNE qui existe deja dans nos BDD
         $personnesExistent = $em->getRepository(CiPersonne::class)->findBy(array(
-            'firstname' => mb_strtoupper($responsable->getLastname()),
-            'lastname' => ucfirst(mb_strtolower($responsable->getFirstname()))
+            'firstname' => mb_strtoupper(trim($responsable->getLastname())),
+            'lastname' => ucfirst(mb_strtolower(trim($responsable->getFirstname())))
         ));
 
         if(count($personnesExistent) == 1 ){ // S'il existe 1 et 1 seule PERSONNE
@@ -287,7 +287,7 @@ class AdminSyncDataCommand extends Command
         $phoneDomicile = $this->formatPhone($responsable->getPhoneDomicile());
 
         $tmp = array(
-            $id, 0, mb_strtoupper($responsable->getLastname()), ucfirst(mb_strtolower($responsable->getFirstname())), $this->getCivility($responsable->getCivility()),
+            $id, 0, mb_strtoupper(trim($responsable->getLastname())), ucfirst(mb_strtolower(trim($responsable->getFirstname()))), $this->getCivility($responsable->getCivility()),
             $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), mb_strtoupper($responsable->getCity()),
             $phoneMobile, $phoneMobile != "" ? 'mobile' : '', $phoneDomicile, $phoneDomicile != "" ? 'domicile' : '',
             null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
@@ -301,7 +301,7 @@ class AdminSyncDataCommand extends Command
         $phone1 = $this->formatPhone($prospect->getPhoneDomicile());
 
         $tmp = array(
-            $id,  $responsableId, null, null, mb_strtoupper($prospect->getLastname()), ucfirst(mb_strtolower($prospect->getFirstname())), $this->getCivility($prospect->getCivility()), 
+            $id,  $responsableId, null, null, mb_strtoupper(trim($prospect->getLastname())), ucfirst(mb_strtolower(trim($prospect->getFirstname()))), $this->getCivility($prospect->getCivility()), 
             intval(date_format($prospect->getBirthday(), 'Ymd')), $this->getSexe($prospect->getCivility()), 2, 
             0, intval(date_format(new DateTime(), 'Ymd')), null, null, null, null, 0, null, 0, intval(date_format(new DateTime(), 'Ymd')), 
             intval(date_format(new DateTime(), 'Ymd')), 0, 0, 0, 0, $phone1, $phone1 != "" ? 'domicile' : '', $phone2, $phone2 != "" ? 'mobile' : '', $prospect->getEmail(), 
@@ -350,7 +350,7 @@ class AdminSyncDataCommand extends Command
         }
 
         $tmp = array(
-            $id, intval($pers->getTycleunik()), mb_strtoupper($lastname), ucfirst(mb_strtolower($firstname)), $civility, $adr, $complement, $cp, $city, $phone1, 
+            $id, intval($pers->getTycleunik()), mb_strtoupper(trim($lastname)), ucfirst(mb_strtolower(trim($firstname))), $civility, $adr, $complement, $cp, $city, $phone1, 
             $name_phone1 , $phone2, $name_phone2, $pers->getNocompta(),intval($pers->getSfcleunik()),$pers->getNaissance(),intval($pers->getCacleunik()),$pers->getProfession(), $pers->getAdresseTrav(),$pers->getTelTrav(),
             $pers->getComment(),$pers->getMrcleunik(),$pers->getNbEch(), $pers->getBqDom1(),$pers->getBqDom2(),$pers->getBqCpte(),$pers->getBqCdebq(),$pers->getBqCdegu(),$pers->getBqClerib(),$pers->getTiret(),
             $pers->getInfoTelTra(),$pers->getTelephone3(),$pers->getInfoTel3(),$pers->getTelephone4(),$pers->getInfoTel4(),$pers->getTelephone5(),$pers->getInfoTel5(),$email, $isExsite
@@ -430,7 +430,7 @@ class AdminSyncDataCommand extends Command
             }
         }
         $tmp = array(
-            $id, $personneId, $numFiche, $adh->getNumFamille(), mb_strtoupper($nom), ucfirst(mb_strtolower($prenom)), $civility, $naissance, $sexe, $adh->getCarteadherent(), 
+            $id, $personneId, $numFiche, $adh->getNumFamille(), mb_strtoupper(trim($nom)), ucfirst(mb_strtolower(trim($prenom))), $civility, $naissance, $sexe, $adh->getCarteadherent(), 
             intval($adh->getTycleunik()), $adh->getInscription(), $adh->getAdhesion(), $adh->getRenouvellement(), $adh->getSortie(), $adh->getNocompta(), $adh->getCecleunik(), $adh->getComment(), $adh->getNotarif(), $adh->getDatecreation(), 
             $dateMaj, $adh->getNorappel(), intval($adh->getLienprofesseur()), intval($adh->getDispsolfege()), intval($adh->getMtrappel()), $phone1, $name1, $phone2, $name2, $email, 
             $adr, $facturer, $mr, $nbEch, $dom1, $dom2, $cpte, $cdebq, $cdegu, $clerib, $tiret, $mF, $mF2, $mF3, $mA, $mA2, $mA3, $mRe, $mRe2, $mRe3,

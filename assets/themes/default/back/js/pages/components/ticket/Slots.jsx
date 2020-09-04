@@ -22,7 +22,7 @@ export class Slots extends Component {
             error: '',
             addHours: {value: '', error: ''},
             addMinutes: {value: '0', error: ''},
-            addMax: {value: '20', error: ''}
+            addMax: {value: '16', error: ''}
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -42,7 +42,7 @@ export class Slots extends Component {
         let el = e.currentTarget;
         let min = parseInt(el.dataset.max) - parseInt(el.dataset.remaining);
         this.setState({openEdit: 'active', error: '', editId: el.dataset.id, editHoraire: el.dataset.horaire, 
-        editMax: {value: el.dataset.max}, editRemaining: el.dataset.remaining, editMinim: min})
+                        editMax: {value: el.dataset.max}, editRemaining: el.dataset.remaining, editMinim: min})
     }
 
     handleAdd (e) {
@@ -50,7 +50,7 @@ export class Slots extends Component {
     }
 
     handleClose (e) {
-        this.setState({openEdit: '', openAdd: '', editId: '', editHoraire: '', editMax: {value: '', error: ''}, editRemaining: '', addHours: {value: '', error: ''}, addMinutes: {value: '', error: ''}, addMax: {value: '', error: ''}})
+        this.setState({openEdit: '', openAdd: '', editId: '', editHoraire: '', editMax: {value: '', error: ''}, editRemaining: '', addHours: {value: '', error: ''}, addMinutes: {value: '0', error: ''}, addMax: {value: '16', error: ''}})
     }
 
     handleSubmit (e) {

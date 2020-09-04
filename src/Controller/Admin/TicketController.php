@@ -130,7 +130,21 @@ class TicketController extends AbstractController
         $remaining = $max - $min;
         $slot->setMax($max);
         $slot->setRemaining($remaining);
+
         $em->persist($slot);
+
+        $slots = $ticketDay->getTicketCreneaux();
+        $tmax = 0;
+        $tr = 0;
+        foreach($slots as $slot){
+            $tmax += $slot->getMax();
+            $tr += $slot->getRemaining();
+        }
+
+        $ticketDay->setMax($tmax);
+        $ticketDay->setRemaining($tr);
+        $em->persist($ticketDay);
+        
         $em->flush();
 
         return new JsonResponse(['code' => 1, 'remaining' => $remaining]);
