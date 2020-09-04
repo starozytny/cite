@@ -38,7 +38,7 @@ class AdminCreateTicketsCommand extends Command
     {
         date_default_timezone_set('Europe/Paris');
         $io = new SymfonyStyle($input, $output);
-
+ 
         $io->title('Reset des tables');
         $this->resetTable($io,'ticket_fermeture');
         $this->resetTable($io,'ticket_ouverture');
