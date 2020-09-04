@@ -35,11 +35,13 @@ export class StepTicket extends Component {
                             <img src={ "data:image/png;base64," + barcode } />
                         </div>
                         <div>Pour le {day} à {horaire}.</div>
-                        <div className="ticket-email"><span>Votre ticket a été envoyé à <b>{finalMessage}</b>.</span> <br/> Veuillez vérifiez vos spams/courriers indésirables.</div>
-                        <div>La réception du mail peut prendre un certain temps.</div>
                         <div className="ticket-download">
-                            <a href={print} target="_blank">Imprimer mon billet</a>
+                            <a href={print} target="_blank">Imprimer mon ticket</a>
                         </div>
+                        <div className="ticket-email">
+                            <span>Votre ticket a été envoyé à <b>{finalMessage}</b>.</span> <br/> Veuillez vérifiez vos spams/courriers indésirables.
+                        </div>
+                        <div>La réception du mail peut prendre un certain temps.</div>
                     </div>
                     <div className="alert">
                         <b>RAPPEL</b> : Avant de vous présenter, vérifiez que vous avez : 

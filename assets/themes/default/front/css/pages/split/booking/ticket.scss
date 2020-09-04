@@ -16,13 +16,31 @@
     }
     .ticket-email{
         margin-top: 25px;
-        span{
-            color: $infoLabel;
+        color: $color6;
+
+        & + div{
+            color: $color6;
         }
     }
     .ticket-download{
         margin-top: 10px;
-        color: $infoLabel;
+        a{
+            color: $alpha;
+            font-size: 20px;
+            border: 1px solid infoBg;
+            padding: 16px 24px;
+            margin: 5px;
+            display: block;
+            border-radius: 10px;
+            background-color: $infoLabel;
+            transition: all 0.2s ease-in-out;
+            max-width: 500px;
+            margin: 26px auto;
+
+            &:hover{
+                background-color: $info;
+            }
+        }
     }
 }
 
