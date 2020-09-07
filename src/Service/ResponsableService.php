@@ -101,6 +101,7 @@ class ResponsableService
             ->setCreneau($creneau)
             ->setDay($day)
             ->setIsMobile($isMobile)
+            ->setBrowser($_SERVER['HTTP_USER_AGENT']);
         ;
     }
 
