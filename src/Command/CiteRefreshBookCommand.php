@@ -39,7 +39,7 @@ class CiteRefreshBookCommand extends Command
         $days = $this->em->getRepository(TicketDay::class)->findAll();
         foreach($days as $day){
             if($day) {
-                $io->title('Delete non confirmed');
+                $io->title('Delete non confirmed - ' . $day->getId());
                 $this->responsableService->deleteNonConfirmed();
             }
         }
