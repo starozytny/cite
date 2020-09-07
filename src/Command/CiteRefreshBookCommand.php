@@ -36,11 +36,14 @@ class CiteRefreshBookCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $day = $this->em->getRepository(TicketDay::class)->findOneBy(array('isOpen' => true));
-        if($day) {
-            $io->title('Delete non confirmed');
-            $this->responsableService->deleteNonConfirmed();
+        $days = $this->em->getRepository(TicketDay::class)->findAll();
+        foreach($days as $day){
+            if($day) {
+                $io->title('Delete non confirmed');
+                $this->responsableService->deleteNonConfirmed();
+            }
         }
+        
 
         $io->text('[FINISH]');
 
