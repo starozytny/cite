@@ -204,7 +204,9 @@ class BookingController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $responsableId = $request->get('responsableId');
         $responsable = $em->getRepository(TicketResponsable::class)->find($responsableId);
-        $this->responsableService->deleteResponsable($responsable);
+        if($responsable){
+            $this->responsableService->deleteResponsable($responsable);
+        }
         $em->flush();
 
         return new JsonResponse(['code' => 1]);
