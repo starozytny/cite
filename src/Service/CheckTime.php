@@ -29,17 +29,19 @@ class CheckTime
     }
 
     public function moreFiveMinutes(?DateTimeInterface $datetime){
+        date_default_timezone_set('Europe/Paris');
         if($datetime == null){
             return true;
         }
-        return (time() > (date_timestamp_get($datetime) + (60*5))) ? true : false;
+        return (time() > (strtotime(date_format($datetime, 'd/m/Y H:i:s')) + (60*5))) ? true : false;
     }
 
     public function moreThirtyMinutes(?DateTimeInterface $datetime){
+        date_default_timezone_set('Europe/Paris');
         if($datetime == null){
             return true;
         }
-        return (time() > (date_timestamp_get($datetime) + (60*30))) ? true : false;
+        return (time() > (strtotime(date_format($datetime, 'd/m/Y H:i:s')) + (60*30))) ? true : false;
     }
 
     public function moreThanTwoMonth(DateTimeInterface $datetime)
