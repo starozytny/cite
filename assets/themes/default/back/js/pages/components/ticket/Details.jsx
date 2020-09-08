@@ -60,6 +60,23 @@ function compareLibelle(a,b){
     return comparison;
 }
 
+function compareLastname(a,b){
+    const bandA = a.lastname;
+    const bandB = b.lastname;
+
+    let comparison = 0;
+    if (bandA > bandB) {
+        comparison = 1;
+    } else if (bandA < bandB) {
+        comparison = -1;
+    }
+    return comparison;
+}
+
+function capitalize($string){
+    return $string.charAt(0).toUpperCase() + $string.slice(1)
+}
+
 export class Details extends Component {
     constructor(props){
         super(props)
@@ -80,6 +97,8 @@ export class Details extends Component {
         let resps = oriResponsables.filter(function(elem){
             if(elem.creneau.id == creneaux[0].value){ return elem; }                
         }); 
+
+        resps = resps.sort(compareLastname)
 
         this.state = {
             responsables: resps,
@@ -120,7 +139,9 @@ export class Details extends Component {
 
         if(name === 'searched') {
             allCheck.forEach((el => el.checked = false))
-            this.setState({ [name]: {value: value}, error: '', responsables: this.handleSearch(value), selection: [] });
+            let newRS = this.handleSearch(value);
+            newRS = newRS.sort(compareLastname)
+            this.setState({ [name]: {value: value}, error: '', responsables: newRS, selection: [] });
         }else if(name === 'check-prospect') {
             let tmp = [{ id: value, check: e.target.checked }]
             let arr = selection;
@@ -142,6 +163,7 @@ export class Details extends Component {
         }else{
             allCheck.forEach((el => el.checked = false))
             let newR = this.handleSelectHoraire(value);
+            newR = newR.sort(compareLastname)
             this.setState({ [name]: {value: value}, error: '', searched:{value: ''}, responsables: newR, horaireResponsables: newR, selection: [] });
         }
     }
@@ -376,7 +398,7 @@ export class Details extends Component {
                                 <div className="numAdh">adhérent {elem.adherent ? '(' + elem.adherent.numAdh + ')' : null}</div>
                             </div>
                             : null}
-                        <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. {elem.firstname} <span>{elem.lastname}</span></div>
+                        <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. <span>{elem.lastname}</span> {elem.firstname}</div>
                         <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
                     </div>
                     <div className="col-2">
@@ -403,7 +425,7 @@ export class Details extends Component {
 
             return <div className="line-resp" key={element.id}>
                 <div className="item-resp">
-                    <a href={Routing.generate('admin_responsable_edit', {'responsable': element.id})}>{element.civility}. {element.firstname} {element.lastname}</a>
+                    <a href={Routing.generate('admin_responsable_edit', {'responsable': element.id})}>{element.civility}. {element.lastname.toUpperCase()} {capitalize(element.firstname)}</a>
                 </div>
                 {eleves}
             </div>;

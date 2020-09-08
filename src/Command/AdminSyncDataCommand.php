@@ -51,15 +51,115 @@ class AdminSyncDataCommand extends Command
         $dataResponsables = $data[0];
         $dataAdherents = $data[1];
 
+        sort($dataResponsables);
+        sort($dataAdherents);
+
+        // $dataResponsablesDoublons = [];
+        // $dataAdherentsDoublons = [];
+        // //-récuperation des possibles doublons
+        // foreach($dataResponsables as $d){
+        //     foreach($dataResponsables as $d2){
+        //         if($d[0] != $d2[0]){
+        //             if($d[1] == $d2[1] && $d[2] == $d2[2]){
+        //                 if(in_array($d, $dataResponsablesDoublons)){
+        //                     array_push($dataResponsablesDoublons, $d);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        // foreach($dataAdherents as $d){
+        //     foreach($dataAdherents as $d2){
+        //         if($d[0] != $d2[0]){
+        //             if($d[4] == $d2[4] && $d[5] == $d2[5]){
+        //                 if(in_array($d, $dataAdherentsDoublons)){
+        //                     array_push($dataAdherentsDoublons, $d);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        // $dataResponsablesSolo = [];
+        // $dataAdherentsSolo = [];
+        // //-récuperation des possibles solos
+        // foreach($dataResponsables as $d){
+        //     $findOne = false;
+        //     foreach($dataAdherents as $d2){
+        //         if($d[0] == $d2[1]){
+        //             $findOne = true;
+        //         }
+        //     }
+
+        //     if(!$findOne){
+        //         if(in_array($d, $dataResponsablesSolo)){
+        //             array_push($dataResponsablesSolo, $d);
+        //         }
+        //     }
+        // }
+
+        // foreach($dataAdherents as $d){
+        //     $findOne = false;
+        //     foreach($dataResponsables as $d2){
+        //         if($d[1] == $d2[0]){
+        //             $findOne = true;
+        //         }
+        //     }
+
+        //     if(!$findOne){
+        //         if(in_array($d, $dataAdherentsSolo)){
+        //             array_push($dataAdherentsSolo, $d);
+        //         }
+        //     }
+        // }
+
         $io->title("Création du fichier [PERSONNE]");
         $this->createFilePersonnes($dataResponsables);
         $io->title("Création du fichier [ADHERENTS]");
         $this->createFileAdherents($dataAdherents);
 
+        // $io->title("Création du fichier [DOUBLONS-PERSONNE]");
+        // $this->createFilePersonnes($dataResponsablesDoublons);
+        // $io->title("Création du fichier [DOUBLONS-ADHERENTS]");
+        // $this->createFileAdherents($dataAdherentsDoublons);
+
+        // $io->title("Création du fichier [SOLO-PERSONNE]");
+        // $this->createFilePersonnes($dataResponsablesSolo);
+        // $io->title("Création du fichier [SOLO-ADHERENTS]");
+        // $this->createFileAdherents($dataAdherentsSolo);
+
         $io->newLine(2);
         $io->text('------- Completed !');
 
         return 0;
+    }
+
+    private function addDonnee($data, $donnees){
+        $add = false;
+        if(count($data) != 0){
+            // --- REMOVE DOUBLON EN FONCTION DE L'ID
+            foreach($data as $d){
+                if($d[0] != $donnees[1][0]){ // ID !=
+                    $add = true;
+                }
+            }
+        }else{
+            $add = true;
+        }
+        return $add;
+    }
+
+    private function findRespInData($data, $donnees){
+        $findOne = false;
+        if(count($data) != 0){
+            foreach($data as $d){
+                if($d[2] == $donnees[1][2] && $d[5] == $donnees[1][5] || $d[2] == $donnees[1][2] && $d[3] == $donnees[1][3]){
+                    $findOne = $d[0];
+                }
+            }   
+        }
+        return $findOne;
     }
 
     private function getData(){
@@ -103,7 +203,7 @@ class AdminSyncDataCommand extends Command
                     // [1] possède 1 prospect non adh + non pers = new elv + new resp (personne = null)
                     // [2] possède 1 prospect non adh + 1 pers = new elv + edit personne
                     // [3] possède 1 prospect adh + non pers = edit adh + new resp (personne = null)
-                    // [4] possède 1 prospect adh + 1 pers = edit adh + edit personne 
+                    // [4] possède 1 prospect adh + 1 pers = edit adh + edit personne
 
                     // --------------------------
                     // ---- IDENTIFICATION DU CAS
@@ -116,15 +216,24 @@ class AdminSyncDataCommand extends Command
                     // --------------------------
                     $donnees = $this->createPersonneData($personne, $lastIDResponsables, $responsable);
                     $personneID = $donnees[2];
-                    $lastIDResponsables = $donnees[0];
-                    array_push($dataResponsables, $donnees[1]);
+                    if($this->addDonnee($dataResponsables, $donnees)){
+                        $find = $this->findRespInData($dataResponsables, $donnees);
+                        if($find == false){
+                            $lastIDResponsables = $donnees[0];
+                            array_push($dataResponsables, $donnees[1]);
+                        }else{
+                            $personneID = $find;
+                        }
+                    }
 
                     // --------------------------
                     // ---- CREATION ELEVE en fonction du CAS
                     // --------------------------
                     $donnees = $this->createAdherentData($isAdh, $lastIDAdherents, $personneID, $prospect);
-                    $lastIDAdherents = $donnees[0];
-                    array_push($dataAdherents, $donnees[1]);
+                    if($this->addDonnee($dataAdherents, $donnees)){
+                        $lastIDAdherents = $donnees[0];
+                        array_push($dataAdherents, $donnees[1]);
+                    }
 
                 // --------------------------
                 // ---- POSSIBILITE [2] Un responsable possède x élèves
@@ -159,8 +268,15 @@ class AdminSyncDataCommand extends Command
                     // --------------------------
                     $donnees = $this->createPersonneData($personne, $lastIDResponsables, $responsable);
                     $personneID = $donnees[2];
-                    $lastIDResponsables = $donnees[0];
-                    array_push($dataResponsables, $donnees[1]);
+                    if($this->addDonnee($dataResponsables, $donnees)){
+                        $find = $this->findRespInData($dataResponsables, $donnees);
+                        if($find == false){
+                            $lastIDResponsables = $donnees[0];
+                            array_push($dataResponsables, $donnees[1]);
+                        }else{
+                            $personneID = $find;
+                        }
+                    }
 
                     // --------------------------
                     // ---- CREATION ELEVE en fonction du CAS
@@ -168,8 +284,10 @@ class AdminSyncDataCommand extends Command
                     foreach($prospects as $prospect){
                         $isAdh = $this->isAdh($prospect);
                         $donnees = $this->createAdherentData($isAdh, $lastIDAdherents, $personneID, $prospect);
-                        $lastIDAdherents = $donnees[0];
-                        array_push($dataAdherents, $donnees[1]);
+                        if($this->addDonnee($dataAdherents, $donnees)){
+                            $lastIDAdherents = $donnees[0];
+                            array_push($dataAdherents, $donnees[1]);
+                        }
                     }
                 }
             }
@@ -232,8 +350,8 @@ class AdminSyncDataCommand extends Command
 
     private function deleteAccent($string){
         $string = str_replace(
-           array('é', 'è', 'ê', 'ë', 'à', 'â', 'î', 'ï', 'ô', 'ù', 'û', 'É', 'È', 'Ê', 'Ë', 'À', 'Â', 'Î', 'Ï', 'Ô', 'Ù', 'Û'),
-           array('e','e','e','e','a','a','i','i','o','u','u','E','E','E','E','A','A','I','I','O','U','U'),
+           array('é', 'è', 'ê', 'ë', 'à', 'â', 'î', 'ï', 'ô', 'ù', 'û', 'É', 'È', 'Ê', 'Ë', 'À', 'Â', 'Î', 'Ï', 'Ô', 'Ù', 'Û', 'ç','Ç'),
+           array('e','e','e','e','a','a','i','i','o','u','u','E','E','E','E','A','A','I','I','O','U','U', 'c', 'C'),
            $string
         );
         return $string;
@@ -254,14 +372,23 @@ class AdminSyncDataCommand extends Command
             $isAdh = $prospect->getAdherent();
         }else{
             // same que en haut // Cette année obligé car il y a peu etre des doublons vu qu'il n'y a pas de test sur le numAdh 
-            $existe = $em->getRepository(CiAdherent::class)->findOneBy(array( 
+            $existent = $em->getRepository(CiAdherent::class)->findBy(array( 
                 'firstname' => $this->setCapitalize($prospect->getFirstname()),
                 'lastname' => $this->setUpper($prospect->getLastname())
             ));
 
-            if($existe){
-                $isAdh = $existe;
-            }    
+            if(count($existent) == 1){
+                $isAdh = $existent[0]; 
+            }else{
+                foreach($existent as $existe){
+                    if($existe->getBirthday()->format('Y') == $prospect->getBirthday()->format('Y')
+                        && $existe->getBirthday()->format('D') == $prospect->getBirthday()->format('D')
+                        && $existe->getBirthday()->format('M') == $prospect->getBirthday()->format('M')
+                    ){
+                        $isAdh = $existe;
+                    }
+                }
+            }
         }
 
         return $isAdh;
@@ -278,6 +405,16 @@ class AdminSyncDataCommand extends Command
 
         if(count($personnesExistent) == 1 ){ // S'il existe 1 et 1 seule PERSONNE
             $personne = $personnesExistent[0]; // [2]
+        }else{
+            $personnesExistent = $em->getRepository(CiPersonne::class)->findBy(array(
+                'lastname' => $this->setUpper($responsable->getLastname()),
+                'adr' => $this->setUpper($responsable->getAdr()),
+                'cp' => $this->setUpper($responsable->getCp()),
+                'city' => $this->setUpper($responsable->getCity())
+            ));
+            if(count($personnesExistent) == 1 ){ // S'il existe 1 et 1 seule PERSONNE
+                $personne = $personnesExistent[0]; // [2]
+            }
         }
         return $personne;
     }
@@ -286,7 +423,7 @@ class AdminSyncDataCommand extends Command
         $same = null;
         $prev = "prev";
         foreach($prospects as $prospect){
-            $isAdh = $this->isAdh($prospect);            
+            $isAdh = $this->isAdh($prospect);
             $personne = ($isAdh != false) ? $isAdh->getPersonne() : $this->getPersonneByResponsable($responsable);
             if($personne != $prev && $prev != "prev"){
                 $same = null;
@@ -305,7 +442,7 @@ class AdminSyncDataCommand extends Command
 
         $tmp = array(
             $id, 0, $this->setUpper($responsable->getLastname()), $this->setCapitalize($responsable->getFirstname()), $this->getCivility($responsable->getCivility()),
-            $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), mb_strtoupper($responsable->getCity()),
+            $responsable->getAdr(), $responsable->getComplement(), $responsable->getCp(), $this->setUpper($responsable->getCity()),
             $phoneMobile, $phoneMobile != "" ? 'mobile' : '', $phoneDomicile, $phoneDomicile != "" ? 'domicile' : '',
             null,0,null,0,null,null,null,null,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,$responsable->getEmail(), 0
         );
@@ -367,7 +504,7 @@ class AdminSyncDataCommand extends Command
         }
         
         $tmp = array(
-            $id, intval($pers->getTycleunik()), $this->setUpper($lastname), $this->setCapitalize($firstname), $civility, $adr, $complement, $cp, $city, $phone1, 
+            $id, intval($pers->getTycleunik()), $this->setUpper($lastname), $this->setCapitalize($firstname), $civility, $adr, $complement, $cp, $this->setUpper($city), $phone1, 
             $name_phone1 , $phone2, $name_phone2, $pers->getNocompta(),intval($pers->getSfcleunik()),$pers->getNaissance(),intval($pers->getCacleunik()),$pers->getProfession(), $pers->getAdresseTrav(),$pers->getTelTrav(),
             $pers->getComment(),$pers->getMrcleunik(),$pers->getNbEch(), $pers->getBqDom1(),$pers->getBqDom2(),$pers->getBqCpte(),$pers->getBqCdebq(),$pers->getBqCdegu(),$pers->getBqClerib(),$pers->getTiret(),
             $pers->getInfoTelTra(),$pers->getTelephone3(),$pers->getInfoTel3(),$pers->getTelephone4(),$pers->getInfoTel4(),$pers->getTelephone5(),$pers->getInfoTel5(),$email, $isExsite
@@ -419,8 +556,15 @@ class AdminSyncDataCommand extends Command
         
 
         if($pro != null){
-            $nom = $pro->getLastname();
-            $prenom = $pro->getFirstname();
+            $nom = $this->setUpper($pro->getLastname());
+            $prenom =  $this->setCapitalize($pro->getFirstname());
+            
+            // Si l'utilisateur a inversé le nom et prénom à la saisie web = j'inverse en référence à la table du logiciel
+            if($nom == $this->setUpper($adh->getPrenom()) && $prenom == $this->setCapitalize($adh->getNom())){
+                $nom = $this->setCapitalize($pro->getFirstname());
+                $prenom = $this->setUpper($pro->getLastname());
+            }
+            
             $civility = $this->getCivility($pro->getCivility());
             $naissance = intval(date_format($pro->getBirthday(), 'Ymd'));
             $sexe = $this->getSexe($pro->getCivility());

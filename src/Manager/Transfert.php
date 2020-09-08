@@ -64,7 +64,7 @@ class Transfert
                 $prenom = substr($nom, $pos+1, strlen($nom));
                 $nom = substr($nom, 0, $pos);
             }else{
-                $prenom = $nom;
+                $prenom = null;
             }
         }
         return [
@@ -75,10 +75,7 @@ class Transfert
 
     public function createPersonne(WindevPersonne $item)
     {
-        
-    
         $cp = strlen($item->getCdePostal()) < 5 ? 0 . $item->getCdePostal() : $item->getCdePostal();
-        
 
         return (new CiPersonne())
             ->setOldId($item->getId())
@@ -116,7 +113,7 @@ class Transfert
             ->setAdr($item->getAdresseAdh())
             ->setPhoneMobile($this->formattedPhone($item->getTelephone1()))
             ->setPhoneDomicile($this->formattedPhone($item->getTelephone2()))
-            ->setPersonne($this->em->getRepository(CiPersonne::class)->findOneBy(array('id' => $item->getPecleunik())))
+            ->setPersonne($this->em->getRepository(CiPersonne::class)->findOneBy(array('oldId' => $item->getPecleunik())))
         ;
     }
 }
