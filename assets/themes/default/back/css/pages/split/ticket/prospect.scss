@@ -118,7 +118,7 @@
             }
 
             &.status-1{
-                background-color: $infoBg;
+                background-color: $color8;
                 cursor: pointer;
                 transition: all 0.2s ease-in-out;
                 max-width: 87px;
@@ -126,7 +126,7 @@
 
                 &:before{
                     width: 20px;
-                    background-color: $info;
+                    background-color: $color8;
                     margin-right: 5px;
                     transition: all 0.2s ease-in-out;
                 }
@@ -137,12 +137,12 @@
 
                 &:hover{
                     &:before{
-                        background-color: $success;
+                        background-color: $transac;
                     }
                 }
             }
             &.status-2{
-                background-color: $successBg;
+                background-color: $transac;
                 cursor: pointer;
                 transition: all 0.2s ease-in-out;
                 padding: 5px 5px 5px 10px;
@@ -151,12 +151,12 @@
                     display: none;
                 }
                 &:after{
-                    background-color: $success;
+                    background-color: $transac;
                     margin-left: 5px;
                 }
                 &:hover{
                     &:after{
-                        background-color: $info;
+                        background-color: $color8;
                     }
                 }
             }

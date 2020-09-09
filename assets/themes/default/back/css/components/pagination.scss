@@ -1,0 +1,39 @@
+@import "../vars/vars.scss";
+
+.pagination{
+    @include flex(row, center, center);
+    list-style: none;
+    padding-left: 0;
+}
+
+.pagination > .disabled{
+    cursor: not-allowed;
+    color: $colorDisabled;
+}
+
+.pagination > li{   
+    
+    &:not(:last-child), &:not(:first-child){
+        margin: 0 2px;
+    }
+    
+    &.active{
+        border-radius: 3px;
+        background-color: $color1;
+    }
+}
+
+.pagination > li > a{
+    @include flex(row, center, center);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    min-width: 31px; min-height: 31px;
+    outline-color: $color1;
+
+    &:hover{
+        background-color: transparentize($color: $color1, $amount: .7);
+    }
+
+    
+}

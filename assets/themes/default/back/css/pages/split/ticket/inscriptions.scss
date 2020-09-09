@@ -1,0 +1,80 @@
+@import '../../../vars/vars.scss';
+
+.prospects-inscriptions{
+    .col-3{
+        display: flex;
+        margin-top: 40px;
+    }
+    .prospects-body{
+        .line-resp{
+            box-shadow: none;
+
+            .item{
+                @include boxsh;
+                margin-bottom: 14px;
+                transition: all 0.2s ease-in-out;
+
+                &:hover{
+                    transform: scale(1.01);
+                }
+            }
+
+            .item.item-rayer{
+                opacity: 0.6;
+                .name, .birthday, .sexe, .email, .telephone{
+                    text-decoration: line-through;
+                }
+            }
+            .item .name{
+                .icon-edit{
+                    display: inline-block;
+                    font-size: 12px;
+                    margin-right: 5px;
+                }
+            }
+
+            .item .birthday{
+                display: block;
+                font-size: 14px;
+                color: $color7;
+            }
+
+            .item .sexe{
+                font-size: 14px;
+                color: $color3;
+            }
+
+            .item .email{
+                margin-bottom: 0;
+                margin-top: 10px;
+            }
+
+            .item .email, .item .telephone{
+                font-size: 14px;
+                opacity: 0.8;
+            }
+            
+        }
+    }
+}
+
+//                      __   _____ __    ___    __
+//                     | _| |___  / /_  ( _ )  |_ |
+//    _____ _____ _____| |     / / '_ \ / _ \   | |_____ _____ _____
+//   |_____|_____|_____| |    / /| (_) | (_) |  | |_____|_____|_____|
+//                     | |   /_/  \___/ \___/   | |
+//                     |__|                    |__|
+@media (min-width:768px) {
+    .prospects-inscriptions{
+        .col-1{
+            width: 40%;
+        }
+        .col-2{
+            width: 35%;
+        }
+        .col-3{
+            width: 15%;
+            margin-top: 0;
+        }
+    }
+}

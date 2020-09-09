@@ -1,0 +1,14 @@
+{% extends 'themes/default/admin/pages/ticket/template.html.twig' %}
+
+{% block title %}Inscriptions{% endblock %}
+
+{% block main_content %}
+
+    <section class="title">
+        <h1>Inscriptions</h1>
+    </section>
+
+    <section class="content">
+        <div id="inscriptions" data-prospects="{{ prospects | json_encode() }}"></div>
+    </section>
+{% endblock %}

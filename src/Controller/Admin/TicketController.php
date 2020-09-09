@@ -46,6 +46,28 @@ class TicketController extends AbstractController
     }
 
     /**
+     * @Route("/definitive/inscription", options={"expose"=true}, name="definitive_inscription")
+     */
+    public function definitiveInscription(SerializerInterface $serializer)
+    {
+        date_default_timezone_set('Europe/Paris');
+        $em = $this->getDoctrine()->getManager();
+       
+        $prospects = $em->getRepository(TicketProspect::class)->findBy([], ['lastname' => 'ASC']);
+
+        $prospects = $serializer->serialize($prospects, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 'isDiff',
+            'responsable' => ['id', 'civility', 'firstname', 'lastname', 'email'],
+            'day' => ['id', 'type', 'typeString']
+        ]]);
+
+        return $this->render('root/admin/pages/ticket/inscriptions.html.twig', [
+            'prospects' => $prospects,
+        ]);
+    }
+
+    /**
     * @Route("/jour/{ticketDay}/details/eleves", name="show")
     */
     public function show(TicketDay $ticketDay, SerializerInterface $serializer)
