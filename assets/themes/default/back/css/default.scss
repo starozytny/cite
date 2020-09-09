@@ -2,6 +2,8 @@
 @import "vars/fonts.scss";
 @import "vars/vars";
 
+@import "toastr";
+
 @import "components/menu.scss";
 @import "components/header.scss";
 @import "components/footer.scss";
@@ -9,6 +11,7 @@
 @import "components/toolbar.scss";
 @import "components/form.scss";
 @import "components/loader.scss";
+@import "components/pagination.scss";
 
 body{
     @include fontRegular();

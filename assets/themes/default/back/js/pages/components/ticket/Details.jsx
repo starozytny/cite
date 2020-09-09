@@ -393,11 +393,6 @@ export class Details extends Component {
                         <input type="checkbox" name="check-prospect" value={elem.id} onChange={this.handleChange} />
                     </div>
                     <div className="col-1">
-                        {elem.numAdh != null ? 
-                            <div className="haveNumAdh">
-                                <div className="numAdh">adhérent {elem.adherent ? '(' + elem.adherent.numAdh + ')' : null}</div>
-                            </div>
-                            : null}
                         <div className="name" onClick={this.handleOpenEdit} data-id={elem.id}>{elem.civility}. <span>{elem.lastname}</span> {elem.firstname}</div>
                         <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
                     </div>
@@ -489,7 +484,7 @@ export class Details extends Component {
                 </div>
             </div>
             
-            {openEdit == 'active' ? <AsideProspect error={errorEdit} openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} onEdit={this.handleEditProspect} responsableIdEdit={responsableIdEdit} /> : null}
+            {openEdit == 'active' ? <AsideProspect special={false} error={errorEdit} openEdit={openEdit} onClose={this.handleClose} prospect={prospectEdit} onEdit={this.handleEditProspect} responsableIdEdit={responsableIdEdit} /> : null}
             
         </>
     }
@@ -556,7 +551,7 @@ export class AsideProspect extends Component {
 
 
     render () {
-        const {openEdit, onClose, prospect, error, responsableIdEdit} = this.props;
+        const {special, openEdit, onClose, prospect, error, responsableIdEdit} = this.props;
         const {civility, firstname, lastname, birthday, numAdh, email, phoneMobile} = this.state;
 
         return <div className="prospect-aside">
@@ -581,7 +576,7 @@ export class AsideProspect extends Component {
                         </ul>
                     </div>
                     <a href={Routing.generate('admin_responsable_edit', {'responsable': prospect.responsable.id})} className="edit-resp">Modifier le responsable</a>
-                    <ResendTicket responsableId={responsableIdEdit}/>
+                    {special == false ? <ResendTicket responsableId={responsableIdEdit}/> : null}
                 </div>
 
                 <hr/>
@@ -624,9 +619,10 @@ export class AsideProspect extends Component {
                         <Input type="number" identifiant="phoneMobile" value={phoneMobile.value} onChange={this.handleChange} error={phoneMobile.error}>Téléphone mobile</Input>
                     </div>
 
-                    <div className="alert alert-infos">
+                    {special == false ? <div className="alert alert-infos">
                         Après modification, assurez-vous de <b>renvoyer</b> le ticket au responsable.
-                    </div>
+                    </div> : null}
+                    
 
                     <div className="from-group">
                         <button className="btn btn-primary" type="submit">Mettre à jour</button>

@@ -90,7 +90,7 @@ class TicketProspect
     private $createAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity=TicketResponsable::class, inversedBy="prospects")
+     * @ORM\ManyToOne(targetEntity=TicketResponsable::class, fetch="EAGER", inversedBy="prospects")
      * @ORM\JoinColumn(nullable=false)
      */
     private $responsable;

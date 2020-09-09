@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import axios from 'axios/dist/axios';
 import AjaxSend from '../components/functions/ajax_classique';
 import {Details} from './components/ticket/Details.jsx';
+import {Inscriptions} from './components/ticket/Inscriptions.jsx';
 import {Slots} from './components/ticket/Slots.jsx';
 import {Ticket} from './components/ticket/Ticket.jsx';
 import {ToolbarTicket} from './components/ticket/ToolbarTicket.jsx';
@@ -15,6 +16,14 @@ if(details){
     ReactDOM.render(
         <Details responsables={details.dataset.responsables} dayId={details.dataset.dayId} />,
         details
+    )
+}
+
+let inscr = document.getElementById("inscriptions");
+if(inscr){
+    ReactDOM.render(
+        <Inscriptions prospects={inscr.dataset.prospects} />,
+        inscr
     )
 }
 

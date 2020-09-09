@@ -20,7 +20,7 @@ class ProspectController extends AbstractController
     /**
      * @Route("/eleve/{id}/update/status", options={"expose"=true}, name="update_status")
      */
-    public function changeStatus(TicketProspect $id)
+    public function changeStatus(TicketProspect $id, SerializerInterface $serializer)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -29,20 +29,73 @@ class ProspectController extends AbstractController
             return new JsonResponse(['code' => 0]);
         }
 
+        $existent = array();
+
         if($prospect->getStatus() == TicketProspect::ST_CONFIRMED){
             $prospect->setStatus(TicketProspect::ST_REGISTERED);
             $status = TicketProspect::ST_REGISTERED;
             $statusString = "Inscrit";
+            $diff = 1;
+            $existent = $this->haveExiste($prospect, $diff, 0);
         }else{
             $prospect->setStatus(TicketProspect::ST_CONFIRMED);
             $status = TicketProspect::ST_CONFIRMED;
             $statusString = "Attente";
+            $diff = 0;
+            $existent = $this->haveExiste($prospect, $diff, 1);
         }
-
         $em->persist($prospect);
         $em->flush();
 
-        return new JsonResponse(['code' => 1, 'status' => $status, 'statusString' => $statusString]);
+        $prospect = $serializer->serialize($prospect, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 'isDiff',
+            'responsable' => ['id', 'civility', 'firstname', 'lastname', 'email'],
+            'day' => ['id', 'type', 'typeString']
+        ]]);
+
+        return new JsonResponse(['code' => 1, 'status' => $status, 'statusString' => $statusString, 'prospect' => $prospect, 'existent' => json_encode($existent), 'diff' => $diff]);
+    }
+
+    private function haveExiste($prospect, $diff, $contraireDiff)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $doublons = array();
+        $existent = $em->getRepository(TicketProspect::class)->findBy(array( 
+            'firstname' => $prospect->getFirstname(),
+            'lastname' => $prospect->getLastname()
+        ));
+
+        $findOne = false;
+
+        if($existent){
+            foreach($existent as $existe){
+                if($existe->getId() != $prospect->getId()){
+                    if($existe->getBirthday()->format('Y') == $prospect->getBirthday()->format('Y')
+                        && $existe->getBirthday()->format('D') == $prospect->getBirthday()->format('D')
+                        && $existe->getBirthday()->format('M') == $prospect->getBirthday()->format('M')
+                    ){
+                        if($existe->getStatus() == TicketProspect::ST_REGISTERED){
+                            $findOne = true;
+                        }                        
+                    }
+                }
+            }
+        }
+
+        if(!$findOne){
+            foreach($existent as $existe){
+                $existe->setIsDiff($diff);
+                $em->persist($existe);
+                array_push($doublons, $existe->getId());
+            }
+        }else{
+            $prospect->setIsDiff($contraireDiff);
+            $em->persist($prospect);
+        }
+        
+        $em->flush();
+        return $doublons;
     }
 
     /**
@@ -148,7 +201,7 @@ class ProspectController extends AbstractController
     /**
      * @Route("/eleve/{id}/set/infos", options={"expose"=true}, name="set_infos")
      */
-    public function setProspect(Request $request, TicketProspect $id)
+    public function setProspect(Request $request, TicketProspect $id, SerializerInterface $serializer)
     {
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent());
@@ -187,6 +240,20 @@ class ProspectController extends AbstractController
         $em->persist($id);
         $em->flush();
 
-        return new JsonResponse(['code' => 1]);
+        $prospectEdit = $serializer->serialize($id, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'birthdayString', 'birthdayJavascript', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 'adherent' => ['id'], 'isDiff',
+            'responsable' => ['id', 'civility', 'firstname', 'lastname', 'createAtString', 'adresseString', 'email', 'phoneMobile', 'phoneDomicile', 'ticket'], 
+            'creneau' => ['id', 'horaireString']
+        ]]);
+
+        $prospect = $serializer->serialize($id, 'json', ['attributes' => [
+            'id', 'firstname', 'lastname', 'civility', 'email', 'birthday', 'age', 'phoneDomicile', 'phoneMobile', 'adr', 'cp', 'city',
+            'numAdh', 'status', 'statusString', 'isDiff',
+            'responsable' => ['id', 'civility', 'firstname', 'lastname', 'email'],
+            'day' => ['id', 'type', 'typeString']
+        ]]);
+
+        return new JsonResponse(['code' => 1, 'prospectEdit' => $prospectEdit, 'prospect' => $prospect]);
     }
 }
