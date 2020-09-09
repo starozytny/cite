@@ -575,7 +575,7 @@ export class AsideProspect extends Component {
                             <li>{prospect.responsable.adresseString}</li>
                         </ul>
                     </div>
-                    <a href={Routing.generate('admin_responsable_edit', {'responsable': prospect.responsable.id})} className="edit-resp">Modifier le responsable</a>
+                    <a target="_blank" href={Routing.generate('admin_responsable_edit', {'responsable': prospect.responsable.id})} className="edit-resp">Modifier le responsable</a>
                     {special == false ? <ResendTicket responsableId={responsableIdEdit}/> : null}
                 </div>
 

@@ -25,6 +25,13 @@
                     text-decoration: line-through;
                 }
             }
+            .item .name{
+                .icon-edit{
+                    display: inline-block;
+                    font-size: 12px;
+                    margin-right: 5px;
+                }
+            }
 
             .item .birthday{
                 display: block;

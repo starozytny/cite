@@ -207,7 +207,10 @@ export class Inscriptions extends Component {
         let eleves = prospectsList.map((elem) => {
             return <div className={"item" + (elem.isDiff != 0 && elem.status != 2 ? ' item-rayer' : '')} key={elem.id}>
                 <div className="col-1">
-                    <div className="name" data-id={elem.id} onClick={this.handleOpenEdit}><span>{elem.lastname}</span> {elem.firstname}</div>
+                    <div className="name" data-id={elem.id} onClick={this.handleOpenEdit}>
+                        <span className="icon-edit"></span>
+                        <span>{elem.lastname}</span> {elem.firstname}
+                    </div>
                     <div className="sexe">{elem.civility == "Mr" ? <span>Homme</span> : <span>Femme</span>}</div>
                     <div className="birthday">{(new Date(elem.birthday)).toLocaleDateString('fr-FR')} ({elem.age})</div>
                 </div>
